@@ -1,0 +1,8 @@
+<svg width="960" height="540" viewBox="0 0 960 540" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="540" fill="#19130F"/>
+  <rect x="40" y="40" width="880" height="460" rx="16" fill="#211914" stroke="#4B3828" stroke-width="4"/>
+  <path d="M250 368C325 238 390 172 480 172C570 172 635 238 710 368H250Z" fill="#33261C"/>
+  <circle cx="480" cy="220" r="56" fill="#7F5A21"/>
+  <path d="M350 385H610" stroke="#D2A74F" stroke-width="12" stroke-linecap="round"/>
+  <text x="480" y="446" text-anchor="middle" fill="#B9A98F" font-family="Arial, sans-serif" font-size="34">Зображення розділу</text>
+</svg>

@@ -1,0 +1,26 @@
+{
+  "name": "Кодекс Майстра",
+  "short_name": "Кодекс",
+  "description": "Український DnD-довідник: раси, класи та предмети.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f0c0a",
+  "theme_color": "#0f0c0a",
+  "lang": "uk",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
