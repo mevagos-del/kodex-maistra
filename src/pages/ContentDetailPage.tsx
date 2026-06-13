@@ -1,6 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 import { Link, useParams } from 'react-router-dom';
 import { EmptyState } from '@/features/catalog/components/EmptyState';
+import { StructuredContentBlock } from '@/features/catalog/components/StructuredContentBlock';
 import { TagList } from '@/features/catalog/components/TagList';
 import { sectionSlugForEntity } from '@/features/catalog/api/catalogApi';
 import { useCatalogEntry } from '@/features/catalog/hooks/useCatalogData';
@@ -86,30 +87,15 @@ function specialFields(entry: CatalogEntry) {
   return rows;
 }
 
-function JsonBlock({ title, value }: { title: string; value: unknown }) {
-  if (value === null || value === undefined) return null;
-  const isEmptyArray = Array.isArray(value) && value.length === 0;
-  const isEmptyObject = typeof value === 'object' && !Array.isArray(value) && Object.keys(value as object).length === 0;
-
-  if (isEmptyArray || isEmptyObject) return null;
-
-  return (
-    <details className="json-block">
-      <summary>{title}</summary>
-      <pre>{JSON.stringify(value, null, 2)}</pre>
-    </details>
-  );
-}
-
-function JsonBlocks({ entry }: { entry: CatalogEntry }) {
+function StructuredBlocks({ entry }: { entry: CatalogEntry }) {
   if (entry.entityType === 'race') {
     return (
       <>
-        <JsonBlock title="Риси раси" value={entry.race_traits} />
-        <JsonBlock title="Бонуси здібностей" value={entry.ability_bonuses} />
-        <JsonBlock title="Володіння" value={entry.proficiencies} />
-        <JsonBlock title="Додаткові навички" value={entry.additional_skills} />
-        <JsonBlock title="Підраси" value={entry.subraces} />
+        <StructuredContentBlock title="Риси раси" value={entry.race_traits} />
+        <StructuredContentBlock title="Бонуси здібностей" value={entry.ability_bonuses} />
+        <StructuredContentBlock title="Володіння" value={entry.proficiencies} />
+        <StructuredContentBlock title="Додаткові вміння" value={entry.additional_skills} />
+        <StructuredContentBlock title="Підраси / варіанти" value={entry.subraces} />
       </>
     );
   }
@@ -117,17 +103,17 @@ function JsonBlocks({ entry }: { entry: CatalogEntry }) {
   if (entry.entityType === 'class') {
     return (
       <>
-        <JsonBlock title="Вибір навичок" value={entry.skill_choices} />
-        <JsonBlock title="Початкове спорядження" value={entry.starting_equipment} />
-        <JsonBlock title="Особливості класу" value={entry.class_features} />
-        <JsonBlock title="Прогресія класу" value={entry.class_progression} />
-        <JsonBlock title="Підкласи" value={entry.subclasses} />
-        <JsonBlock title="Заклинання" value={entry.spellcasting} />
+        <StructuredContentBlock title="Навички на вибір" value={entry.skill_choices} />
+        <StructuredContentBlock title="Початкове спорядження" value={entry.starting_equipment} />
+        <StructuredContentBlock title="Класові особливості" value={entry.class_features} />
+        <StructuredContentBlock title="Таблиця прогресії" value={entry.class_progression} />
+        <StructuredContentBlock title="Підкласи" value={entry.subclasses} />
+        <StructuredContentBlock title="Заклинальні можливості" value={entry.spellcasting} />
       </>
     );
   }
 
-  return <JsonBlock title="Властивості предмета" value={entry.properties} />;
+  return <StructuredContentBlock title="Властивості" value={entry.properties} />;
 }
 
 export function ContentDetailPage({ entity }: ContentDetailPageProps) {
@@ -208,9 +194,9 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
         </section>
       ) : null}
 
-      <section className="detail-section">
-        <h2>Структуровані блоки</h2>
-        <JsonBlocks entry={entry} />
+      <section className="detail-section detail-structured-section">
+        <h2>Структуровані дані</h2>
+        <StructuredBlocks entry={entry} />
       </section>
 
       <section className="detail-section detail-source">
