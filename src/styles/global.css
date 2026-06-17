@@ -1207,6 +1207,96 @@ select:disabled {
   padding: 14px;
 }
 
+.detail-v2-lower-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.detail-v2-group-panel,
+.detail-v2-description-panel {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 16px;
+  background:
+    linear-gradient(145deg, rgb(34 25 18 / 76%), rgb(17 13 10 / 84%)),
+    var(--surface);
+  box-shadow: inset 0 1px 0 rgb(255 240 190 / 5%);
+}
+
+.detail-v2-group-panel h3,
+.detail-v2-description-panel h2 {
+  margin: 0;
+  color: var(--accent);
+  font-family: var(--heading-font);
+  font-size: 1.12rem;
+}
+
+.detail-v2-group-list {
+  display: grid;
+  gap: 10px;
+}
+
+.detail-v2-group {
+  display: grid;
+  grid-template-columns: minmax(104px, 0.32fr) minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgb(210 167 79 / 12%);
+}
+
+.detail-v2-group:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.detail-v2-group-title {
+  color: var(--text);
+  font-family: var(--heading-font);
+  font-size: 0.94rem;
+  line-height: 1.35;
+}
+
+.detail-v2-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.detail-v2-clean-chip {
+  border: 1px solid rgb(210 167 79 / 24%);
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: var(--text);
+  background: rgb(15 12 10 / 44%);
+  font-size: 0.78rem;
+  line-height: 1.25;
+}
+
+.detail-v2-description-panel {
+  margin-top: 2px;
+}
+
+.detail-v2-description-panel .markdown-content {
+  max-width: 78ch;
+  color: var(--text);
+  line-height: 1.72;
+}
+
+.detail-v2-source-note {
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 0 4px 4px;
+}
+
+.detail-v2-source-note p {
+  margin: 0;
+}
+
 .detail-sidebar__image {
   width: 100%;
   aspect-ratio: 4 / 3;
@@ -2170,7 +2260,8 @@ select:disabled {
   }
 
   .detail-v2-stat-grid,
-  .detail-v2-two-column {
+  .detail-v2-two-column,
+  .detail-v2-lower-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -2227,7 +2318,12 @@ select:disabled {
   }
 
   .detail-v2-stat-grid,
-  .detail-v2-two-column {
+  .detail-v2-two-column,
+  .detail-v2-lower-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-v2-group {
     grid-template-columns: 1fr;
   }
 
