@@ -113,6 +113,42 @@ function SummarySection({ entry }: { entry: CatalogEntry }) {
   );
 }
 
+function DetailGroupPanel({ title, groups }: { title: string; groups: Array<{ title: string; values: string[] }> }) {
+  const visibleGroups = groups.filter((group) => group.values.length > 0);
+
+  if (visibleGroups.length === 0) return null;
+
+  return (
+    <section className="detail-v2-group-panel">
+      <h3>{title}</h3>
+      <div className="detail-v2-group-list">
+        {visibleGroups.map((group) => (
+          <div key={group.title} className="detail-v2-group">
+            <strong className="detail-v2-group-title">{group.title}</strong>
+            <div className="detail-v2-chip-list">
+              {group.values.map((value) => (
+                <span key={`${group.title}-${value}`} className="detail-v2-clean-chip">{value}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function infoRowsToGroups(rows: Array<{ label: string; value: string }>) {
+  const grouped = new Map<string, string[]>();
+
+  for (const row of rows) {
+    const current = grouped.get(row.label) ?? [];
+    current.push(...row.value.split(',').map((value) => value.trim()).filter(Boolean));
+    grouped.set(row.label, Array.from(new Set(current)));
+  }
+
+  return Array.from(grouped.entries()).map(([title, values]) => ({ title, values }));
+}
+
 function AbilityScoreGrid({ entry }: { entry: Extract<CatalogEntry, { entityType: 'race' }> }) {
   const { cells, note } = abilityScoreCells(entry.ability_bonuses);
 
@@ -134,25 +170,7 @@ function AbilityScoreGrid({ entry }: { entry: Extract<CatalogEntry, { entityType
 
 function ProficiencyGroups({ entry }: { entry: Extract<CatalogEntry, { entityType: 'race' | 'class' }> }) {
   const groups = groupedProficiencies(entry);
-  if (groups.length === 0) return null;
-
-  return (
-    <section className="detail-v2-compact-panel">
-      <h3>Володіння та навички</h3>
-      <div className="proficiency-group-grid">
-        {groups.map((group) => (
-          <div key={group.title} className="proficiency-group">
-            <strong>{group.title}</strong>
-            <div className="structured-badges">
-              {group.values.map((value) => (
-                <span key={`${group.title}-${value}`}>{value}</span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
+  return <DetailGroupPanel title={entry.entityType === 'class' ? 'Володіння' : 'Володіння та навички'} groups={groups} />;
 }
 
 function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
@@ -162,14 +180,9 @@ function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
     return (
       <>
         <DetailReferenceSection title="Риси раси" cards={referenceCards(entry.race_traits, 'Риса')} />
-        <div className="detail-v2-two-column">
+        <div className="detail-v2-lower-grid">
           <ProficiencyGroups entry={entry} />
-          {resistanceInfo.length > 0 ? (
-            <section className="detail-v2-compact-panel">
-              <h3>Стійкості та переваги</h3>
-              <MechanicInfoGrid items={resistanceInfo} />
-            </section>
-          ) : null}
+          <DetailGroupPanel title="Стійкості та переваги" groups={infoRowsToGroups(resistanceInfo)} />
         </div>
         <DetailReferenceSection title="Підраси / варіанти" cards={referenceCards(entry.subraces, 'Варіант')} />
       </>
@@ -180,15 +193,15 @@ function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
     return (
       <>
         <DetailReferenceSection title="Класові особливості" cards={referenceCards(entry.class_features, 'Особливість')} />
-        <div className="detail-v2-two-column">
+        <div className="detail-v2-lower-grid">
           <ProficiencyGroups entry={entry} />
           <div className="detail-v2-column-stack">
+            <DetailReferenceSection title="Навички на вибір" cards={referenceCards(entry.skill_choices, 'Вибір')} />
             <DetailReferenceSection title="Початкове спорядження" cards={referenceCards(entry.starting_equipment, 'Спорядження')} />
             <DetailReferenceSection title="Підкласи" cards={referenceCards(entry.subclasses, 'Підклас')} />
             {entry.has_spellcasting ? <DetailReferenceSection title="Заклинальні можливості" cards={referenceCards(entry.spellcasting, 'Заклинання')} /> : null}
           </div>
         </div>
-        <DetailReferenceSection title="Навички на вибір" cards={referenceCards(entry.skill_choices, 'Вибір')} />
         <StructuredContentBlock title="Таблиця прогресії" value={entry.class_progression} />
       </>
     );
@@ -199,24 +212,23 @@ function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
   return (
     <>
       <DetailReferenceSection title="Властивості предмета" cards={referenceCards(entry.properties, 'Властивість')} />
-      <div className="detail-v2-two-column">
-        {requirements.length > 0 ? (
-          <section className="detail-v2-compact-panel">
-            <h3>Вимоги та обмеження</h3>
-            <MechanicInfoGrid items={requirements} />
-          </section>
-        ) : null}
-        <section className="detail-v2-compact-panel">
-          <h3>Вміст / кількість</h3>
-          <MechanicInfoGrid
-            items={[
-              entry.quantity ? { label: 'Кількість', value: entry.quantity } : null,
-              entry.weight ? { label: 'Вага', value: entry.weight } : null,
-              entry.price ? { label: 'Ціна', value: entry.price } : null,
-            ].filter((item): item is { label: string; value: string } => Boolean(item))}
-          />
-        </section>
+      <div className="detail-v2-lower-grid">
+        <DetailGroupPanel title="Вимоги та обмеження" groups={infoRowsToGroups(requirements)} />
+        <DetailGroupPanel
+          title="Вміст / кількість"
+          groups={[
+            {
+              title: 'Параметри',
+              values: [
+                entry.quantity ? `Кількість: ${entry.quantity}` : null,
+                entry.weight ? `Вага: ${entry.weight}` : null,
+                entry.price ? `Ціна: ${entry.price}` : null,
+              ].filter((item): item is string => Boolean(item)),
+            },
+          ]}
+        />
       </div>
+      <SummarySection entry={entry} />
     </>
   );
 }
@@ -271,11 +283,11 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
 
       {entry.entityType === 'race' ? <AbilityScoreGrid entry={entry} /> : null}
 
-      <SummarySection entry={entry} />
+      {entry.entityType !== 'item' ? <SummarySection entry={entry} /> : null}
 
       <RichReferenceBlocks entry={entry} />
 
-      <section className="detail-v2-panel">
+      <section className="detail-v2-description-panel">
         <h2>Опис</h2>
         {entry.full_description_markdown ? (
           <div className="markdown-content">
@@ -286,7 +298,7 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
         )}
       </section>
 
-      <section className="detail-v2-panel detail-source">
+      <section className="detail-v2-source-note">
         <p>Джерело: {entry.source?.title ?? 'не вказано'}</p>
       </section>
     </DetailLayout>
