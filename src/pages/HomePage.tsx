@@ -1,22 +1,14 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { CatalogCard } from '@/features/catalog/components/CatalogCard';
 import { EmptyState } from '@/features/catalog/components/EmptyState';
 import { globalSearch } from '@/features/catalog/api/catalogFilters';
-import {
-  useCatalogList,
-  usePublishedSections,
-  useRecentlyAddedMaterials,
-  useSectionCounts,
-} from '@/features/catalog/hooks/useCatalogData';
-import { FutureModuleTile } from '@/components/ui/FutureModuleTile';
-import { SectionTile } from '@/components/ui/SectionTile';
-import { coreSections, futureModules } from '@/data/navigation';
+import { useCatalogList, usePublishedSections } from '@/features/catalog/hooks/useCatalogData';
+import { referenceQuickAccess } from '@/data/navigation';
 
 export function HomePage() {
   const [search, setSearch] = useState('');
   const sections = usePublishedSections();
-  const counts = useSectionCounts();
-  const recent = useRecentlyAddedMaterials(6);
   const races = useCatalogList('race');
   const classes = useCatalogList('class');
   const items = useCatalogList('item');
@@ -28,101 +20,78 @@ export function HomePage() {
   const searchResults = useMemo(() => globalSearch(allMaterials, search).slice(0, 8), [allMaterials, search]);
 
   return (
-    <div className="page-stack home-page">
-      <section className="hero home-hero">
-        <p className="eyebrow">Довідник майстра</p>
-        <h1>Кодекс Майстра</h1>
+    <div className="page-stack home-page codex-home">
+      <section className="hero home-hero cinematic-hero" aria-labelledby="home-title">
+        <div className="cinematic-hero__glow" aria-hidden="true" />
+        <div className="cinematic-hero__sigil" aria-hidden="true" />
+        <div className="cinematic-hero__dust" aria-hidden="true" />
+        <div className="cinematic-hero__content">
+          <p className="eyebrow">Ваш довідник у світі</p>
+          <h1 id="home-title">Dungeons &amp; Dragons</h1>
+          <p>Правила, описи та інструменти для ваших пригод</p>
+        </div>
       </section>
 
-      <section className="home-search-panel" aria-labelledby="home-search-title">
+      <section className="home-search-panel codex-search-panel" aria-labelledby="home-search-title">
         <div className="section-heading section-heading-compact">
           <p className="eyebrow">Пошук у довіднику</p>
-          <h2 id="home-search-title">Знайти матеріал</h2>
+          <h2 id="home-search-title">Знайти правило або матеріал</h2>
         </div>
-        <div className="global-search" role="search">
+        <div className="global-search codex-search" role="search">
           <label htmlFor="global-search">Пошук</label>
           <input
             id="global-search"
             type="search"
-            placeholder="Назва, оригінальна назва або тег..."
+            placeholder="Пошук у довіднику…"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
           {!sections.isLoading && sections.data.length === 0 ? (
-            <span>Якщо Supabase ще не налаштовано або немає опублікованих матеріалів, результати будуть порожні.</span>
+            <span>Опубліковані матеріали не знайдені або Supabase ще не налаштовано.</span>
           ) : null}
         </div>
 
         {search.trim() ? (
           <div className="home-search-results" aria-live="polite">
-          {searchResults.length > 0 ? (
-            <div className="catalog-grid catalog-grid-compact">
-              {searchResults.map((entry) => (
-                <CatalogCard key={`${entry.entityType}-${entry.id}`} entry={entry} compact />
-              ))}
-            </div>
-          ) : (
-            <EmptyState description="Спробуйте змінити пошуковий запит або фільтри." />
-          )}
+            {searchResults.length > 0 ? (
+              <div className="catalog-grid catalog-grid-compact">
+                {searchResults.map((entry) => (
+                  <CatalogCard key={entry.entityType + '-' + entry.id} entry={entry} compact />
+                ))}
+              </div>
+            ) : (
+              <EmptyState description="Спробуйте змінити пошуковий запит або фільтри." />
+            )}
           </div>
         ) : null}
       </section>
 
-      <section className="content-section home-directory-section" aria-labelledby="core-sections-title">
+      <section className="content-section quick-access-section" aria-labelledby="quick-access-title">
         <div className="section-heading section-heading-compact">
-          <p className="eyebrow">Основні розділи</p>
-          <h2 id="core-sections-title">Довідник</h2>
+          <p className="eyebrow">Довідник</p>
+          <h2 id="quick-access-title">Швидкий доступ</h2>
         </div>
-        <div className="section-grid home-directory-grid">
-          {coreSections.map((section) => {
-            const dbSection = sections.data.find((item) => item.slug === section.slug);
-            return (
-              <SectionTile
-                key={section.slug}
-                section={{
-                  ...section,
-                  title: dbSection?.title ?? section.title,
-                  description: dbSection?.description ?? section.description,
-                }}
-                imageUrl={dbSection?.image_url}
-                count={counts.data[section.slug]}
-              />
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="content-section home-future-section" aria-labelledby="future-title">
-        <div className="section-heading section-heading-compact">
-          <p className="eyebrow">План розвитку</p>
-          <h2 id="future-title">Майбутні модулі</h2>
-        </div>
-        <div className="future-grid home-future-grid">
-          {futureModules.map((module) => (
-            <FutureModuleTile key={module.title} module={module} />
+        <div className="quick-access-grid">
+          {referenceQuickAccess.map((item) => (
+            item.isDisabled ? (
+              <button key={item.title} type="button" className="quick-access-item quick-access-item-disabled" disabled>
+                <span className="quick-access-symbol" aria-hidden="true">{item.symbol}</span>
+                <strong>{item.title}</strong>
+                <small>Скоро</small>
+              </button>
+            ) : (
+              <Link key={item.title} to={item.path} className="quick-access-item">
+                <span className="quick-access-symbol" aria-hidden="true">{item.symbol}</span>
+                <strong>{item.title}</strong>
+              </Link>
+            )
           ))}
         </div>
       </section>
 
-      <section className="content-section home-recent-section" aria-labelledby="recent-title">
-        <div className="section-heading section-heading-compact">
-          <p className="eyebrow">Останні матеріали</p>
-          <h2 id="recent-title">Останні додані матеріали</h2>
-        </div>
-        {recent.isLoading ? (
-          <div className="placeholder-panel">Завантажуємо матеріали...</div>
-        ) : recent.errorMessage ? (
-          <div className="placeholder-panel">Не вдалося завантажити матеріали: {recent.errorMessage}</div>
-        ) : recent.data.length > 0 ? (
-          <div className="catalog-grid catalog-grid-compact">
-            {recent.data.map((entry) => (
-              <CatalogCard key={`${entry.entityType}-${entry.id}`} entry={entry} compact />
-            ))}
-          </div>
-        ) : (
-          <EmptyState description="Матеріалів немає або Supabase ще не налаштовано." />
-        )}
-      </section>
+      <p className="home-source-note">
+        На основі відкритих правил SRD 5.2. Текст адаптовано українською для довідника. Сайт не є офіційним продуктом Wizards of the Coast.
+      </p>
     </div>
   );
 }

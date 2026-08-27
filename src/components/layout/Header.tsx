@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
-import { appRoutes, publicNavigation } from '@/routes/appRoutes';
+import { toolNavigation } from '@/data/navigation';
+import { appRoutes } from '@/routes/appRoutes';
 
 export function Header() {
   return (
@@ -8,15 +9,16 @@ export function Header() {
         <span className="brand-mark">КМ</span>
         <span>
           <strong>Кодекс Майстра</strong>
-          <small>український DnD-довідник</small>
+          <small>Довідник D&amp;D 5E</small>
         </span>
       </NavLink>
 
-      <nav className="main-nav" aria-label="Основна навігація">
-        {publicNavigation.map((item) => (
-          <NavLink key={item.path} to={item.path}>
-            {item.label}
-          </NavLink>
+      <nav className="main-nav tool-nav" aria-label="Модулі інструментів">
+        {toolNavigation.map((item) => (
+          <button key={item.title} type="button" className="tool-nav__item" disabled aria-label={item.title + '. ' + item.status}>
+            <span>{item.title}</span>
+            <small>{item.status}</small>
+          </button>
         ))}
       </nav>
 
