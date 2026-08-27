@@ -167,7 +167,7 @@ export function abilityBonusCards(value: unknown): ReferenceCard[] {
     if (direct.length > 0) return direct;
 
     const description = cleanText(value.description ?? value.text ?? value.note ?? value.value);
-    if (description) return [{ title: 'Гнучкий бонус', description, rows: [] }];
+    if (description) return [{ title: 'Збільшення характеристики', description, rows: [] }];
   }
 
   for (const item of arrayFromUnknown(value)) {
@@ -180,14 +180,14 @@ export function abilityBonusCards(value: unknown): ReferenceCard[] {
         cards.push({ title: `${bonus} ${translateAbility(ability)}`, description, rows: rowsForRecord(item) });
       } else {
         cards.push({
-          title: ability ?? 'Бонус характеристик',
+          title: ability ?? 'Збільшення характеристики',
           description: description ?? cleanText(item.value) ?? undefined,
           rows: rowsForRecord(item),
         });
       }
     } else {
       const text = cleanText(item);
-      if (text) cards.push({ title: 'Бонус характеристик', description: text, rows: [] });
+      if (text) cards.push({ title: 'Збільшення характеристики', description: text, rows: [] });
     }
   }
 
@@ -292,39 +292,38 @@ export function resistanceRows(...values: unknown[]): ReferenceInfo[] {
 export function gameplaySummary(entry: CatalogEntry): GameplaySummary {
   if (entry.entityType === 'race') {
     const items = [
+      entry.creature_type ? `Тип істоти: ${entry.creature_type}.` : null,
       entry.size ? `Розмір: ${entry.size}.` : null,
-      entry.speed ? `Базова швидкість: ${entry.speed}.` : null,
+      entry.speed ? `Швидкість: ${entry.speed}.` : null,
       entry.languages.length > 0 ? `Мови: ${entry.languages.join(', ')}.` : null,
-      abilityBonusCards(entry.ability_bonuses).length > 0 ? 'Збільшення характеристики або гнучкий вибір описані в окремому блоці.' : null,
-      referenceCards(entry.race_traits, 'Риса').length > 0 ? 'Базові расові риси застосовуються до всіх представників раси.' : null,
     ].filter((item): item is string => Boolean(item));
 
-    return { title: 'Ключові правила раси', items };
+    return { title: 'Базові правила раси', items };
   }
 
   if (entry.entityType === 'class') {
     const items = [
-      entry.hit_die ? `Витривалість класу задає кістка хітів ${entry.hit_die}.` : null,
+      entry.hit_die ? `Кістка хітів: ${entry.hit_die}.` : null,
       entry.primary_ability ? `Основна характеристика: ${entry.primary_ability}.` : null,
-      entry.saving_throws.length > 0 ? `Ключові ряткидки: ${entry.saving_throws.join(', ')}.` : null,
-      entry.has_spellcasting ? 'Клас має розділ заклинань із заклинальною характеристикою та формулами.' : 'Клас не має базового блоку заклинань.',
-      referenceCards(entry.class_features, 'Особливість').length > 0 ? 'Класові особливості згруповані як правила з рівнем, дією, використанням і обмеженнями.' : null,
+      entry.saving_throws.length > 0 ? `Ряткидки: ${entry.saving_throws.join(', ')}.` : null,
+      `Заклинання: ${entry.has_spellcasting ? 'Так' : 'Ні'}.`,
     ].filter((item): item is string => Boolean(item));
 
-    return { title: 'Ключові правила класу', items };
+    return { title: 'Базові правила класу', items };
   }
 
   const item = entry as ItemEntry;
   const items = [
-    item.item_type || item.category ? `Тип: ${[item.item_type, item.category].filter(Boolean).join(' · ')}.` : null,
+    item.item_type || item.category ? `Тип предмета: ${[item.item_type, item.category].filter(Boolean).join(' · ')}.` : null,
     item.damage ? `Шкода: ${item.damage}${item.damage_type ? `, ${item.damage_type}` : ''}.` : null,
     item.armor_class ? `Клас захисту: ${item.armor_class}.` : null,
-    item.is_magical ? 'Це магічний предмет.' : null,
-    item.requires_attunement ? 'Потребує налаштування перед повним використанням.' : null,
-    referenceCards(item.properties, 'Властивість').length > 0 ? 'Властивості нижче подані як окремі правила предмета.' : null,
+    item.price ? `Ціна: ${item.price}.` : null,
+    item.weight ? `Вага: ${item.weight}.` : null,
+    item.is_magical ? 'Магічний предмет: Так.' : null,
+    item.requires_attunement ? 'Потребує налаштування: Так.' : null,
   ].filter((summaryItem): summaryItem is string => Boolean(summaryItem));
 
-  return { title: 'Правила використання', items };
+  return { title: 'Правила предмета', items };
 }
 
 export function quickSummaryItems(entry: CatalogEntry): ReferenceInfo[] {
@@ -334,7 +333,7 @@ export function quickSummaryItems(entry: CatalogEntry): ReferenceInfo[] {
     const resistances = resistanceRows(entry.race_traits, entry.proficiencies, entry.additional_skills)[0];
 
     return [
-      bonus ? { label: 'Бонуси', value: bonus.title } : null,
+      bonus ? { label: 'Збільшення характеристики', value: bonus.title } : null,
       entry.speed ? { label: 'Швидкість', value: entry.speed } : null,
       entry.size ? { label: 'Розмір', value: entry.size } : null,
       entry.languages.length > 0 ? { label: 'Мови', value: entry.languages.join(', ') } : null,
@@ -346,7 +345,7 @@ export function quickSummaryItems(entry: CatalogEntry): ReferenceInfo[] {
   if (entry.entityType === 'class') {
     return [
       entry.hit_die ? { label: 'Кістка хітів', value: entry.hit_die } : null,
-      entry.primary_ability ? { label: 'Основна', value: entry.primary_ability } : null,
+      entry.primary_ability ? { label: 'Основна характеристика', value: entry.primary_ability } : null,
       entry.saving_throws.length > 0 ? { label: 'Ряткидки', value: entry.saving_throws.join(', ') } : null,
       { label: 'Заклинання', value: entry.has_spellcasting ? 'Так' : 'Ні' },
       referenceCards(entry.class_features, 'Особливість')[0]
@@ -363,7 +362,7 @@ export function quickSummaryItems(entry: CatalogEntry): ReferenceInfo[] {
     entry.damage ? { label: 'Шкода', value: entry.damage } : null,
     entry.armor_class ? { label: 'Клас захисту', value: entry.armor_class } : null,
     entry.is_magical ? { label: 'Магічний', value: 'Так' } : null,
-    entry.requires_attunement ? { label: 'Налаштування', value: 'Так' } : null,
+    entry.requires_attunement ? { label: 'Потребує налаштування', value: 'Так' } : null,
   ].filter((item): item is ReferenceInfo => Boolean(item));
 }
 

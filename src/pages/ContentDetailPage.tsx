@@ -73,7 +73,7 @@ function mainInfoBlocks(entry: CatalogEntry) {
     addInfo(blocks, 'Швидкість', entry.speed);
     addInfo(blocks, 'Мови', entry.languages.join(', '));
     addInfo(blocks, 'Тривалість життя', entry.lifespan);
-    addInfo(blocks, 'Типова поведінка', entry.alignment_or_behavior);
+    addInfo(blocks, 'Поведінка', entry.alignment_or_behavior);
   }
 
   if (entry.entityType === 'class') {
@@ -98,8 +98,8 @@ function mainInfoBlocks(entry: CatalogEntry) {
     addInfo(blocks, 'Тип шкоди', entry.damage_type);
     addInfo(blocks, 'Дальність', entry.range);
     addInfo(blocks, 'Клас захисту', entry.armor_class);
-    addInfo(blocks, 'Вимога сили', entry.required_strength);
-    blocks.push({ label: 'Перешкода на Скритність', value: booleanLabel(entry.stealth_disadvantage) });
+    addInfo(blocks, 'Необхідна сила', entry.required_strength);
+    blocks.push({ label: 'Перешкода: Скритність', value: booleanLabel(entry.stealth_disadvantage) });
     addInfo(blocks, 'Кількість', entry.quantity);
   }
 
@@ -173,7 +173,7 @@ function AbilityScoreGrid({ entry }: { entry: Extract<CatalogEntry, { entityType
 
   return (
     <section className="detail-v2-panel">
-      <h2>Бонуси характеристик</h2>
+      <h2>Збільшення характеристики</h2>
       <div className="detail-v2-score-grid">
         {cells.map((cell) => (
           <div key={cell.label} className={cell.isActive ? 'detail-v2-score-cell detail-v2-score-cell-active' : 'detail-v2-score-cell'}>
@@ -306,20 +306,20 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
 
       <RichReferenceBlocks entry={entry} />
 
-      <section className="detail-v2-description-panel">
-        <h2>Опис</h2>
-        {entry.full_description_markdown ? (
+      {entry.full_description_markdown ? (
+        <section className="detail-v2-description-panel">
+          <h2>Опис</h2>
           <div className="markdown-content">
             <ReactMarkdown>{entry.full_description_markdown}</ReactMarkdown>
           </div>
-        ) : (
-          <p className="muted-text">Повний опис ще не додано.</p>
-        )}
-      </section>
+        </section>
+      ) : null}
 
-      <section className="detail-v2-source-note">
-        <p>Джерело: {entry.source?.title ?? 'не вказано'}. На основі відкритих правил SRD, якщо зазначено в джерелі. Текст адаптовано українською для довідника.</p>
-      </section>
+      {entry.source?.title ? (
+        <section className="detail-v2-source-note">
+          <p>Джерело: {entry.source.title}. На основі відкритих правил SRD, якщо зазначено в джерелі. Текст адаптовано українською для довідника.</p>
+        </section>
+      ) : null}
     </DetailLayout>
   );
 }

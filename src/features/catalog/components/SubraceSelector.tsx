@@ -183,9 +183,7 @@ export function SubraceSelector({ value }: SubraceSelectorProps) {
               </div>
             ))}
           </div>
-        ) : (
-          <p className="muted-text">Окремі правила підраси ще не заповнені.</p>
-        )}
+        ) : null}
       </article>
     </section>
   );

@@ -7,7 +7,7 @@ type StructuredContentBlockProps = {
 };
 
 const readableLabels: Record<string, string> = {
-  graceful: 'Граційність',
+  graceful: 'Риса',
   strength: 'Сила',
   dexterity: 'Спритність',
   constitution: 'Статура',
@@ -28,7 +28,7 @@ const readableLabels: Record<string, string> = {
   choose: 'Обрати',
   from: 'Зі списку',
   versatile: 'Універсальна властивість',
-  flexible: 'Гнучкість',
+  flexible: 'Збільшення характеристики',
   sturdy: 'Стійкість',
   proficiency_bonus: 'Бонус майстерності',
   spell_slots: 'Комірки заклинань',
@@ -46,10 +46,14 @@ const readableLabels: Record<string, string> = {
   what_changes: 'Що змінює',
 };
 
-function isEmptyValue(value: unknown) {
-  if (value === null || value === undefined || value === '') return true;
-  if (Array.isArray(value)) return value.length === 0;
-  if (typeof value === 'object') return Object.keys(value as object).length === 0;
+function isEmptyValue(value: unknown): boolean {
+  if (value === null || value === undefined) return true;
+  if (typeof value === 'string') return value.trim().length === 0;
+  if (Array.isArray(value)) return value.length === 0 || value.every(isEmptyValue);
+  if (typeof value === 'object') {
+    const entries = Object.values(value as Record<string, unknown>);
+    return entries.length === 0 || entries.every(isEmptyValue);
+  }
   return false;
 }
 
@@ -59,7 +63,7 @@ function labelForKey(key: string) {
 
 function formatPrimitive(value: unknown): string {
   if (typeof value === 'boolean') return value ? 'Так' : 'Ні';
-  if (value === null || value === undefined || value === '') return 'Не вказано';
+  if (isEmptyValue(value)) return '';
   return String(value);
 }
 
@@ -87,7 +91,7 @@ function renderValue(value: unknown): ReactNode {
   if (typeof value === 'object' && value !== null) {
     return (
       <div className="structured-kv">
-        {Object.entries(value).map(([key, childValue]) => (
+        {Object.entries(value).filter(([, childValue]) => !isEmptyValue(childValue)).map(([key, childValue]) => (
           <div key={key}>
             <strong>{labelForKey(key)}</strong>
             <span>{renderValue(childValue)}</span>
@@ -119,7 +123,7 @@ function objectKeys(items: unknown[]) {
 function renderObjectCard(item: Record<string, unknown>, index: number) {
   const title = item.name ?? item.title ?? item.level ?? `Запис ${index + 1}`;
   const description = item.description ?? item.text ?? item.note;
-  const rest = Object.entries(item).filter(([key]) => !['name', 'title', 'description', 'text', 'note'].includes(key));
+  const rest = Object.entries(item).filter(([key, value]) => !['name', 'title', 'description', 'text', 'note'].includes(key) && !isEmptyValue(value));
 
   return (
     <article className="structured-card" key={index}>
@@ -139,21 +143,12 @@ function renderObjectCard(item: Record<string, unknown>, index: number) {
   );
 }
 
-export function StructuredContentBlock({ title, value, emptyMessage = 'Дані поки не заповнені.' }: StructuredContentBlockProps) {
+export function StructuredContentBlock({ title, value }: StructuredContentBlockProps) {
   if (isEmptyValue(value)) {
     return null;
   }
 
   if (Array.isArray(value)) {
-    if (value.length === 0) {
-      return (
-        <section className="rulebook-section structured-block">
-          <h3>{title}</h3>
-          <p className="muted-text">{emptyMessage}</p>
-        </section>
-      );
-    }
-
     if (canRenderTable(value)) {
       const keys = objectKeys(value);
 

@@ -43,7 +43,7 @@ const abilityLabels: Record<string, string> = {
 };
 
 const readableKeys: Record<string, string> = {
-  flexible: 'Гнучкий бонус',
+
   graceful: 'Тонке чуття',
   sturdy: 'Стійкість',
   versatile: 'Універсальна',
@@ -59,19 +59,10 @@ const readableKeys: Record<string, string> = {
 };
 
 const readableDescriptions: Record<string, string> = {
-  flexible: 'Механіка може бути налаштована під обрану роль персонажа.',
-  graceful: 'Підкреслює уважність, точність або природну спритність персонажа.',
-  sturdy: 'Підкреслює витривалість, стійкість або надійність персонажа.',
-  versatile: 'Предмет можна використовувати по-різному залежно від хвату або ситуації.',
-  finesse: 'Для атаки можна спиратися на точність і контроль.',
-  light: 'Зручний для швидкого використання або перенесення.',
-  heavy: 'Потребує впевненого поводження через розмір або вагу.',
-  thrown: 'Може бути використаний для атаки на відстані.',
-  ammunition: 'Потребує відповідних боєприпасів.',
-  reach: 'Дозволяє тримати ціль на більшій відстані.',
-  loading: 'Потребує часу на підготовку між пострілами.',
-  two_handed: 'Потребує двох рук для ефективного використання.',
-  contains: 'Набір містить кілька корисних речей для пригоди.',
+  versatile: 'Однією рукою завдає базову шкоду; двома руками використовує значення універсальної шкоди, якщо воно вказане.',
+  ammunition: 'Для атаки потрібні відповідні боєприпаси.',
+  loading: 'Кількість атак обмежується властивістю перезаряджання.',
+  two_handed: 'Для атаки потрібні дві руки.',
 };
 
 const tooltipLabels: Record<string, string> = {
@@ -170,13 +161,13 @@ function abilityRows(value: unknown, compact: boolean): CardStat[] {
       .filter((item): item is string => Boolean(item));
 
     if (directBonuses.length > 0) {
-      rows.push({ label: 'Бонуси характеристик', value: formatList(directBonuses, compact ? 2 : 3), tone: 'accent' });
+      rows.push({ label: 'Збільшення характеристики', value: formatList(directBonuses, compact ? 2 : 3), tone: 'accent' });
       return rows;
     }
 
     const description = cleanText(value.description ?? value.text ?? value.note ?? value.value);
     if (description) {
-      rows.push({ label: 'Бонуси характеристик', value: limitText(description, compact ? 46 : 68), tone: 'accent' });
+      rows.push({ label: 'Збільшення характеристики', value: limitText(description, compact ? 46 : 68), tone: 'accent' });
       return rows;
     }
   }
@@ -190,15 +181,15 @@ function abilityRows(value: unknown, compact: boolean): CardStat[] {
       const description = cleanText(item.description ?? item.text ?? item.note);
 
       if (ability && bonus && abilityLabels[ability.toLowerCase()]) {
-        rows.push({ label: 'Бонуси характеристик', value: `${bonus} ${translateAbility(ability)}`, tone: 'accent' });
+        rows.push({ label: 'Збільшення характеристики', value: `${bonus} ${translateAbility(ability)}`, tone: 'accent' });
       } else if (description) {
-        rows.push({ label: 'Бонуси характеристик', value: limitText(description, compact ? 46 : 68), tone: 'accent' });
+        rows.push({ label: 'Збільшення характеристики', value: limitText(description, compact ? 46 : 68), tone: 'accent' });
       } else if (ability && bonus) {
-        rows.push({ label: 'Бонуси характеристик', value: `${bonus} ${ability}`, tone: 'accent' });
+        rows.push({ label: 'Збільшення характеристики', value: `${bonus} ${ability}`, tone: 'accent' });
       }
     } else {
       const text = cleanText(item);
-      if (text) rows.push({ label: 'Бонуси характеристик', value: limitText(text, compact ? 46 : 68), tone: 'accent' });
+      if (text) rows.push({ label: 'Збільшення характеристики', value: limitText(text, compact ? 46 : 68), tone: 'accent' });
     }
   }
 
@@ -268,7 +259,7 @@ export function getRaceMechanics(entry: RaceEntry, compact = false): CatalogCard
   const features = allFeaturePreviews(entry.race_traits);
 
   return {
-    main: makeSection('Бонуси характеристик', mainRows),
+    main: makeSection('Збільшення характеристики', mainRows),
     secondary: makeSection('Основне', compactRows(secondaryRows, compact, 3)),
     featureTitle: 'Риси',
     features: features.slice(0, compact ? 2 : featureLimit),

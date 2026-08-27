@@ -5,7 +5,7 @@ export const coreSections: SectionMeta[] = [
   {
     slug: 'races',
     title: 'Раси',
-    description: 'Походження, риси та культурні акценти персонажів.',
+    description: 'Тип істоти, розмір, швидкість, мови та расові риси.',
     imageAlt: 'Темний фентезійний силует мандрівника',
     path: appRoutes.races,
     materialCountLabel: '0 матеріалів',
@@ -13,7 +13,7 @@ export const coreSections: SectionMeta[] = [
   {
     slug: 'classes',
     title: 'Класи',
-    description: 'Архетипи героїв, бойові ролі та ключові здібності.',
+    description: 'Кістка хітів, ряткидки, володіння та класові особливості.',
     imageAlt: 'Герой з книгою заклинань і зброєю',
     path: appRoutes.classes,
     materialCountLabel: '0 матеріалів',
@@ -21,7 +21,7 @@ export const coreSections: SectionMeta[] = [
   {
     slug: 'items',
     title: 'Предмети',
-    description: 'Спорядження, зброя, броня та корисні речі для пригод.',
+    description: 'Зброя, броня, спорядження, властивості та ціна.',
     imageAlt: 'Старий стіл з мечем і дорожнім набором',
     path: appRoutes.items,
     materialCountLabel: '0 матеріалів',
@@ -29,12 +29,12 @@ export const coreSections: SectionMeta[] = [
 ];
 
 export const futureModules: FutureModule[] = [
-  { title: 'Заклинання', description: 'Каталог магії для майбутнього релізу.', status: 'Скоро' },
-  { title: 'Монстри', description: 'Бестіарій для підготовки сутичок.', status: 'Скоро' },
-  { title: 'Магічні предмети', description: 'Окремий розділ рідкісних знахідок.', status: 'Скоро' },
-  { title: 'Зона майстра', description: 'Робочий простір для ведення пригод.', status: 'Скоро' },
-  { title: 'Конструктор персонажа', description: 'Покрокове створення героя.', status: 'Скоро' },
-  { title: 'Кампанії', description: 'Сесії, учасники та довга історія партії.', status: 'Скоро' },
-  { title: 'NPC', description: 'Неігрові персонажі та швидкі нотатки.', status: 'Скоро' },
-  { title: 'Бойовий трекер', description: 'Ініціатива, стани та хід раундів.', status: 'Скоро' },
+  { title: 'Заклинання', description: 'Назва, рівень, школа, час накладання.', status: 'Скоро' },
+  { title: 'Монстри', description: 'Статблоки, тип істоти, КЗ, хіти, дії.', status: 'Скоро' },
+  { title: 'Магічні предмети', description: 'Рідкість, налаштування, властивості.', status: 'Скоро' },
+  { title: 'Зона майстра', description: 'Нотатки, сцени, правила кампанії.', status: 'Скоро' },
+  { title: 'Конструктор персонажа', description: 'Раса, клас, характеристики, спорядження.', status: 'Скоро' },
+  { title: 'Кампанії', description: 'Сесії, учасники, нотатки кампанії.', status: 'Скоро' },
+  { title: 'NPC', description: 'Ім’я, роль, статблок, нотатки.', status: 'Скоро' },
+  { title: 'Бойовий трекер', description: 'Ініціатива, стани, раунди.', status: 'Скоро' },
 ];
