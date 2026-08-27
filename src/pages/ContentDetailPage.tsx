@@ -167,6 +167,9 @@ function infoRowsToGroups(rows: Array<{ label: string; value: string }>) {
 
 function AbilityScoreGrid({ entry }: { entry: Extract<CatalogEntry, { entityType: 'race' }> }) {
   const { cells, note } = abilityScoreCells(entry.ability_bonuses);
+  const hasVisibleRule = cells.some((cell) => cell.isActive) || Boolean(note);
+
+  if (!hasVisibleRule) return null;
 
   return (
     <section className="detail-v2-panel">

@@ -131,7 +131,9 @@ const classJsonFields: JsonFieldConfig[] = [
 
 const itemJsonFields: JsonFieldConfig[] = [{ key: 'properties', label: 'Властивості' }];
 
-function formFromRow(type: AdminMaterialType, row: any): AdminMaterialForm {
+type AdminMaterialRow = Partial<AdminMaterialForm> & Record<string, unknown>;
+
+function formFromRow(type: AdminMaterialType, row: AdminMaterialRow): AdminMaterialForm {
   const base = emptyMaterial();
 
   return {
@@ -431,7 +433,7 @@ export function MaterialsAdminTab() {
             </label>
             <label>
               Статус публікації
-              <select value={form.publication_status} onChange={(event) => updateField('publication_status', event.target.value as any)}>
+              <select value={form.publication_status} onChange={(event) => updateField('publication_status', event.target.value as AdminMaterialForm['publication_status'])}>
                 <option value="draft">Чернетка</option>
                 <option value="published">Опубліковано</option>
                 <option value="hidden">Приховано</option>
@@ -439,14 +441,14 @@ export function MaterialsAdminTab() {
             </label>
             <label>
               Версія правил
-              <select value={form.rules_version} onChange={(event) => updateField('rules_version', event.target.value as any)}>
+              <select value={form.rules_version} onChange={(event) => updateField('rules_version', event.target.value as AdminMaterialForm['rules_version'])}>
                 <option value="2024">2024</option>
                 <option value="homebrew">homebrew</option>
               </select>
             </label>
             <label>
               Тип контенту
-              <select value={form.content_type} onChange={(event) => updateField('content_type', event.target.value as any)}>
+              <select value={form.content_type} onChange={(event) => updateField('content_type', event.target.value as AdminMaterialForm['content_type'])}>
                 <option value="official">Офіційний</option>
                 <option value="homebrew">Homebrew</option>
                 <option value="campaign">Матеріал кампанії</option>

@@ -14,21 +14,23 @@ const contentSelect = `
   source:sources(id,title,source_type)
 `;
 
+type CatalogRow = Record<string, unknown>;
+
 function ensureArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
 }
 
-function normalizeRace(row: any): RaceEntry {
+function normalizeRace(row: CatalogRow): RaceEntry {
   return {
     ...row,
     entityType: 'race',
     tags: ensureArray(row.tags),
     languages: ensureArray(row.languages),
     source: row.source ?? null,
-  };
+  } as RaceEntry;
 }
 
-function normalizeClass(row: any): ClassEntry {
+function normalizeClass(row: CatalogRow): ClassEntry {
   return {
     ...row,
     entityType: 'class',
@@ -39,10 +41,10 @@ function normalizeClass(row: any): ClassEntry {
     tool_proficiencies: ensureArray(row.tool_proficiencies),
     has_spellcasting: Boolean(row.has_spellcasting),
     source: row.source ?? null,
-  };
+  } as ClassEntry;
 }
 
-function normalizeItem(row: any): ItemEntry {
+function normalizeItem(row: CatalogRow): ItemEntry {
   return {
     ...row,
     entityType: 'item',
@@ -51,7 +53,7 @@ function normalizeItem(row: any): ItemEntry {
     is_magical: Boolean(row.is_magical),
     stealth_disadvantage: Boolean(row.stealth_disadvantage),
     source: row.source ?? null,
-  };
+  } as ItemEntry;
 }
 
 function tableForEntity(entity: EntityType) {
@@ -60,7 +62,7 @@ function tableForEntity(entity: EntityType) {
   return 'items';
 }
 
-function normalizeByEntity(entity: EntityType, row: any): CatalogEntry {
+function normalizeByEntity(entity: EntityType, row: CatalogRow): CatalogEntry {
   if (entity === 'race') return normalizeRace(row);
   if (entity === 'class') return normalizeClass(row);
   return normalizeItem(row);
