@@ -6,53 +6,15 @@ import { globalSearch } from '@/features/catalog/api/catalogFilters';
 import { useCatalogList, usePublishedSections } from '@/features/catalog/hooks/useCatalogData';
 import { referenceQuickAccess } from '@/data/navigation';
 
-type QuickAccessIconProps = {
-  symbol: string;
+const quickAccessIcons: Record<string, string> = {
+  Раси: '/icons/races.webp',
+  Класи: '/icons/classes.webp',
+  Предмети: '/icons/items.webp',
+  Закляття: '/icons/spells.webp',
 };
 
-function QuickAccessIcon({ symbol }: QuickAccessIconProps) {
-  if (symbol === 'Р') {
-    return (
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M16 34c0-5 3.5-8 8-8s8 3 8 8" />
-        <path d="M24 26c4.4 0 8-4.2 8-9.5S28.4 7 24 7s-8 4.2-8 9.5 3.6 9.5 8 9.5Z" />
-        <path d="M11 39c2.9-2.2 7.4-3.5 13-3.5s10.1 1.3 13 3.5" />
-      </svg>
-    );
-  }
-
-  if (symbol === 'К') {
-    return (
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M34 6 18 25" />
-        <path d="m14 29 5 5" />
-        <path d="m27 14 7 7" />
-        <path d="M10 38 20 28" />
-        <path d="M31 9 39 5l-3 9" />
-      </svg>
-    );
-  }
-
-  if (symbol === 'П') {
-    return (
-      <svg viewBox="0 0 48 48" aria-hidden="true">
-        <path d="M12 18h24v20H12z" />
-        <path d="M18 18v-4c0-3 2.5-5 6-5s6 2 6 5v4" />
-        <path d="M12 24h24" />
-        <path d="M24 24v14" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 48 48" aria-hidden="true">
-      <path d="M15 9h17c3 0 5 2 5 5v25H16c-3 0-5-2-5-5V13c0-2.2 1.8-4 4-4Z" />
-      <path d="M16 14h15" />
-      <path d="M18 23h12" />
-      <path d="M24 29 21 34h6l-3-5Z" />
-      <path d="M24 20v15" />
-    </svg>
-  );
+function getQuickAccessIcon(title: string) {
+  return quickAccessIcons[title] ?? '/icons/spells.webp';
 }
 
 export function HomePage() {
@@ -105,13 +67,13 @@ export function HomePage() {
               {referenceQuickAccess.map((item) => (
                 item.isDisabled ? (
                   <button key={item.title} type="button" className="quick-access-item quick-access-item-disabled" disabled>
-                    <span className="quick-access-icon" aria-hidden="true"><QuickAccessIcon symbol={item.symbol} /></span>
+                    <span className="quick-access-icon"><img src={getQuickAccessIcon(item.title)} alt={`Іконка розділу ${item.title}`} /></span>
                     <strong>{item.title}</strong>
                     <small>Скоро</small>
                   </button>
                 ) : (
                   <Link key={item.title} to={item.path} className="quick-access-item">
-                    <span className="quick-access-icon" aria-hidden="true"><QuickAccessIcon symbol={item.symbol} /></span>
+                    <span className="quick-access-icon"><img src={getQuickAccessIcon(item.title)} alt={`Іконка розділу ${item.title}`} /></span>
                     <strong>{item.title}</strong>
                   </Link>
                 )
