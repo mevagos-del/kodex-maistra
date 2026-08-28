@@ -98,6 +98,7 @@ export type CatalogFilters = {
   language: string;
   hitDie: string;
   primaryAbility: string;
+  armorProficiency: string;
   hasSpellcasting: string;
   itemType: string;
   category: string;

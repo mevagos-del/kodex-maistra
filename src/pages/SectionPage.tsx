@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { PageBanner } from '@/components/ui/PageBanner';
+import { Link } from 'react-router-dom';
 import {
   arrayOptionValues,
   defaultCatalogFilters,
@@ -8,10 +8,9 @@ import {
 } from '@/features/catalog/api/catalogFilters';
 import { CatalogCard } from '@/features/catalog/components/CatalogCard';
 import { EmptyState } from '@/features/catalog/components/EmptyState';
-import { useCatalogList, usePublishedSections } from '@/features/catalog/hooks/useCatalogData';
+import { useCatalogList } from '@/features/catalog/hooks/useCatalogData';
 import type { CatalogFilters } from '@/features/catalog/types';
-import { getDefaultImageUrl } from '@/lib/storage';
-import { coreSections } from '@/data/navigation';
+import { coreSections, referenceQuickAccess } from '@/data/navigation';
 import type { CoreSectionSlug, EntityType } from '@/types/content';
 
 type SectionPageProps = {
@@ -28,9 +27,7 @@ export function SectionPage({ section }: SectionPageProps) {
   const entity = sectionToEntity[section];
   const [filters, setFilters] = useState<CatalogFilters>(defaultCatalogFilters);
   const meta = coreSections.find((item) => item.slug === section);
-  const sections = usePublishedSections();
   const catalog = useCatalogList(entity);
-  const dbSection = sections.data.find((item) => item.slug === section);
 
   const filteredEntries = useMemo(
     () => filterCatalogEntries(catalog.data, filters, entity),
@@ -38,27 +35,46 @@ export function SectionPage({ section }: SectionPageProps) {
   );
 
   const allTags = arrayOptionValues(catalog.data, (entry) => entry.tags);
-  const title = dbSection?.title ?? meta?.title ?? 'Розділ';
-  const description = dbSection?.description ?? meta?.description ?? 'Матеріали цього розділу.';
-  const imageUrl = dbSection?.image_url ?? getDefaultImageUrl('sections');
+  const title = meta?.title ?? 'Розділ';
 
   function updateFilter(name: keyof CatalogFilters, value: string) {
     setFilters((current) => ({ ...current, [name]: value }));
   }
 
   return (
-    <div className="page-stack">
-      <PageBanner eyebrow="Розділ довідника" title={title} description={description} imageUrl={imageUrl} />
-
-      <section className="content-section">
-        <div className="section-heading">
-          <p className="eyebrow">Пошук і фільтри</p>
-          <h2>Матеріали</h2>
+    <div className={`page-stack catalog-section-page catalog-section-page--${section}`}>
+      <section className="catalog-grimoire-hero" aria-labelledby="catalog-section-title">
+        <div className="catalog-grimoire-hero__shade" aria-hidden="true" />
+        <div className="catalog-grimoire-hero__content">
+          <p className="eyebrow">Розділ довідника</p>
+          <h1 id="catalog-section-title">{title}</h1>
         </div>
+      </section>
 
-        <div className="toolbar catalog-toolbar">
+      <nav className="catalog-section-tabs" aria-label="Розділи довідника">
+        {referenceQuickAccess.map((item) =>
+          item.path && !item.isDisabled ? (
+            <Link
+              key={item.title}
+              to={item.path}
+              className={item.path === `/${section}` ? 'catalog-section-tab catalog-section-tab-active' : 'catalog-section-tab'}
+              aria-current={item.path === `/${section}` ? 'page' : undefined}
+            >
+              {item.title}
+            </Link>
+          ) : (
+            <span key={item.title} className="catalog-section-tab catalog-section-tab-disabled" aria-disabled="true">
+              {item.title}
+              <small>Скоро</small>
+            </span>
+          ),
+        )}
+      </nav>
+
+      <section className="content-section catalog-section-content">
+        <div className="toolbar catalog-toolbar" aria-label="Фільтри каталогу">
           <label>
-            Пошук у розділі
+            Пошук
             <input
               type="search"
               placeholder="Назва, оригінальна назва або тег..."
@@ -81,17 +97,6 @@ export function SectionPage({ section }: SectionPageProps) {
               <option value="official">Офіційний</option>
               <option value="homebrew">Homebrew</option>
               <option value="campaign">Матеріал кампанії</option>
-            </select>
-          </label>
-          <label>
-            Тег
-            <select value={filters.tag} onChange={(event) => updateFilter('tag', event.target.value)}>
-              <option value="">Усі</option>
-              {allTags.map((tag) => (
-                <option key={tag} value={tag}>
-                  #{tag}
-                </option>
-              ))}
             </select>
           </label>
 
@@ -130,6 +135,15 @@ export function SectionPage({ section }: SectionPageProps) {
           {entity === 'class' ? (
             <>
               <label>
+                Основна характеристика
+                <select value={filters.primaryAbility} onChange={(event) => updateFilter('primaryAbility', event.target.value)}>
+                  <option value="">Усі</option>
+                  {optionValues(catalog.data, (entry) => (entry.entityType === 'class' ? entry.primary_ability : null)).map((value) => (
+                    <option key={value} value={value}>{value}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
                 Кістка хітів
                 <select value={filters.hitDie} onChange={(event) => updateFilter('hitDie', event.target.value)}>
                   <option value="">Усі</option>
@@ -139,10 +153,10 @@ export function SectionPage({ section }: SectionPageProps) {
                 </select>
               </label>
               <label>
-                Основна характеристика
-                <select value={filters.primaryAbility} onChange={(event) => updateFilter('primaryAbility', event.target.value)}>
+                Володіння бронею
+                <select value={filters.armorProficiency} onChange={(event) => updateFilter('armorProficiency', event.target.value)}>
                   <option value="">Усі</option>
-                  {optionValues(catalog.data, (entry) => (entry.entityType === 'class' ? entry.primary_ability : null)).map((value) => (
+                  {arrayOptionValues(catalog.data, (entry) => (entry.entityType === 'class' ? entry.armor_proficiencies : [])).map((value) => (
                     <option key={value} value={value}>{value}</option>
                   ))}
                 </select>
@@ -188,6 +202,14 @@ export function SectionPage({ section }: SectionPageProps) {
                 </select>
               </label>
               <label>
+                Потребує налаштування
+                <select value={filters.requiresAttunement} onChange={(event) => updateFilter('requiresAttunement', event.target.value)}>
+                  <option value="">Усі</option>
+                  <option value="true">Так</option>
+                  <option value="false">Ні</option>
+                </select>
+              </label>
+              <label>
                 Магічний предмет
                 <select value={filters.isMagical} onChange={(event) => updateFilter('isMagical', event.target.value)}>
                   <option value="">Усі</option>
@@ -195,16 +217,18 @@ export function SectionPage({ section }: SectionPageProps) {
                   <option value="false">Немагічний</option>
                 </select>
               </label>
-              <label>
-                Налаштування
-                <select value={filters.requiresAttunement} onChange={(event) => updateFilter('requiresAttunement', event.target.value)}>
-                  <option value="">Усі</option>
-                  <option value="true">Потребує</option>
-                  <option value="false">Не потребує</option>
-                </select>
-              </label>
             </>
           ) : null}
+
+          <label>
+            Тег
+            <select value={filters.tag} onChange={(event) => updateFilter('tag', event.target.value)}>
+              <option value="">Усі</option>
+              {allTags.map((tag) => (
+                <option key={tag} value={tag}>#{tag}</option>
+              ))}
+            </select>
+          </label>
         </div>
 
         {catalog.isLoading ? (
@@ -218,7 +242,7 @@ export function SectionPage({ section }: SectionPageProps) {
             ))}
           </div>
         ) : (
-          <EmptyState description="Нічого не знайдено. Спробуйте змінити пошуковий запит або фільтри." />
+          <EmptyState description="Спробуйте змінити пошук або фільтри." />
         )}
       </section>
     </div>

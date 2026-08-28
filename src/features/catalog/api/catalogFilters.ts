@@ -11,6 +11,7 @@ export const defaultCatalogFilters: CatalogFilters = {
   language: '',
   hitDie: '',
   primaryAbility: '',
+  armorProficiency: '',
   hasSpellcasting: '',
   itemType: '',
   category: '',
@@ -60,6 +61,7 @@ export function filterCatalogEntries(entries: CatalogEntry[], filters: CatalogFi
     if (entity === 'class' && entry.entityType === 'class') {
       if (filters.hitDie && entry.hit_die !== filters.hitDie) return false;
       if (filters.primaryAbility && entry.primary_ability !== filters.primaryAbility) return false;
+      if (filters.armorProficiency && !entry.armor_proficiencies.includes(filters.armorProficiency)) return false;
       if (!matchesBooleanFilter(entry.has_spellcasting, filters.hasSpellcasting)) return false;
     }
 
