@@ -71,12 +71,6 @@ export function HomePage() {
   return (
     <div className="page-stack home-page codex-home codex-home-v2">
       <section className="hero home-hero cinematic-hero cinematic-hero-v2" aria-labelledby="home-title">
-        <div className="home-hero-table" aria-hidden="true" />
-        <div className="home-hero-codex-bg" aria-hidden="true">
-          <div className="home-hero-book home-hero-book-left" />
-          <div className="home-hero-book home-hero-book-right" />
-          <div className="home-hero-book-spine" />
-        </div>
         <div className="home-hero-vignette" aria-hidden="true" />
         <div className="home-hero-candle-glow" aria-hidden="true" />
         <div className="home-hero-particles" aria-hidden="true" />

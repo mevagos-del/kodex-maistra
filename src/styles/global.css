@@ -3146,13 +3146,12 @@ body::before {
   overflow: hidden;
   border-color: rgb(214 169 74 / 34%);
   background:
-    radial-gradient(circle at 18% 86%, rgb(214 169 74 / 16%), transparent 18rem),
-    radial-gradient(circle at 72% 18%, rgb(124 92 255 / 9%), transparent 24rem),
+    linear-gradient(180deg, rgb(6 7 10 / 34%), rgb(6 7 10 / 84%)),
+    radial-gradient(circle at 18% 86%, rgb(214 169 74 / 18%), transparent 20rem),
+    url('/images/home-codex-hero.png') center / cover no-repeat,
     linear-gradient(180deg, #080b11 0%, #06070a 100%);
 }
 
-.home-hero-table,
-.home-hero-codex-bg,
 .home-hero-vignette,
 .home-hero-candle-glow,
 .home-hero-particles,
@@ -3162,117 +3161,28 @@ body::before {
   pointer-events: none;
 }
 
-.home-hero-table {
-  background:
-    radial-gradient(ellipse at 50% 78%, rgb(74 43 24 / 72%), transparent 42%),
-    linear-gradient(120deg, rgb(28 18 12 / 92%), rgb(8 9 12 / 96%));
-}
-
-.home-hero-table::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  opacity: 0.22;
-  background:
-    linear-gradient(90deg, rgb(214 169 74 / 0.05) 1px, transparent 1px),
-    linear-gradient(0deg, rgb(0 0 0 / 0.22) 1px, transparent 1px);
-  background-size: 76px 100%, 100% 42px;
-  transform: rotate(-1deg) scale(1.08);
-}
-
-.home-hero-codex-bg {
-  inset: 18% 7% 5%;
-  z-index: 1;
-  filter: drop-shadow(0 42px 70px rgb(0 0 0 / 64%));
-  transform: perspective(1100px) rotateX(8deg);
-}
-
-.home-hero-book {
-  position: absolute;
-  top: 15%;
-  bottom: 8%;
-  width: 48%;
-  border: 1px solid rgb(214 169 74 / 24%);
-  background:
-    linear-gradient(90deg, rgb(66 48 32 / 16%), transparent 10%, transparent 88%, rgb(48 34 22 / 22%)),
-    repeating-linear-gradient(0deg, rgb(246 219 156 / 0.06) 0 1px, transparent 1px 15px),
-    radial-gradient(ellipse at 50% 20%, rgb(224 193 118 / 22%), transparent 28%),
-    linear-gradient(105deg, #8f7650 0%, #c0a06a 38%, #80613b 100%);
-  opacity: 0.82;
-  box-shadow:
-    inset 0 0 34px rgb(39 24 14 / 54%),
-    inset 0 0 0 1px rgb(255 245 210 / 10%);
-}
-
-.home-hero-book-left {
-  left: 2%;
-  border-radius: 18px 7px 10px 22px;
-  transform: skewY(3deg) rotate(-2deg);
-  transform-origin: right center;
-}
-
-.home-hero-book-right {
-  right: 2%;
-  border-radius: 7px 18px 22px 10px;
-  transform: skewY(-3deg) rotate(2deg);
-  transform-origin: left center;
-}
-
-.home-hero-book::before,
-.home-hero-book::after {
-  content: "";
-  position: absolute;
-  inset: 8% 11%;
-  border-top: 1px solid rgb(68 44 25 / 25%);
-  border-bottom: 1px solid rgb(68 44 25 / 18%);
-  opacity: 0.5;
-}
-
-.home-hero-book::after {
-  inset: 18% 18% 22%;
-  border: 1px solid rgb(68 44 25 / 16%);
-  border-right: 0;
-  border-left: 0;
-}
-
-.home-hero-book-spine {
-  position: absolute;
-  top: 12%;
-  bottom: 5%;
-  left: 50%;
-  width: 5.5%;
-  transform: translateX(-50%);
-  border-radius: 999px;
-  background:
-    radial-gradient(ellipse at center, rgb(255 226 150 / 30%), transparent 38%),
-    linear-gradient(90deg, rgb(45 28 16 / 68%), rgb(214 169 74 / 30%), rgb(45 28 16 / 68%));
-  box-shadow:
-    0 0 38px rgb(214 169 74 / 16%),
-    inset 0 0 22px rgb(0 0 0 / 50%);
-}
-
 .home-hero-vignette {
   z-index: 2;
   background:
-    radial-gradient(ellipse at 50% 58%, transparent 0 42%, rgb(5 7 10 / 48%) 72%, rgb(5 7 10 / 88%) 100%),
-    linear-gradient(180deg, rgb(5 7 10 / 24%), rgb(5 7 10 / 76%));
+    radial-gradient(ellipse at 50% 48%, rgb(7 10 15 / 8%) 0 24%, rgb(7 10 15 / 28%) 54%, rgb(5 7 10 / 88%) 100%),
+    linear-gradient(180deg, rgb(5 7 10 / 18%), rgb(5 7 10 / 74%));
 }
 
 .home-hero-candle-glow {
   z-index: 3;
   inset: auto auto 4% -6%;
-  width: min(460px, 62vw);
+  width: min(480px, 64vw);
   height: min(360px, 48vw);
   border-radius: 50%;
   background:
-    radial-gradient(circle at 42% 58%, rgb(255 201 103 / 42%), rgb(214 169 74 / 24%) 26%, rgb(166 95 43 / 12%) 48%, transparent 72%);
+    radial-gradient(circle at 42% 58%, rgb(255 201 103 / 44%), rgb(214 169 74 / 24%) 28%, rgb(166 95 43 / 12%) 50%, transparent 74%);
   filter: blur(8px);
   animation: homeCandlePulse 5.6s ease-in-out infinite;
 }
 
 .home-hero-particles {
   z-index: 4;
-  opacity: 0.5;
+  opacity: 0.52;
   background-image:
     radial-gradient(circle, rgb(224 193 118 / 82%) 0 1px, transparent 1.8px),
     radial-gradient(circle, rgb(214 169 74 / 55%) 0 1px, transparent 1.7px),
@@ -3330,7 +3240,7 @@ body::before {
   border-radius: 14px;
   background:
     radial-gradient(ellipse at 50% 0%, rgb(214 169 74 / 12%), transparent 56%),
-    linear-gradient(180deg, rgb(7 10 15 / 46%), rgb(7 10 15 / 22%));
+    linear-gradient(180deg, rgb(7 10 15 / 54%), rgb(7 10 15 / 28%));
   box-shadow: 0 28px 80px rgb(0 0 0 / 28%);
   backdrop-filter: blur(2px);
 }
@@ -3525,10 +3435,7 @@ body::before {
 @media (max-width: 900px) {
   .cinematic-hero-v2 {
     min-height: 620px;
-  }
-
-  .home-hero-codex-bg {
-    inset: 25% -18% 9%;
+    background-position: center top;
   }
 
   .home-hero-content-v2 {
@@ -3539,11 +3446,7 @@ body::before {
 @media (max-width: 560px) {
   .cinematic-hero-v2 {
     min-height: 560px;
-  }
-
-  .home-hero-codex-bg {
-    inset: 36% -36% 6%;
-    opacity: 0.78;
+    background-position: center top;
   }
 
   .home-hero-sigil {
