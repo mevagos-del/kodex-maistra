@@ -3146,18 +3146,18 @@ body::before {
 
 .codex-home-v2 .cinematic-hero-v2 {
   width: 100vw;
-  min-height: 100vh;
+  min-height: 106vh;
   margin-top: calc(-1 * (var(--header-height, 72px) + 28px));
   margin-inline: calc(50% - 50vw);
-  padding: calc(var(--header-height, 72px) + clamp(30px, 5vw, 62px)) max(18px, calc((100vw - 1180px) / 2)) clamp(32px, 5vw, 64px);
+  padding: calc(var(--header-height, 72px) + clamp(30px, 5vw, 58px)) max(18px, calc((100vw - 1180px) / 2)) clamp(84px, 10vh, 132px);
   align-content: center;
   overflow: hidden;
   border: 0;
   border-radius: 0;
   box-shadow: none;
   background:
-    linear-gradient(180deg, rgb(4 6 9 / 8%) 0%, rgb(4 6 9 / 18%) 36%, rgb(4 6 9 / 52%) 76%, #070a0f 100%),
-    radial-gradient(circle at 16% 58%, rgb(255 176 77 / 15%), transparent 18rem),
+    linear-gradient(180deg, rgb(4 6 9 / 6%) 0%, rgb(4 6 9 / 14%) 34%, rgb(4 6 9 / 48%) 72%, #070a0f 100%),
+    radial-gradient(circle at 16% 58%, rgb(255 176 77 / 14%), transparent 18rem),
     url('/images/home-codex-hero.png') center center / cover no-repeat,
     linear-gradient(180deg, #070a0f 0%, #06070a 100%);
 }
@@ -3169,9 +3169,9 @@ body::before {
   z-index: 1;
   pointer-events: none;
   background:
-    linear-gradient(180deg, rgb(3 5 8 / 68%) 0%, rgb(3 5 8 / 18%) 18%, transparent 44%),
-    radial-gradient(ellipse at 50% 44%, transparent 0 32%, rgb(4 6 9 / 15%) 58%, rgb(2 4 7 / 76%) 100%),
-    linear-gradient(90deg, rgb(3 5 8 / 44%), transparent 24%, transparent 76%, rgb(3 5 8 / 48%));
+    linear-gradient(180deg, rgb(3 5 8 / 72%) 0%, rgb(3 5 8 / 22%) 18%, transparent 44%),
+    radial-gradient(ellipse at 50% 43%, transparent 0 34%, rgb(4 6 9 / 15%) 58%, rgb(2 4 7 / 78%) 100%),
+    linear-gradient(90deg, rgb(3 5 8 / 46%), transparent 24%, transparent 76%, rgb(3 5 8 / 50%));
 }
 
 .codex-home-v2 .cinematic-hero-v2::after {
@@ -3179,9 +3179,15 @@ body::before {
   position: absolute;
   inset: auto 0 0;
   z-index: 6;
-  height: min(32vh, 310px);
+  height: 38%;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 0%, rgb(7 10 15 / 54%) 46%, #070a0f 100%);
+  background: linear-gradient(
+    to bottom,
+    rgb(7 10 15 / 0%) 0%,
+    rgb(7 10 15 / 48%) 44%,
+    rgb(7 10 15 / 84%) 72%,
+    #070a0f 100%
+  );
 }
 
 .home-hero-vignette,
@@ -3196,19 +3202,19 @@ body::before {
 .home-hero-vignette {
   z-index: 2;
   background:
-    radial-gradient(ellipse at 50% 43%, rgb(5 7 10 / 0%) 0 30%, rgb(5 7 10 / 14%) 62%, rgb(3 5 8 / 64%) 100%),
-    linear-gradient(180deg, rgb(4 6 9 / 20%) 0%, transparent 32%, rgb(4 6 9 / 28%) 72%, rgb(4 6 9 / 68%) 100%);
+    radial-gradient(ellipse at 50% 43%, rgb(5 7 10 / 0%) 0 31%, rgb(5 7 10 / 13%) 62%, rgb(3 5 8 / 64%) 100%),
+    linear-gradient(180deg, rgb(4 6 9 / 18%) 0%, transparent 32%, rgb(4 6 9 / 26%) 72%, rgb(4 6 9 / 70%) 100%);
 }
 
 .home-candle-glow {
   z-index: 3;
-  inset: auto auto 19% 10%;
-  width: min(330px, 36vw);
-  height: min(290px, 33vw);
+  inset: auto auto 24% 10%;
+  width: min(320px, 35vw);
+  height: min(280px, 32vw);
   border-radius: 999px;
-  background: radial-gradient(circle at 36% 54%, rgb(255 199 104 / 34%), rgb(214 169 74 / 17%) 30%, rgb(166 95 43 / 9%) 54%, transparent 76%);
-  filter: blur(24px);
-  opacity: 0.4;
+  background: radial-gradient(circle at 36% 54%, rgb(255 199 104 / 32%), rgb(214 169 74 / 16%) 30%, rgb(166 95 43 / 8%) 54%, transparent 76%);
+  filter: blur(26px);
+  opacity: 0.38;
   transform-origin: 36% 54%;
   animation: homeCandleFlicker 4.8s ease-in-out infinite;
 }
@@ -3221,18 +3227,18 @@ body::before {
   width: 28%;
   height: 32%;
   border-radius: 50%;
-  background: radial-gradient(circle, rgb(255 226 160 / 44%), rgb(255 157 66 / 18%) 44%, transparent 72%);
+  background: radial-gradient(circle, rgb(255 226 160 / 42%), rgb(255 157 66 / 17%) 44%, transparent 72%);
   filter: blur(18px);
   animation: homeCandleFlickerSmall 2.9s ease-in-out infinite;
 }
 
 .home-hero-particles {
   z-index: 4;
-  opacity: 0.38;
+  opacity: 0.36;
   background-image:
-    radial-gradient(circle, rgb(224 193 118 / 60%) 0 1px, transparent 1.8px),
-    radial-gradient(circle, rgb(214 169 74 / 35%) 0 1px, transparent 1.7px),
-    radial-gradient(circle, rgb(243 232 208 / 24%) 0 1px, transparent 1.6px);
+    radial-gradient(circle, rgb(224 193 118 / 58%) 0 1px, transparent 1.8px),
+    radial-gradient(circle, rgb(214 169 74 / 32%) 0 1px, transparent 1.7px),
+    radial-gradient(circle, rgb(243 232 208 / 22%) 0 1px, transparent 1.6px);
   background-size: 96px 96px, 156px 156px, 240px 240px;
   background-position: 0 0, 40px 60px, 90px 20px;
   mask-image: radial-gradient(ellipse at 50% 45%, black, transparent 76%);
@@ -3478,22 +3484,22 @@ body::before {
 .site-header {
   display: block;
   min-height: var(--header-height);
-  padding: 0 clamp(16px, 4vw, 48px);
-  border-bottom-color: rgb(214 169 74 / 24%);
+  padding: 0 clamp(18px, 3.5vw, 48px);
+  border-bottom-color: rgb(214 169 74 / 18%);
   background:
-    linear-gradient(180deg, rgb(7 10 15 / 74%), rgb(7 10 15 / 52%)),
-    radial-gradient(circle at 16% 0%, rgb(214 169 74 / 9%), transparent 20rem);
-  box-shadow: 0 10px 34px rgb(0 0 0 / 24%);
+    linear-gradient(180deg, rgb(7 10 15 / 76%), rgb(7 10 15 / 48%)),
+    radial-gradient(circle at 16% 0%, rgb(214 169 74 / 8%), transparent 20rem);
+  box-shadow: 0 10px 34px rgb(0 0 0 / 20%);
   backdrop-filter: blur(16px);
 }
 
 .site-header-inner,
 .site-header__inner {
   display: grid;
-  width: min(1320px, 100%);
+  width: min(1360px, 100%);
   min-height: var(--header-height);
-  grid-template-columns: minmax(220px, 1fr) auto minmax(220px, 1fr);
-  gap: 18px;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, auto) minmax(220px, 1fr);
+  gap: clamp(14px, 2vw, 28px);
   align-items: center;
   margin-inline: auto;
 }
@@ -3511,19 +3517,88 @@ body::before {
 }
 
 .tool-nav {
+  display: flex;
   justify-self: center;
-  max-width: min(680px, 52vw);
+  justify-content: center;
+  max-width: none;
+  gap: clamp(10px, 1vw, 16px);
+  overflow: visible;
+  scrollbar-width: none;
+}
+
+.tool-nav::-webkit-scrollbar {
+  display: none;
 }
 
 .tool-nav__item {
-  border-color: rgb(214 169 74 / 10%);
-  padding: 7px 10px;
+  position: relative;
+  display: inline-flex;
+  min-width: max-content;
+  align-items: baseline;
+  gap: 5px;
+  border: 0;
+  border-radius: 0;
+  padding: 7px 0;
   color: rgb(243 232 208 / 78%);
-  background: rgb(7 10 15 / 22%);
+  background: transparent;
+  box-shadow: none;
+  letter-spacing: 0.01em;
+}
+
+.tool-nav__item::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  left: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgb(214 169 74 / 54%), transparent);
+  opacity: 0;
+  transform: scaleX(0.55);
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+.tool-nav__item span {
+  font-size: clamp(0.78rem, 0.84vw, 0.9rem);
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .tool-nav__item small {
+  color: rgb(158 122 53 / 76%);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transform: translateY(-0.18em);
+}
+
+.tool-nav__item:disabled {
+  opacity: 0.88;
+}
+
+.tool-nav__item:disabled:hover::after,
+.tool-nav__item:disabled:focus-visible::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.mobile-tool-indicator {
+  display: none;
+  justify-self: center;
+  color: rgb(243 232 208 / 78%);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.mobile-tool-indicator span {
+  margin-left: 6px;
   color: rgb(158 122 53 / 82%);
+  font-size: 0.68rem;
 }
 
 .header-actions {
@@ -3539,36 +3614,36 @@ body::before {
 }
 
 .header-actions .accent-link {
-  border-color: rgb(214 169 74 / 24%);
+  border-color: rgb(214 169 74 / 20%);
   color: var(--gold-soft);
-  background: rgb(7 10 15 / 24%);
+  background: rgb(7 10 15 / 18%);
 }
 
 .header-actions .accent-link:hover {
   color: #fff1cf;
-  background: rgb(214 169 74 / 10%);
+  background: rgb(214 169 74 / 8%);
 }
 
 .site-footer {
   justify-content: center;
-  padding-block: 14px;
-  color: rgb(142 130 107 / 70%);
-  font-size: 0.76rem;
+  padding-block: 18px;
+  color: rgb(142 130 107 / 64%);
+  font-size: 0.74rem;
   background: #070a0f;
 }
 
 @keyframes homeCandleFlicker {
-  0%, 100% { opacity: 0.28; transform: scale(0.96) translateY(6px); }
-  18% { opacity: 0.44; transform: scale(1.03) translateY(1px); }
-  37% { opacity: 0.36; transform: scale(0.99) translateY(4px); }
-  58% { opacity: 0.5; transform: scale(1.06) translateY(0); }
-  76% { opacity: 0.4; transform: scale(1.01) translateY(3px); }
+  0%, 100% { opacity: 0.26; transform: scale(0.96) translateY(6px); }
+  18% { opacity: 0.42; transform: scale(1.03) translateY(1px); }
+  37% { opacity: 0.34; transform: scale(0.99) translateY(4px); }
+  58% { opacity: 0.48; transform: scale(1.06) translateY(0); }
+  76% { opacity: 0.38; transform: scale(1.01) translateY(3px); }
 }
 
 @keyframes homeCandleFlickerSmall {
-  0%, 100% { opacity: 0.18; transform: scale(0.92); }
-  43% { opacity: 0.44; transform: scale(1.08); }
-  67% { opacity: 0.3; transform: scale(1); }
+  0%, 100% { opacity: 0.17; transform: scale(0.92); }
+  43% { opacity: 0.42; transform: scale(1.08); }
+  67% { opacity: 0.28; transform: scale(1); }
 }
 
 @keyframes homeDustDrift {
@@ -3577,8 +3652,8 @@ body::before {
 }
 
 @keyframes homeSigilPulse {
-  0%, 100% { opacity: 0.34; transform: translateX(-50%) scale(0.98); }
-  50% { opacity: 0.62; transform: translateX(-50%) scale(1.04); }
+  0%, 100% { opacity: 0.32; transform: translateX(-50%) scale(0.98); }
+  50% { opacity: 0.58; transform: translateX(-50%) scale(1.04); }
 }
 
 @keyframes arcaneMarkPulse {
@@ -3593,49 +3668,70 @@ body::before {
   .home-hero-particles,
   .home-hero-sigil,
   .hero-arcane-mark,
-  .quick-access-icon {
+  .quick-access-icon,
+  .tool-nav__item::after {
     animation: none !important;
     transition: none !important;
   }
 
   .home-candle-glow {
-    opacity: 0.28;
+    opacity: 0.26;
   }
 
   .home-hero-particles {
-    opacity: 0.12;
+    opacity: 0.1;
   }
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
   .site-header-inner,
   .site-header__inner {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding-block: 12px;
-  }
-
-  .brand,
-  .tool-nav,
-  .header-actions {
-    justify-self: stretch;
+    grid-template-columns: minmax(190px, 1fr) minmax(0, auto) minmax(168px, 1fr);
+    gap: 14px;
   }
 
   .tool-nav {
-    max-width: 100%;
-    justify-content: flex-start;
+    gap: 9px;
+  }
+
+  .tool-nav__item span {
+    font-size: 0.78rem;
+  }
+
+  .tool-nav__item small {
+    font-size: 0.54rem;
+  }
+}
+
+@media (max-width: 980px) {
+  .site-header-inner,
+  .site-header__inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    padding-block: 10px;
+  }
+
+  .tool-nav {
+    display: none;
+  }
+
+  .mobile-tool-indicator {
+    display: inline-flex;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: start;
   }
 
   .header-actions {
-    justify-content: flex-start;
+    justify-self: end;
   }
 }
 
 @media (max-width: 900px) {
   .codex-home-v2 .cinematic-hero-v2 {
     margin-top: calc(-1 * (var(--header-height, 72px) + 28px));
-    min-height: 100svh;
-    padding-block: calc(var(--header-height, 72px) + 26px) 28px;
+    min-height: 106svh;
+    padding-block: calc(var(--header-height, 72px) + 24px) 88px;
     background-position: center center;
   }
 
@@ -3645,26 +3741,44 @@ body::before {
 
   .home-candle-glow {
     left: -8%;
-    bottom: 20%;
+    bottom: 26%;
     width: 52vw;
     height: 42vw;
   }
 }
 
 @media (max-width: 560px) {
+  .site-header {
+    padding-inline: 14px;
+  }
+
+  .brand strong {
+    font-size: 1.02rem;
+  }
+
+  .brand small {
+    font-size: 0.7rem;
+  }
+
+  .header-actions .ghost-link,
+  .header-actions .accent-link {
+    padding: 6px 8px;
+    font-size: 0.82rem;
+  }
+
   .codex-home-v2 .cinematic-hero-v2 {
-    min-height: 100svh;
-    padding: calc(var(--header-height, 72px) + 22px) 16px 24px;
+    min-height: 106svh;
+    padding: calc(var(--header-height, 72px) + 46px) 16px 82px;
     background-position: center top;
   }
 
   .home-hero-sigil {
-    top: 16%;
+    top: 18%;
   }
 
   .home-candle-glow {
     left: -22%;
-    bottom: 24%;
+    bottom: 28%;
     width: 74vw;
     height: 58vw;
   }

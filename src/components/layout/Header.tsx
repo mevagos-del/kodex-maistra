@@ -23,6 +23,10 @@ export function Header() {
           ))}
         </nav>
 
+        <div className="mobile-tool-indicator" aria-label="Модулі інструментів">
+          Інструменти <span>Скоро</span>
+        </div>
+
         <div className="header-actions">
           <NavLink to={appRoutes.login} className="ghost-link">
             Увійти
