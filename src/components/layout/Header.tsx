@@ -5,7 +5,7 @@ import { appRoutes } from '@/routes/appRoutes';
 export function Header() {
   return (
     <header className="site-header">
-      <div className="site-header__inner">
+      <div className="site-header-inner site-header__inner">
         <NavLink to={appRoutes.home} className="brand" aria-label="Кодекс Майстра">
           <span className="brand-mark">КМ</span>
           <span>

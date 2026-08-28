@@ -81,9 +81,6 @@ export function HomePage() {
             </div>
           </section>
 
-          <p className="home-source-note">
-            На основі відкритих правил SRD 5.2. Текст адаптовано українською для довідника. Сайт не є офіційним продуктом Wizards of the Coast.
-          </p>
         </div>
       </section>
 
