@@ -1,8 +1,7 @@
 export function Footer() {
   return (
-    <footer className="site-footer">
-      <p>Кодекс Майстра. MVP-довідник без копіювання стороннього контенту.</p>
-      <p>Підготовлено для майбутніх інструментів майстра та гравців.</p>
+    <footer className="site-footer" aria-label="Примітка сайту">
+      <p>На основі відкритих правил SRD 5.2. Сайт не є офіційним продуктом Wizards of the Coast.</p>
     </footer>
   );
 }
