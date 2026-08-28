@@ -3146,10 +3146,10 @@ body::before {
 
 .codex-home-v2 .cinematic-hero-v2 {
   width: 100vw;
-  min-height: 106vh;
+  min-height: 112vh;
   margin-top: calc(-1 * (var(--header-height, 72px) + 28px));
   margin-inline: calc(50% - 50vw);
-  padding: calc(var(--header-height, 72px) + clamp(30px, 5vw, 58px)) max(18px, calc((100vw - 1180px) / 2)) clamp(84px, 10vh, 132px);
+  padding: calc(var(--header-height, 72px) + clamp(30px, 5vw, 58px)) max(18px, calc((100vw - 1180px) / 2)) clamp(140px, 16vh, 240px);
   align-content: center;
   overflow: hidden;
   border: 0;
@@ -3179,13 +3179,13 @@ body::before {
   position: absolute;
   inset: auto 0 0;
   z-index: 6;
-  height: 38%;
+  height: 45%;
   pointer-events: none;
   background: linear-gradient(
     to bottom,
     rgb(7 10 15 / 0%) 0%,
-    rgb(7 10 15 / 48%) 44%,
-    rgb(7 10 15 / 84%) 72%,
+    rgb(7 10 15 / 55%) 45%,
+    rgb(7 10 15 / 90%) 75%,
     #070a0f 100%
   );
 }
@@ -3626,7 +3626,7 @@ body::before {
 
 .site-footer {
   justify-content: center;
-  padding-block: 18px;
+  padding-block: 22px 18px;
   color: rgb(142 130 107 / 64%);
   font-size: 0.74rem;
   background: #070a0f;
@@ -3730,8 +3730,8 @@ body::before {
 @media (max-width: 900px) {
   .codex-home-v2 .cinematic-hero-v2 {
     margin-top: calc(-1 * (var(--header-height, 72px) + 28px));
-    min-height: 106svh;
-    padding-block: calc(var(--header-height, 72px) + 24px) 88px;
+    min-height: 112svh;
+    padding-block: calc(var(--header-height, 72px) + 24px) 140px;
     background-position: center center;
   }
 
@@ -3767,8 +3767,8 @@ body::before {
   }
 
   .codex-home-v2 .cinematic-hero-v2 {
-    min-height: 106svh;
-    padding: calc(var(--header-height, 72px) + 46px) 16px 82px;
+    min-height: 112svh;
+    padding: calc(var(--header-height, 72px) + 46px) 16px 132px;
     background-position: center top;
   }
 
