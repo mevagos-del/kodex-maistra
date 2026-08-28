@@ -3139,6 +3139,15 @@ body::before {
   --header-height: 72px;
 }
 
+.app-main:has(.codex-home-v2) {
+  padding-bottom: 0;
+}
+
+.app-main:has(.codex-home-v2) + .site-footer {
+  margin-top: -1px;
+  border-top: 0;
+}
+
 .codex-home-v2 {
   gap: 0;
   animation: codexPageIn 520ms ease both;
@@ -3626,8 +3635,8 @@ body::before {
 
 .site-footer {
   justify-content: center;
-  padding-block: 22px 18px;
-  color: rgb(142 130 107 / 64%);
+  padding-block: 10px 16px;
+  color: rgb(142 130 107 / 52%);
   font-size: 0.74rem;
   background: #070a0f;
 }
