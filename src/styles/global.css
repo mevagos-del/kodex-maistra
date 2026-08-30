@@ -3810,6 +3810,7 @@ body::before {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
 /* Grimoire catalog sections */
 .catalog-section-page {
   gap: 0;
@@ -3818,28 +3819,40 @@ body::before {
 .catalog-grimoire-interface {
   position: relative;
   isolation: isolate;
-  min-height: 72vh;
+  min-height: 76vh;
   overflow: hidden;
-  border: 1px solid rgb(214 169 74 / 26%);
-  border-radius: 10px;
-  background-color: #0b0d12;
-  background-position: center top;
-  background-repeat: no-repeat;
-  background-size: cover;
-  box-shadow: 0 24px 64px rgb(0 0 0 / 34%);
+  border: 1px solid rgb(177 126 58 / 22%);
+  border-radius: 8px;
+  background-color: #24180f;
+  background-position: top center, top center;
+  background-repeat: no-repeat, no-repeat;
+  background-size: 100% auto, 100% 100%;
+  box-shadow: 0 18px 48px rgb(0 0 0 / 26%);
+  animation: catalog-section-enter 240ms cubic-bezier(0.22, 0.72, 0.24, 1) both;
 }
 
 .catalog-section-page--races .catalog-grimoire-interface {
-  background-image: url('/images/grimoire-races.webp');
+  background-image:
+    url('/images/grimoire-races-page.webp'),
+    linear-gradient(180deg, #49331f 0%, #2d1e13 58%, #19110d 100%);
 }
 
-.catalog-section-page--classes .catalog-grimoire-interface,
+.catalog-section-page--classes .catalog-grimoire-interface {
+  background-image:
+    url('/images/grimoire-classes-page.webp'),
+    linear-gradient(180deg, #49331f 0%, #2d1e13 58%, #19110d 100%);
+}
+
 .catalog-section-page--items .catalog-grimoire-interface {
-  background-image: url('/images/grimoire-classes.webp');
+  background-image:
+    url('/images/grimoire-items-page.webp'),
+    linear-gradient(180deg, #49331f 0%, #2d1e13 58%, #19110d 100%);
 }
 
 .catalog-section-page--spells .catalog-grimoire-interface {
-  background-image: url('/images/grimoire-spells.webp');
+  background-image:
+    url('/images/grimoire-spells-page.webp'),
+    linear-gradient(180deg, #403020 0%, #281d17 58%, #17110f 100%);
 }
 
 .catalog-grimoire-surface {
@@ -3847,8 +3860,8 @@ body::before {
   z-index: -1;
   inset: 0;
   background:
-    linear-gradient(90deg, rgb(7 10 15 / 22%) 0%, transparent 14%, transparent 86%, rgb(7 10 15 / 22%) 100%),
-    linear-gradient(180deg, rgb(7 10 15 / 18%) 0%, transparent 18%, transparent 84%, rgb(7 10 15 / 30%) 100%);
+    linear-gradient(90deg, rgb(10 7 5 / 18%) 0%, transparent 11%, transparent 89%, rgb(10 7 5 / 18%) 100%),
+    linear-gradient(180deg, rgb(8 6 5 / 12%) 0%, transparent 16%, transparent 82%, rgb(18 12 8 / 24%) 100%);
   pointer-events: none;
 }
 
@@ -3858,7 +3871,8 @@ body::before {
   display: grid;
   gap: clamp(14px, 2vw, 22px);
   min-height: inherit;
-  padding: clamp(22px, 3.8vw, 48px);
+  padding: clamp(26px, 4.5vw, 58px) clamp(22px, 6vw, 82px) clamp(42px, 7vw, 90px);
+  background: transparent;
 }
 
 .catalog-grimoire-heading {
@@ -3869,20 +3883,20 @@ body::before {
 }
 
 .catalog-grimoire-heading .eyebrow {
-  margin-bottom: 4px;
-  color: rgb(224 193 118 / 78%);
-  text-shadow: 0 2px 14px rgb(0 0 0 / 75%);
+  margin-bottom: 3px;
+  color: rgb(231 201 137 / 82%);
+  text-shadow: 0 2px 12px rgb(0 0 0 / 68%);
 }
 
 .catalog-grimoire-heading h1 {
   margin: 0;
   color: var(--text-main);
   font-family: var(--heading-font);
-  font-size: clamp(2.2rem, 5vw, 4.4rem);
-  line-height: 0.98;
+  font-size: clamp(2.1rem, 4.5vw, 4rem);
+  line-height: 1;
   text-shadow:
-    0 3px 20px rgb(0 0 0 / 82%),
-    0 0 28px rgb(214 169 74 / 12%);
+    0 3px 18px rgb(0 0 0 / 76%),
+    0 0 24px rgb(214 169 74 / 10%);
 }
 
 .catalog-section-tabs {
@@ -3890,14 +3904,13 @@ body::before {
   width: fit-content;
   max-width: 100%;
   justify-self: center;
-  align-items: stretch;
-  gap: 2px;
-  overflow-x: auto;
-  border-block: 1px solid rgb(214 169 74 / 24%);
-  padding: 4px 0;
-  background: rgb(18 13 9 / 36%);
-  backdrop-filter: blur(3px);
-  scrollbar-width: thin;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px 4px;
+  overflow: visible;
+  border-block: 1px solid rgb(177 126 58 / 20%);
+  padding: 3px 0;
+  background: transparent;
 }
 
 .catalog-section-tab {
@@ -3906,34 +3919,34 @@ body::before {
   min-width: max-content;
   align-items: center;
   justify-content: center;
-  gap: 7px;
-  padding: 9px clamp(13px, 2vw, 22px);
-  color: var(--text-soft);
+  gap: 6px;
+  padding: 7px clamp(11px, 1.7vw, 18px);
+  color: rgb(225 208 172 / 82%);
   font-family: var(--heading-font);
-  font-size: 0.92rem;
+  font-size: 0.86rem;
   letter-spacing: 0.035em;
-  text-shadow: 0 2px 10px rgb(0 0 0 / 70%);
-  transition: color 160ms ease, background-color 160ms ease;
+  text-shadow: 0 2px 9px rgb(0 0 0 / 62%);
+  transition: color 200ms ease-out, background-color 200ms ease-out;
 }
 
 .catalog-section-tab::after {
   content: '';
   position: absolute;
-  right: 16%;
-  bottom: 1px;
-  left: 16%;
+  right: 18%;
+  bottom: 0;
+  left: 18%;
   height: 1px;
   background: var(--gold);
   opacity: 0;
   transform: scaleX(0.45);
-  transition: opacity 160ms ease, transform 160ms ease;
+  transition: opacity 200ms ease-out, transform 200ms ease-out;
 }
 
 .catalog-section-tab:hover,
 .catalog-section-tab:focus-visible,
 .catalog-section-tab-active {
   color: var(--gold-soft);
-  background: rgb(214 169 74 / 8%);
+  background: rgb(232 205 156 / 5%);
 }
 
 .catalog-section-tab:hover::after,
@@ -3944,26 +3957,26 @@ body::before {
 }
 
 .catalog-section-tab:focus-visible {
-  outline: 2px solid rgb(214 169 74 / 48%);
+  outline: 2px solid rgb(214 169 74 / 42%);
   outline-offset: -2px;
 }
 
 .catalog-section-tab-disabled {
   color: var(--text-muted);
   cursor: default;
-  opacity: 0.64;
+  opacity: 0.62;
 }
 
 .catalog-section-tab-disabled small {
   color: var(--gold-muted);
   font-family: var(--body-font);
-  font-size: 0.6rem;
+  font-size: 0.58rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .catalog-section-content {
-  gap: clamp(18px, 2.4vw, 30px);
+  gap: clamp(18px, 2.5vw, 30px);
   border: 0;
   padding: 0;
   background: transparent;
@@ -3972,7 +3985,7 @@ body::before {
 
 .catalog-section-page .catalog-toolbar {
   grid-template-columns: minmax(0, 1fr);
-  width: min(100%, 760px);
+  width: min(100%, 640px);
   justify-self: center;
   gap: 0;
   border: 0;
@@ -3983,17 +3996,15 @@ body::before {
 }
 
 .catalog-section-page .catalog-toolbar label {
-  gap: 6px;
-  border: 1px solid rgb(184 132 63 / 20%);
-  border-radius: 5px;
-  padding: 8px 9px 9px;
-  color: rgb(239 221 183 / 88%);
-  background:
-    linear-gradient(180deg, rgb(232 205 156 / 10%), rgb(126 87 43 / 5%)),
-    rgb(57 38 21 / 12%);
-  font-size: 0.76rem;
+  gap: 5px;
+  border: 1px solid rgb(177 126 58 / 18%);
+  border-radius: 4px;
+  padding: 7px 8px 8px;
+  color: rgb(238 221 184 / 86%);
+  background: rgb(229 199 143 / 8%);
+  font-size: 0.72rem;
   letter-spacing: 0.025em;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(1.5px);
 }
 
 .catalog-section-page .catalog-toolbar label:first-child {
@@ -4002,18 +4013,22 @@ body::before {
 
 .catalog-section-page .catalog-toolbar input,
 .catalog-section-page .catalog-toolbar select {
-  min-height: 36px;
-  border-color: rgb(177 126 58 / 22%);
-  border-radius: 4px;
-  padding: 7px 9px;
+  min-height: 34px;
+  border-color: rgb(166 113 50 / 20%);
+  border-radius: 3px;
+  padding: 6px 9px;
   color: var(--text-main);
-  background: rgb(15 12 9 / 50%);
-  box-shadow: inset 0 1px 4px rgb(0 0 0 / 12%);
+  background: rgb(16 12 9 / 44%);
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 10%);
 }
 
 .catalog-section-page .catalog-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(16px, 2.2vw, 26px);
+  display: grid;
+  width: min(100%, 980px);
+  justify-self: center;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 220px));
+  justify-content: center;
+  gap: clamp(14px, 2vw, 22px);
   border: 0;
   padding: 0;
   background: transparent;
@@ -4021,48 +4036,61 @@ body::before {
 }
 
 .catalog-section-page .catalog-card {
-  border-color: rgb(166 113 50 / 22%);
-  border-radius: 5px;
+  min-height: 0;
+  border-color: rgb(156 103 44 / 20%);
+  border-radius: 4px;
   background:
-    linear-gradient(180deg, rgb(236 211 164 / 13%), rgb(91 59 29 / 10%)),
-    rgb(49 32 18 / 20%);
-  box-shadow: 0 7px 16px rgb(0 0 0 / 14%);
-  backdrop-filter: blur(1.5px);
+    linear-gradient(180deg, rgb(236 211 164 / 11%), rgb(91 59 29 / 8%)),
+    rgb(49 32 18 / 17%);
+  box-shadow: 0 5px 13px rgb(0 0 0 / 12%);
+  backdrop-filter: blur(1px);
+  animation: catalog-card-enter 220ms ease-out both;
 }
 
 .catalog-section-page .catalog-card:hover,
 .catalog-section-page .catalog-card:focus-within {
-  border-color: rgb(224 193 118 / 54%);
+  border-color: rgb(224 193 118 / 46%);
   box-shadow:
-    0 16px 34px rgb(0 0 0 / 36%),
-    0 0 20px rgb(214 169 74 / 8%);
+    0 10px 22px rgb(0 0 0 / 24%),
+    0 0 16px rgb(214 169 74 / 6%);
+  transform: translateY(-2px);
 }
 
 .catalog-section-page .catalog-card__image {
   width: 100%;
-  height: clamp(118px, 9vw, 138px);
+  height: clamp(82px, 7vw, 108px);
   aspect-ratio: auto;
   object-fit: cover;
-  opacity: 0.96;
+  opacity: 0.94;
 }
 
 .catalog-section-page .catalog-card__header {
-  gap: 4px;
-  padding-block: 11px 9px;
+  gap: 2px;
+  padding: 8px 10px 7px;
+}
+
+.catalog-section-page .catalog-card h3 {
+  font-size: 1rem;
+  line-height: 1.15;
+}
+
+.catalog-section-page .catalog-card .original-title {
+  font-size: 0.78rem;
 }
 
 .catalog-section-page .catalog-card__meta {
-  margin: 3px 0 0;
+  margin: 2px 0 0;
   color: var(--gold-muted);
-  font-size: 0.74rem;
-  letter-spacing: 0.055em;
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
 .catalog-section-page .catalog-card__footer {
   justify-content: flex-end;
-  padding-block: 7px 10px;
-  background: rgb(236 211 164 / 5%);
+  border-top-color: rgb(177 126 58 / 14%);
+  padding: 5px 10px 7px;
+  background: rgb(236 211 164 / 4%);
 }
 
 .catalog-section-page .catalog-card[data-entry-slug='dwarf'] .catalog-card__image {
@@ -4072,44 +4100,77 @@ body::before {
 .catalog-section-page .catalog-card__open-link {
   border: 0;
   border-radius: 0;
-  padding: 5px 0 4px;
+  padding: 3px 0;
+  color: var(--gold-soft);
   background: transparent;
+  font-size: 0.76rem;
 }
 
 .catalog-section-page .catalog-card__open-link:hover {
-  color: var(--gold-soft);
+  color: #f0d99d;
   background: transparent;
 }
 
 .catalog-section-page .placeholder-panel,
 .catalog-section-page .empty-state {
-  border: 1px solid rgb(214 169 74 / 22%);
-  border-radius: 6px;
-  background: rgb(67 45 25 / 24%);
-  backdrop-filter: blur(3px);
+  border: 1px solid rgb(177 126 58 / 18%);
+  border-radius: 4px;
+  background: rgb(229 199 143 / 8%);
+  backdrop-filter: blur(1.5px);
+}
+
+@keyframes catalog-section-enter {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+@keyframes catalog-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 980px) {
   .catalog-grimoire-inner {
-    padding: clamp(20px, 4vw, 34px);
+    padding: clamp(22px, 4vw, 36px) clamp(18px, 5vw, 48px) clamp(36px, 6vw, 60px);
   }
 
-  .catalog-section-page .catalog-toolbar,
+  .catalog-section-page .catalog-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .catalog-section-page .catalog-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(100%, 720px);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 210px));
   }
 }
 
 @media (max-width: 640px) {
   .catalog-grimoire-interface {
     min-height: 0;
-    border-radius: 7px;
-    background-position: center top;
+    border-radius: 6px;
+    background-position: top center, top center;
+    background-size: 100% auto, 100% 100%;
   }
 
   .catalog-grimoire-inner {
-    gap: 14px;
-    padding: 20px 14px 24px;
+    gap: 13px;
+    padding: 20px 14px 28px;
   }
 
   .catalog-grimoire-heading {
@@ -4118,20 +4179,50 @@ body::before {
   }
 
   .catalog-grimoire-heading h1 {
-    font-size: clamp(2rem, 12vw, 3.1rem);
+    font-size: clamp(2rem, 11vw, 3rem);
   }
 
   .catalog-section-tabs {
     width: 100%;
     justify-self: stretch;
+    justify-content: flex-start;
+    gap: 1px 3px;
   }
 
-  .catalog-section-page .catalog-toolbar,
+  .catalog-section-tab {
+    padding-inline: 10px;
+    font-size: 0.8rem;
+  }
+
+  .catalog-section-page .catalog-toolbar {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .catalog-section-page .catalog-grid {
-    grid-template-columns: 1fr;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .catalog-section-page .catalog-toolbar label:first-child {
-    grid-column: auto;
+  .catalog-section-page .catalog-card__image {
+    height: 104px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-grimoire-interface,
+  .catalog-section-page .catalog-card {
+    animation: none;
+  }
+
+  .catalog-section-page .catalog-card,
+  .catalog-section-tab,
+  .catalog-section-tab::after {
+    transition: none;
+  }
+
+  .catalog-section-page .catalog-card:hover,
+  .catalog-section-page .catalog-card:focus-within {
+    transform: none;
   }
 }

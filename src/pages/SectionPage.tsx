@@ -28,7 +28,7 @@ export function SectionPage({ section }: SectionPageProps) {
 
   return (
     <div className={`page-stack catalog-section-page catalog-section-page--${section}`}>
-      <section className="catalog-grimoire-interface" aria-labelledby="catalog-section-title">
+      <section key={section} className="catalog-grimoire-interface" aria-labelledby="catalog-section-title">
         <div className="catalog-grimoire-surface" aria-hidden="true" />
         <div className="catalog-grimoire-inner">
           <header className="catalog-grimoire-heading">
@@ -80,7 +80,7 @@ export function SectionPage({ section }: SectionPageProps) {
                 ))}
               </div>
             ) : (
-              <EmptyState description="Спробуйте змінити пошук або фільтри." />
+              <EmptyState description="Спробуйте змінити пошук." />
             )}
           </section>
         </div>
