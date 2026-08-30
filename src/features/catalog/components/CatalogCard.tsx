@@ -9,15 +9,28 @@ type CatalogCardProps = {
   compact?: boolean;
 };
 
+const raceImageFallbacks: Record<string, string> = {
+  human: '/images/catalog/races/human.webp',
+  elf: '/images/catalog/races/elf.webp',
+  dwarf: '/images/catalog/races/dwarf.webp',
+};
+
 function catalogCardMeta(entry: CatalogEntry) {
   if (entry.entityType === 'race') return 'Раса';
   if (entry.entityType === 'class') return 'Клас';
   return [entry.item_type, entry.category].filter(Boolean).join(' · ') || 'Предмет';
 }
 
+function catalogCardImage(entry: CatalogEntry, sectionSlug: ReturnType<typeof sectionSlugForEntity>) {
+  const configuredImage = entry.image_url?.trim();
+  if (configuredImage) return configuredImage;
+  if (entry.entityType === 'race' && raceImageFallbacks[entry.slug]) return raceImageFallbacks[entry.slug];
+  return getDefaultImageUrl(sectionSlug);
+}
+
 export function CatalogCard({ entry, compact = false }: CatalogCardProps) {
   const sectionSlug = sectionSlugForEntity(entry.entityType);
-  const imageUrl = entry.image_url ?? getDefaultImageUrl(sectionSlug);
+  const imageUrl = catalogCardImage(entry, sectionSlug);
   const tagLimit = compact ? 3 : 4;
   const visibleTags = entry.tags.slice(0, tagLimit);
   const hiddenTagCount = Math.max(0, entry.tags.length - visibleTags.length);
