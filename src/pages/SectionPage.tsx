@@ -43,16 +43,16 @@ export function SectionPage({ section }: SectionPageProps) {
 
   return (
     <div className={`page-stack catalog-section-page catalog-section-page--${section}`}>
-      <section className="catalog-grimoire-hero" aria-labelledby="catalog-section-title">
-        <div className="catalog-grimoire-hero__shade" aria-hidden="true" />
-        <div className="catalog-grimoire-hero__content">
-          <p className="eyebrow">Розділ довідника</p>
-          <h1 id="catalog-section-title">{title}</h1>
-        </div>
-      </section>
+      <section className="catalog-grimoire-interface" aria-labelledby="catalog-section-title">
+        <div className="catalog-grimoire-surface" aria-hidden="true" />
+        <div className="catalog-grimoire-inner">
+          <header className="catalog-grimoire-heading">
+            <p className="eyebrow">Розділ довідника</p>
+            <h1 id="catalog-section-title">{title}</h1>
+          </header>
 
-      <nav className="catalog-section-tabs" aria-label="Розділи довідника">
-        {referenceQuickAccess.map((item) =>
+          <nav className="catalog-section-tabs" aria-label="Розділи довідника">
+            {referenceQuickAccess.map((item) =>
           item.path && !item.isDisabled ? (
             <Link
               key={item.title}
@@ -69,10 +69,10 @@ export function SectionPage({ section }: SectionPageProps) {
             </span>
           ),
         )}
-      </nav>
+          </nav>
 
-      <section className="content-section catalog-section-content">
-        <div className="toolbar catalog-toolbar" aria-label="Фільтри каталогу">
+          <section className="content-section catalog-section-content">
+            <div className="toolbar catalog-toolbar" aria-label="Фільтри каталогу">
           <label>
             Пошук
             <input
@@ -244,6 +244,8 @@ export function SectionPage({ section }: SectionPageProps) {
         ) : (
           <EmptyState description="Спробуйте змінити пошук або фільтри." />
         )}
+          </section>
+        </div>
       </section>
     </div>
   );

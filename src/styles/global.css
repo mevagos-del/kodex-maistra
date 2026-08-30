@@ -3812,67 +3812,94 @@ body::before {
 }
 /* Grimoire catalog sections */
 .catalog-section-page {
-  gap: clamp(18px, 3vw, 30px);
+  gap: 0;
 }
 
-.catalog-grimoire-hero {
+.catalog-grimoire-interface {
   position: relative;
   isolation: isolate;
-  min-height: clamp(230px, 32vw, 380px);
+  min-height: 72vh;
   overflow: hidden;
-  display: grid;
-  align-items: end;
-  border: 1px solid rgb(214 169 74 / 22%);
-  border-radius: 8px;
-  background-color: #090c12;
-  background-position: center 48%;
+  border: 1px solid rgb(214 169 74 / 26%);
+  border-radius: 10px;
+  background-color: #0b0d12;
+  background-position: center top;
   background-repeat: no-repeat;
   background-size: cover;
-  box-shadow: 0 24px 60px rgb(0 0 0 / 38%);
+  box-shadow:
+    0 28px 80px rgb(0 0 0 / 48%),
+    inset 0 0 80px rgb(0 0 0 / 34%);
 }
 
-.catalog-section-page--races .catalog-grimoire-hero {
+.catalog-section-page--races .catalog-grimoire-interface {
   background-image: url('/images/grimoire-races.webp');
 }
 
-.catalog-section-page--classes .catalog-grimoire-hero,
-.catalog-section-page--items .catalog-grimoire-hero {
+.catalog-section-page--classes .catalog-grimoire-interface,
+.catalog-section-page--items .catalog-grimoire-interface {
   background-image: url('/images/grimoire-classes.webp');
 }
 
-.catalog-grimoire-hero__shade {
+.catalog-section-page--spells .catalog-grimoire-interface {
+  background-image: url('/images/grimoire-spells.webp');
+}
+
+.catalog-grimoire-surface {
   position: absolute;
   z-index: -1;
   inset: 0;
   background:
-    linear-gradient(90deg, rgb(7 10 15 / 88%) 0%, rgb(7 10 15 / 54%) 46%, rgb(7 10 15 / 18%) 72%),
-    linear-gradient(0deg, rgb(7 10 15 / 90%) 0%, transparent 58%),
-    radial-gradient(circle at 52% 42%, transparent 12%, rgb(7 10 15 / 34%) 100%);
+    linear-gradient(90deg, rgb(7 10 15 / 72%) 0%, rgb(25 18 12 / 28%) 24%, rgb(25 18 12 / 18%) 50%, rgb(25 18 12 / 28%) 76%, rgb(7 10 15 / 72%) 100%),
+    linear-gradient(180deg, rgb(7 10 15 / 58%) 0%, rgb(7 10 15 / 16%) 24%, rgb(7 10 15 / 22%) 72%, rgb(7 10 15 / 82%) 100%),
+    radial-gradient(ellipse at center, rgb(221 177 91 / 8%) 0%, rgb(7 10 15 / 42%) 86%);
+  pointer-events: none;
 }
 
-.catalog-grimoire-hero__content {
+.catalog-grimoire-inner {
+  position: relative;
+  z-index: 1;
   display: grid;
-  gap: 4px;
-  width: min(100%, 620px);
-  padding: clamp(24px, 5vw, 54px);
+  gap: clamp(14px, 2vw, 22px);
+  min-height: inherit;
+  padding: clamp(22px, 3.8vw, 48px);
 }
 
-.catalog-grimoire-hero h1 {
+.catalog-grimoire-heading {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
+.catalog-grimoire-heading .eyebrow {
+  margin-bottom: 4px;
+  color: rgb(224 193 118 / 78%);
+  text-shadow: 0 2px 14px rgb(0 0 0 / 75%);
+}
+
+.catalog-grimoire-heading h1 {
   margin: 0;
   color: var(--text-main);
   font-family: var(--heading-font);
-  font-size: clamp(2.5rem, 6vw, 5.2rem);
-  line-height: 0.95;
-  text-shadow: 0 3px 24px rgb(0 0 0 / 72%);
+  font-size: clamp(2.2rem, 5vw, 4.4rem);
+  line-height: 0.98;
+  text-shadow:
+    0 3px 20px rgb(0 0 0 / 82%),
+    0 0 28px rgb(214 169 74 / 12%);
 }
 
 .catalog-section-tabs {
   display: flex;
+  width: fit-content;
+  max-width: 100%;
+  justify-self: center;
   align-items: stretch;
-  gap: 4px;
+  gap: 2px;
   overflow-x: auto;
-  border-block: 1px solid rgb(214 169 74 / 16%);
-  padding: 5px 0;
+  border-block: 1px solid rgb(214 169 74 / 24%);
+  padding: 4px 0;
+  background: rgb(18 13 9 / 36%);
+  backdrop-filter: blur(3px);
   scrollbar-width: thin;
 }
 
@@ -3883,11 +3910,12 @@ body::before {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  padding: 10px clamp(14px, 2vw, 24px);
+  padding: 9px clamp(13px, 2vw, 22px);
   color: var(--text-soft);
   font-family: var(--heading-font);
-  font-size: 0.94rem;
+  font-size: 0.92rem;
   letter-spacing: 0.035em;
+  text-shadow: 0 2px 10px rgb(0 0 0 / 70%);
   transition: color 160ms ease, background-color 160ms ease;
 }
 
@@ -3895,7 +3923,7 @@ body::before {
   content: '';
   position: absolute;
   right: 16%;
-  bottom: 2px;
+  bottom: 1px;
   left: 16%;
   height: 1px;
   background: var(--gold);
@@ -3908,7 +3936,7 @@ body::before {
 .catalog-section-tab:focus-visible,
 .catalog-section-tab-active {
   color: var(--gold-soft);
-  background: rgb(214 169 74 / 5%);
+  background: rgb(214 169 74 / 8%);
 }
 
 .catalog-section-tab:hover::after,
@@ -3919,72 +3947,107 @@ body::before {
 }
 
 .catalog-section-tab:focus-visible {
-  outline: 2px solid rgb(214 169 74 / 44%);
+  outline: 2px solid rgb(214 169 74 / 48%);
   outline-offset: -2px;
 }
 
 .catalog-section-tab-disabled {
   color: var(--text-muted);
   cursor: default;
-  opacity: 0.58;
+  opacity: 0.64;
 }
 
 .catalog-section-tab-disabled small {
   color: var(--gold-muted);
   font-family: var(--body-font);
-  font-size: 0.62rem;
+  font-size: 0.6rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .catalog-section-content {
-  gap: clamp(18px, 2.5vw, 28px);
+  gap: clamp(16px, 2vw, 24px);
 }
 
 .catalog-section-page .catalog-toolbar {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  border-color: rgb(214 169 74 / 16%);
-  padding: clamp(14px, 2vw, 20px);
+  gap: 10px;
+  border: 1px solid rgb(196 148 69 / 30%);
+  border-radius: 6px;
+  padding: clamp(13px, 2vw, 18px);
   background:
-    linear-gradient(180deg, rgb(16 20 29 / 88%), rgb(8 11 17 / 94%)),
-    #0a0d13;
+    linear-gradient(180deg, rgb(40 29 19 / 74%), rgb(18 13 9 / 82%)),
+    rgb(18 13 9 / 76%);
+  box-shadow:
+    inset 0 1px rgb(255 232 176 / 5%),
+    0 12px 28px rgb(0 0 0 / 24%);
+  backdrop-filter: blur(5px);
+}
+
+.catalog-section-page .catalog-toolbar label {
+  color: rgb(224 206 169 / 82%);
+  font-size: 0.78rem;
+  letter-spacing: 0.025em;
 }
 
 .catalog-section-page .catalog-toolbar label:first-child {
   grid-column: span 2;
 }
 
+.catalog-section-page .catalog-toolbar input,
+.catalog-section-page .catalog-toolbar select {
+  min-height: 40px;
+  border-color: rgb(214 169 74 / 26%);
+  border-radius: 5px;
+  padding: 9px 11px;
+  background: rgb(9 8 7 / 74%);
+  box-shadow: inset 0 1px 8px rgb(0 0 0 / 22%);
+}
+
 .catalog-section-page .catalog-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(14px, 2vw, 20px);
+  gap: clamp(12px, 1.7vw, 18px);
 }
 
 .catalog-section-page .catalog-card {
-  border-color: rgb(214 169 74 / 18%);
+  border-color: rgb(200 153 74 / 26%);
   border-radius: 6px;
-  background: linear-gradient(180deg, rgb(19 23 31 / 96%), rgb(9 12 17 / 98%));
+  background:
+    linear-gradient(180deg, rgb(25 20 15 / 88%), rgb(10 10 10 / 94%)),
+    rgb(12 10 8 / 90%);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 28%);
+  backdrop-filter: blur(4px);
+}
+
+.catalog-section-page .catalog-card:hover,
+.catalog-section-page .catalog-card:focus-within {
+  border-color: rgb(224 193 118 / 54%);
+  box-shadow:
+    0 16px 34px rgb(0 0 0 / 36%),
+    0 0 20px rgb(214 169 74 / 8%);
 }
 
 .catalog-section-page .catalog-card__image {
   aspect-ratio: 16 / 7;
+  opacity: 0.9;
 }
 
 .catalog-section-page .catalog-card__header {
   gap: 4px;
-  padding-block: 12px 10px;
+  padding-block: 11px 9px;
 }
 
 .catalog-section-page .catalog-card__meta {
   margin: 3px 0 0;
   color: var(--gold-muted);
-  font-size: 0.76rem;
+  font-size: 0.74rem;
   letter-spacing: 0.055em;
   text-transform: uppercase;
 }
 
 .catalog-section-page .catalog-card__footer {
-  padding-block: 9px 11px;
+  padding-block: 8px 10px;
+  background: rgb(8 8 8 / 18%);
 }
 
 .catalog-section-page .catalog-card__open-link {
@@ -3999,7 +4062,19 @@ body::before {
   background: transparent;
 }
 
+.catalog-section-page .placeholder-panel,
+.catalog-section-page .empty-state {
+  border: 1px solid rgb(214 169 74 / 24%);
+  border-radius: 6px;
+  background: rgb(18 13 9 / 78%);
+  backdrop-filter: blur(5px);
+}
+
 @media (max-width: 980px) {
+  .catalog-grimoire-inner {
+    padding: clamp(20px, 4vw, 34px);
+  }
+
   .catalog-section-page .catalog-toolbar,
   .catalog-section-page .catalog-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4007,17 +4082,29 @@ body::before {
 }
 
 @media (max-width: 640px) {
-  .catalog-grimoire-hero {
-    min-height: 220px;
-    background-position: 58% center;
+  .catalog-grimoire-interface {
+    min-height: 0;
+    border-radius: 7px;
+    background-position: center top;
   }
 
-  .catalog-grimoire-hero__content {
-    padding: 24px 20px;
+  .catalog-grimoire-inner {
+    gap: 14px;
+    padding: 20px 14px 24px;
+  }
+
+  .catalog-grimoire-heading {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .catalog-grimoire-heading h1 {
+    font-size: clamp(2rem, 12vw, 3.1rem);
   }
 
   .catalog-section-tabs {
-    margin-inline: -4px;
+    width: 100%;
+    justify-self: stretch;
   }
 
   .catalog-section-page .catalog-toolbar,
