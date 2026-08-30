@@ -36,6 +36,7 @@ export function CatalogCard({ entry, compact = false }: CatalogCardProps) {
         <img className="catalog-card__image" src={imageUrl} alt={entry.title_ua} loading="lazy" />
         <div className="catalog-card__header">
           <h3>{entry.title_ua}</h3>
+          {entry.title_original ? <p className="original-title">{entry.title_original}</p> : null}
         </div>
       </Link>
       <div className="catalog-card__footer">

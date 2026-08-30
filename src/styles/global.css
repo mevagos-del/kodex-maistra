@@ -3814,6 +3814,7 @@ body::before {
 /* Grimoire catalog sections */
 .catalog-section-page {
   gap: 0;
+  background: #070a0f;
 }
 
 .catalog-grimoire-interface {
@@ -4080,6 +4081,13 @@ body::before {
 .catalog-section-page .catalog-card h3 {
   font-size: 1rem;
   line-height: 1.15;
+}
+
+.catalog-section-page .catalog-card .original-title {
+  margin: 0;
+  color: rgb(243 232 208 / 62%);
+  font-size: 0.78rem;
+  line-height: 1.2;
 }
 
 
