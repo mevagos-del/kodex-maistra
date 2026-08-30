@@ -3824,7 +3824,7 @@ body::before {
   overflow: hidden;
   border: 0;
   border-radius: 0;
-  background-color: #24180f;
+  background-color: #070a0f;
   background-position: top center, top center;
   background-repeat: no-repeat, no-repeat;
   background-size: min(100%, 1024px) auto, 100% 100%;
@@ -3834,26 +3834,24 @@ body::before {
 
 .catalog-section-page--races .catalog-grimoire-interface {
   background-image:
-    url('/images/grimoire-races-page.png'),
-    linear-gradient(180deg, #49331f 0%, #2d1e13 58%, #19110d 100%);
+    url('/images/grimoire-races-page.webp'),
+    linear-gradient(180deg, #0c0f14 0%, #070a0f 64%, #05070a 100%);
 }
 
 .catalog-section-page--classes .catalog-grimoire-interface {
   background-image:
-    url('/images/grimoire-classes-page.png'),
-    linear-gradient(180deg, #49331f 0%, #2d1e13 58%, #19110d 100%);
+    url('/images/grimoire-classes-page.webp'),
+    linear-gradient(180deg, #0c0f14 0%, #070a0f 64%, #05070a 100%);
 }
 
 .catalog-section-page--items .catalog-grimoire-interface {
   background-image:
-    url('/images/grimoire-items-page.png'),
-    linear-gradient(180deg, #49331f 0%, #2d1e13 58%, #19110d 100%);
+    url('/images/grimoire-items-page.webp'),
+    linear-gradient(180deg, #0c0f14 0%, #070a0f 64%, #05070a 100%);
 }
 
 .catalog-section-page--spells .catalog-grimoire-interface {
-  background-image:
-    url('/images/grimoire-spells-page.webp'),
-    linear-gradient(180deg, #403020 0%, #281d17 58%, #17110f 100%);
+  background-image: linear-gradient(180deg, #0c0f14 0%, #070a0f 64%, #05070a 100%);
 }
 
 .catalog-grimoire-surface {
@@ -3861,8 +3859,8 @@ body::before {
   z-index: -1;
   inset: 0;
   background:
-    linear-gradient(90deg, rgb(10 7 5 / 18%) 0%, transparent 11%, transparent 89%, rgb(10 7 5 / 18%) 100%),
-    linear-gradient(180deg, rgb(8 6 5 / 12%) 0%, transparent 16%, transparent 82%, rgb(18 12 8 / 24%) 100%);
+    linear-gradient(90deg, rgb(7 10 15 / 78%) 0%, transparent 16%, transparent 84%, rgb(7 10 15 / 78%) 100%),
+    linear-gradient(180deg, rgb(7 10 15 / 12%) 0%, transparent 16%, transparent 76%, rgb(7 10 15 / 62%) 100%);
   pointer-events: none;
 }
 
