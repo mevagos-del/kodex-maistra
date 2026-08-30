@@ -14,11 +14,6 @@ const raceImageOverrides: Record<string, string> = {
   dwarf: '/images/catalog/races/dwarf.webp',
 };
 
-function catalogCardMeta(entry: CatalogEntry) {
-  if (entry.entityType === 'race') return 'Раса';
-  if (entry.entityType === 'class') return 'Клас';
-  return [entry.item_type, entry.category].filter(Boolean).join(' · ') || 'Предмет';
-}
 
 function catalogCardImage(entry: CatalogEntry, sectionSlug: ReturnType<typeof sectionSlugForEntity>) {
   const localRaceImage = entry.entityType === 'race' ? raceImageOverrides[entry.slug] : undefined;
@@ -31,7 +26,6 @@ function catalogCardImage(entry: CatalogEntry, sectionSlug: ReturnType<typeof se
 export function CatalogCard({ entry, compact = false }: CatalogCardProps) {
   const sectionSlug = sectionSlugForEntity(entry.entityType);
   const imageUrl = catalogCardImage(entry, sectionSlug);
-  const meta = catalogCardMeta(entry);
 
   return (
     <article
@@ -42,8 +36,6 @@ export function CatalogCard({ entry, compact = false }: CatalogCardProps) {
         <img className="catalog-card__image" src={imageUrl} alt={entry.title_ua} loading="lazy" />
         <div className="catalog-card__header">
           <h3>{entry.title_ua}</h3>
-          {entry.title_original ? <p className="original-title">{entry.title_original}</p> : null}
-          <p className="catalog-card__meta">{meta}</p>
         </div>
       </Link>
       <div className="catalog-card__footer">
