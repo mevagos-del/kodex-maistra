@@ -3818,17 +3818,18 @@ body::before {
 }
 
 .catalog-grimoire-interface {
+  --grimoire-page-width: 608px;
+  --grimoire-page-height: 905px;
   position: relative;
   isolation: isolate;
-  min-height: 0;
-  aspect-ratio: 2 / 3;
+  min-height: var(--grimoire-page-height);
   overflow: hidden;
   border: 0;
   border-radius: 0;
   background-color: #070a0f;
   background-position: top center, top center;
   background-repeat: no-repeat, no-repeat;
-  background-size: min(100%, 1024px) auto, 100% 100%;
+  background-size: min(100%, var(--grimoire-page-width)) auto, 100% 100%;
   box-shadow: none;
   animation: catalog-section-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -3837,19 +3838,23 @@ body::before {
 .catalog-section-page--races .catalog-grimoire-interface {
   background-image:
     url('/images/grimoire-races-page.png'),
-    linear-gradient(180deg, #0c0f14 0%, #070a0f 64%, #05070a 100%);
+    linear-gradient(#070a0f, #070a0f);
 }
 
 .catalog-section-page--classes .catalog-grimoire-interface {
+  --grimoire-page-width: 613px;
+  --grimoire-page-height: 927px;
   background-image:
     url('/images/grimoire-classes-page.png'),
-    linear-gradient(180deg, #0c0f14 0%, #070a0f 64%, #05070a 100%);
+    linear-gradient(#070a0f, #070a0f);
 }
 
 .catalog-section-page--items .catalog-grimoire-interface {
+  --grimoire-page-width: 580px;
+  --grimoire-page-height: 925px;
   background-image:
     url('/images/grimoire-items-page.png'),
-    linear-gradient(180deg, #0c0f14 0%, #070a0f 64%, #05070a 100%);
+    linear-gradient(#070a0f, #070a0f);
 }
 
 .catalog-section-page--spells .catalog-grimoire-interface {
@@ -3871,7 +3876,9 @@ body::before {
   z-index: 1;
   display: grid;
   gap: clamp(14px, 2vw, 22px);
-  min-height: inherit;
+  width: min(100%, var(--grimoire-page-width));
+  min-height: var(--grimoire-page-height);
+  margin-inline: auto;
   padding: clamp(26px, 4.5vw, 58px) clamp(22px, 6vw, 82px) clamp(42px, 7vw, 90px);
   background: transparent;
 }
@@ -4169,12 +4176,12 @@ body::before {
 @media (max-width: 640px) {
   .catalog-grimoire-interface {
     min-height: 100vh;
-    aspect-ratio: auto;
     background-position: top center, top center;
     background-size: 100% auto, 100% 100%;
   }
 
   .catalog-grimoire-inner {
+    min-height: 100vh;
     gap: 13px;
     padding: 20px 14px 28px;
   }
