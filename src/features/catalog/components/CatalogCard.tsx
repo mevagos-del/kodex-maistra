@@ -22,10 +22,11 @@ function catalogCardMeta(entry: CatalogEntry) {
 }
 
 function catalogCardImage(entry: CatalogEntry, sectionSlug: ReturnType<typeof sectionSlugForEntity>) {
+  const localRaceImage = entry.entityType === 'race' ? raceImageFallbacks[entry.slug] : undefined;
+  if (localRaceImage) return localRaceImage;
+
   const configuredImage = entry.image_url?.trim();
-  if (configuredImage) return configuredImage;
-  if (entry.entityType === 'race' && raceImageFallbacks[entry.slug]) return raceImageFallbacks[entry.slug];
-  return getDefaultImageUrl(sectionSlug);
+  return configuredImage || getDefaultImageUrl(sectionSlug);
 }
 
 export function CatalogCard({ entry, compact = false }: CatalogCardProps) {
