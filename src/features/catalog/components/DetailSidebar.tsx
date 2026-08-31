@@ -36,9 +36,11 @@ export function DetailSidebar({
           <img src={imageUrl} alt={imageAlt} />
         </div>
 
-        <div className="detail-v2-tags">
-          <TagList tags={tags} />
-        </div>
+        {tags.length > 0 ? (
+          <div className="detail-v2-tags">
+            <TagList tags={tags} />
+          </div>
+        ) : null}
       </div>
 
       {quickItems.length > 0 ? (

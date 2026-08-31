@@ -14,6 +14,7 @@ import { DetailLayout } from '@/features/catalog/components/DetailLayout';
 import { DetailSidebar } from '@/features/catalog/components/DetailSidebar';
 import { EmptyState } from '@/features/catalog/components/EmptyState';
 import { MechanicInfoGrid } from '@/features/catalog/components/MechanicInfoGrid';
+import { RaceTraitSection } from '@/features/catalog/components/RaceTraitSection';
 import { StructuredContentBlock } from '@/features/catalog/components/StructuredContentBlock';
 import { SubraceSelector } from '@/features/catalog/components/SubraceSelector';
 import { sectionSlugForEntity } from '@/features/catalog/api/catalogApi';
@@ -45,7 +46,7 @@ function booleanLabel(value: boolean) {
 function contentTypeLabel(value: CatalogEntry['content_type']) {
   const labels: Record<CatalogEntry['content_type'], string> = {
     official: 'Офіційний',
-    homebrew: 'Homebrew',
+    homebrew: 'Авторський матеріал',
     campaign: 'Матеріал кампанії',
     draft: 'Чернетка',
   };
@@ -61,6 +62,17 @@ function addInfo(blocks: Array<{ label: string; value: string }>, label: string,
   if (value) blocks.push({ label, value });
 }
 
+const raceTermLabels: Record<string, string> = {
+  humanoid: 'Гуманоїд', 'гуманоїд': 'Гуманоїд', medium: 'Середній', 'середній': 'Середній',
+  small: 'Малий', 'малий': 'Малий', common: 'Спільна', 'спільна': 'Спільна',
+  dwarvish: 'Дворфійська', 'дворфійська': 'Дворфійська', elvish: 'Ельфійська', 'ельфійська': 'Ельфійська',
+};
+
+function localizeRaceValue(value: string) {
+  const normalized = value.trim().toLowerCase();
+  return raceTermLabels[normalized] ?? value.replace(/\b(feet|foot|ft\.?)\b/gi, 'фт');
+}
+
 function mainInfoBlocks(entry: CatalogEntry) {
   const blocks: Array<{ label: string; value: string }> = [];
 
@@ -68,10 +80,10 @@ function mainInfoBlocks(entry: CatalogEntry) {
   blocks.push({ label: 'Тип контенту', value: contentTypeLabel(entry.content_type) });
 
   if (entry.entityType === 'race') {
-    addInfo(blocks, 'Тип істоти', entry.creature_type);
-    addInfo(blocks, 'Розмір', entry.size);
-    addInfo(blocks, 'Швидкість', entry.speed);
-    addInfo(blocks, 'Мови', entry.languages.join(', '));
+    addInfo(blocks, 'Тип істоти', entry.creature_type ? localizeRaceValue(entry.creature_type) : null);
+    addInfo(blocks, 'Розмір', entry.size ? localizeRaceValue(entry.size) : null);
+    addInfo(blocks, 'Швидкість', entry.speed ? localizeRaceValue(entry.speed) : null);
+    addInfo(blocks, 'Мови', entry.languages.map(localizeRaceValue).join(', '));
     addInfo(blocks, 'Тривалість життя', entry.lifespan);
     addInfo(blocks, 'Поведінка', entry.alignment_or_behavior);
   }
@@ -129,23 +141,30 @@ function SummarySection({ entry }: { entry: CatalogEntry }) {
   );
 }
 
-function DetailGroupPanel({ title, groups }: { title: string; groups: Array<{ title: string; values: string[] }> }) {
+function DetailGroupPanel({ title, groups, presentation = 'chips' }: {
+  title: string;
+  groups: Array<{ title: string; values: string[] }>;
+  presentation?: 'chips' | 'rows';
+}) {
   const visibleGroups = groups.filter((group) => group.values.length > 0);
-
   if (visibleGroups.length === 0) return null;
 
   return (
-    <section className="detail-v2-group-panel">
+    <section className={`detail-v2-group-panel detail-v2-group-panel--${presentation}`}>
       <h3>{title}</h3>
       <div className="detail-v2-group-list">
         {visibleGroups.map((group) => (
           <div key={group.title} className="detail-v2-group">
             <strong className="detail-v2-group-title">{group.title}</strong>
-            <div className="detail-v2-chip-list">
-              {group.values.map((value) => (
-                <span key={`${group.title}-${value}`} className="detail-v2-clean-chip">{value}</span>
-              ))}
-            </div>
+            {presentation === 'rows' ? (
+              <div className="detail-v2-group-values">
+                {group.values.map((value) => <p key={`${group.title}-${value}`}>{value}</p>)}
+              </div>
+            ) : (
+              <div className="detail-v2-chip-list">
+                {group.values.map((value) => <span key={`${group.title}-${value}`} className="detail-v2-clean-chip">{value}</span>)}
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -173,7 +192,7 @@ function AbilityScoreGrid({ entry }: { entry: Extract<CatalogEntry, { entityType
 
   return (
     <section className="detail-v2-panel">
-      <h2>Збільшення характеристики</h2>
+      <h2>Збільшення характеристик</h2>
       <div className="detail-v2-score-grid">
         {cells.map((cell) => (
           <div key={cell.label} className={cell.isActive ? 'detail-v2-score-cell detail-v2-score-cell-active' : 'detail-v2-score-cell'}>
@@ -187,21 +206,24 @@ function AbilityScoreGrid({ entry }: { entry: Extract<CatalogEntry, { entityType
   );
 }
 
-function ProficiencyGroups({ entry }: { entry: Extract<CatalogEntry, { entityType: 'race' | 'class' }> }) {
+function ProficiencyGroups({ entry, presentation = 'chips' }: {
+  entry: Extract<CatalogEntry, { entityType: 'race' | 'class' }>;
+  presentation?: 'chips' | 'rows';
+}) {
   const groups = groupedProficiencies(entry);
-  return <DetailGroupPanel title={entry.entityType === 'class' ? 'Володіння' : 'Володіння та навички'} groups={groups} />;
+  return <DetailGroupPanel title={entry.entityType === 'class' ? 'Володіння' : 'Володіння та навички'} groups={groups} presentation={presentation} />;
 }
 
 function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
   if (entry.entityType === 'race') {
-    const resistanceInfo = resistanceRows(entry.race_traits, entry.proficiencies, entry.additional_skills);
+    const resistanceInfo = resistanceRows(entry.proficiencies, entry.additional_skills);
 
     return (
       <>
-        <DetailReferenceSection title="Риси раси" cards={referenceCards(entry.race_traits, 'Риса')} />
+        <RaceTraitSection cards={referenceCards(entry.race_traits, 'Риса')} />
         <div className="detail-v2-lower-grid">
-          <ProficiencyGroups entry={entry} />
-          <DetailGroupPanel title="Стійкості та переваги" groups={infoRowsToGroups(resistanceInfo)} />
+          <ProficiencyGroups entry={entry} presentation="rows" />
+          <DetailGroupPanel title="Стійкості та переваги" groups={infoRowsToGroups(resistanceInfo)} presentation="rows" />
         </div>
         <SubraceSelector value={entry.subraces} />
       </>
@@ -252,6 +274,18 @@ function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
   );
 }
 
+function splitRaceDescription(markdown: string | null, title: string) {
+  if (!markdown?.trim()) return { description: null, creation: null };
+  const marker = /^#{1,6}\s+Під час створення персонажа\s*$/im;
+  const match = marker.exec(markdown);
+  const rawDescription = match ? markdown.slice(0, match.index).trim() : markdown.trim();
+  const creation = match ? markdown.slice(match.index + match[0].length).trim() || null : null;
+  const lines = rawDescription.split(/\r?\n/);
+  const firstHeading = lines[0]?.replace(/^#{1,6}\s+/, '').trim().toLowerCase();
+  if (firstHeading === title.trim().toLowerCase()) lines.shift();
+  return { description: lines.join('\n').trim() || null, creation };
+}
+
 export function ContentDetailPage({ entity }: ContentDetailPageProps) {
   const { slug } = useParams();
   const { data: entry, isLoading, errorMessage } = useCatalogEntry(entity, slug);
@@ -278,6 +312,9 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
 
   const imageUrl = entry.image_url ?? getDefaultImageUrl(sectionSlug);
   const infoBlocks = mainInfoBlocks(entry);
+  const raceDescription = entry.entityType === 'race'
+    ? splitRaceDescription(entry.full_description_markdown, entry.title_ua)
+    : null;
 
   return (
     <DetailLayout
@@ -288,10 +325,10 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
           label={entityLabels[entity]}
           title={entry.title_ua}
           originalTitle={entry.title_original}
-          description={entry.short_description}
-          tags={entry.tags}
+          description={entry.entityType === 'race' ? null : entry.short_description}
+          tags={entry.entityType === 'race' ? [] : entry.tags}
           quickTitle={quickTitles[entity]}
-          quickItems={quickSummaryItems(entry)}
+          quickItems={entry.entityType === 'race' ? [] : quickSummaryItems(entry)}
         />
       }
     >
@@ -302,16 +339,23 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
 
       {entry.entityType === 'race' ? <AbilityScoreGrid entry={entry} /> : null}
 
-      {entry.entityType !== 'item' ? <SummarySection entry={entry} /> : null}
+      {entry.entityType === 'class' ? <SummarySection entry={entry} /> : null}
 
       <RichReferenceBlocks entry={entry} />
 
-      {entry.full_description_markdown ? (
+      {(entry.entityType === 'race' ? raceDescription?.description : entry.full_description_markdown) ? (
         <section className="detail-v2-description-panel">
           <h2>Опис</h2>
           <div className="markdown-content">
-            <ReactMarkdown>{entry.full_description_markdown}</ReactMarkdown>
+            <ReactMarkdown>{entry.entityType === 'race' ? raceDescription?.description : entry.full_description_markdown}</ReactMarkdown>
           </div>
+        </section>
+      ) : null}
+
+      {entry.entityType === 'race' && raceDescription?.creation ? (
+        <section className="detail-v2-description-panel detail-v2-creation-panel">
+          <h2>Під час створення персонажа</h2>
+          <div className="markdown-content"><ReactMarkdown>{raceDescription.creation}</ReactMarkdown></div>
         </section>
       ) : null}
 

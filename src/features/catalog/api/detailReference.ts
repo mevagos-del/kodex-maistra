@@ -82,7 +82,14 @@ const keyLabels: Record<string, string> = {
   choose: 'Обрати',
   from: 'Зі списку',
   tools: 'Інструменти',
+  tool: 'Інструменти',
+  tool_proficiencies: 'Інструменти',
   skills: 'Навички',
+  skill: 'Навички',
+  language: 'Мови',
+  languages: 'Мови',
+  proficiency: 'Володіння',
+  proficiencies: 'Володіння',
   weapons: 'Зброя',
   armor: 'Броня',
   other: 'Інше',
@@ -100,7 +107,26 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function cleanText(value: unknown): string | null {
   if (value === null || value === undefined || value === '') return null;
   if (typeof value === 'boolean') return value ? 'Так' : 'Ні';
-  if (Array.isArray(value)) return value.map(cleanText).filter(Boolean).join(', ');
+  if (Array.isArray(value)) {
+    const values = value.map(cleanText).filter((item): item is string => Boolean(item));
+    return Array.from(new Set(values)).join(', ') || null;
+  }
+  if (isRecord(value)) {
+    const title = titleKeys.map((key) => cleanText(value[key])).find(Boolean);
+    const effect = cleanText(
+      value.mechanical_effect ?? value.effect ?? value.value ?? value.description ?? value.text ?? value.note,
+    );
+
+    if (title || effect) {
+      if (title && effect && title !== effect) return `${title}: ${effect}`;
+      return title ?? effect ?? null;
+    }
+
+    const nestedValues = Object.values(value)
+      .map(cleanText)
+      .filter((item): item is string => Boolean(item));
+    return Array.from(new Set(nestedValues)).join(', ') || null;
+  }
   const text = String(value).trim();
   return text.length > 0 ? text : null;
 }
@@ -247,19 +273,31 @@ export function groupedProficiencies(entry: RaceEntry | ClassEntry): Array<{ tit
   const proficiencies = entry.proficiencies;
   const skills = entry.additional_skills;
 
+  function addGroup(key: string, value: unknown) {
+    const title = keyLabels[key] ?? 'Інше';
+    const rawValues = Array.isArray(value) ? value : [value];
+    const values = rawValues
+      .map(cleanText)
+      .filter((item): item is string => Boolean(item))
+      .map((item) => {
+        if (title !== 'Інструменти' || !/вибір|вибором|на вибір/i.test(item) || /майстр/i.test(item)) return item;
+        return `${item} — конкретний інструмент визначте за правилами кампанії або погодьте з Майстром`;
+      });
+
+    if (values.length > 0) groups.push({ title, values: Array.from(new Set(values)) });
+  }
+
   if (isRecord(proficiencies)) {
-    for (const [key, child] of Object.entries(proficiencies)) {
-      const value = cleanText(child);
-      if (value) groups.push({ title: keyLabels[key] ?? key.replace(/_/g, ' '), values: value.split(', ').filter(Boolean) });
-    }
+    for (const [key, child] of Object.entries(proficiencies)) addGroup(key, child);
+  } else if (Array.isArray(proficiencies)) {
+    addGroup('other', proficiencies);
   }
 
   if (Array.isArray(skills)) {
-    const values = skills.map(cleanText).filter((value): value is string => Boolean(value));
-    if (values.length > 0) groups.push({ title: 'Навички', values });
+    addGroup('skills', skills);
+  } else if (isRecord(skills)) {
+    for (const [key, child] of Object.entries(skills)) addGroup(key, child);
   }
-
-  if (entry.languages.length > 0) groups.push({ title: 'Мови', values: entry.languages });
 
   return groups;
 }
