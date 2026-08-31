@@ -4187,7 +4187,7 @@ body::before {
 .catalog-book-content {
   position: absolute;
   z-index: 2;
-  inset: 10.5% 18% 13% 11%;
+  inset: 8.5% 13.5% 10.5% 10.5%;
   display: grid;
   min-width: 0;
   min-height: 0;
@@ -4213,32 +4213,32 @@ body::before {
 
 .catalog-bookmarks {
   position: absolute;
-  z-index: 6;
-  top: 22%;
-  right: 3.8%;
+  z-index: 8;
+  top: 24%;
+  right: 3.2%;
   display: flex;
   flex-direction: column;
-  width: 82px;
-  gap: 6px;
+  width: 96px;
+  gap: 8px;
   pointer-events: auto;
 }
 
 .catalog-bookmark {
   display: inline-flex;
-  width: 82px;
-  min-width: 82px;
-  min-height: 30px;
+  width: 96px;
+  min-width: 96px;
+  min-height: 34px;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  border: 1px solid rgb(111 68 31 / 46%);
-  border-radius: 3px 9px 9px 3px;
-  padding: 5px 7px;
-  color: #3d2514;
-  background: linear-gradient(90deg, rgb(119 73 32 / 66%), rgb(208 160 82 / 58%));
-  box-shadow: 0 5px 11px rgb(0 0 0 / 16%);
+  border: 1px solid rgb(224 170 83 / 55%);
+  border-radius: 10px 0 0 10px;
+  padding: 7px 9px;
+  color: #f2d89c;
+  background: linear-gradient(90deg, rgb(98 55 22 / 92%), rgb(166 104 39 / 88%));
+  box-shadow: 0 8px 16px rgb(0 0 0 / 26%), inset 0 1px 0 rgb(255 231 175 / 28%);
   font-family: var(--heading-font);
-  font-size: 0.72rem;
+  font-size: 0.76rem;
   line-height: 1;
   text-shadow: 0 1px 0 rgb(246 218 160 / 28%);
   transition: color 180ms ease-out, border-color 180ms ease-out, filter 180ms ease-out, transform 180ms ease-out;
@@ -4246,10 +4246,10 @@ body::before {
 
 .catalog-bookmark:hover,
 .catalog-bookmark:focus-visible {
-  border-color: rgb(207 155 73 / 72%);
-  color: #241307;
+  border-color: rgb(235 190 104 / 82%);
+  color: #ffe6ac;
   filter: brightness(1.08);
-  transform: translateX(3px);
+  transform: translateX(-3px);
 }
 
 .catalog-bookmark:focus-visible {
@@ -4258,16 +4258,17 @@ body::before {
 }
 
 .catalog-bookmark--active {
-  border-color: rgb(226 181 93 / 76%);
+  border-color: rgb(255 214 121 / 90%);
   color: #211207;
-  background: linear-gradient(90deg, rgb(226 181 93 / 88%), rgb(145 87 36 / 82%));
-  box-shadow: 0 6px 13px rgb(0 0 0 / 21%);
-  transform: translateX(4px);
+  background: linear-gradient(90deg, rgb(239 190 91 / 96%), rgb(160 91 32 / 90%));
+  box-shadow: 0 9px 18px rgb(0 0 0 / 28%), inset 0 1px 0 rgb(255 238 190 / 42%);
+  transform: translateX(-5px);
 }
 
 .catalog-bookmark--disabled {
   cursor: default;
-  opacity: 0.44;
+  filter: grayscale(0.25);
+  opacity: 0.5;
   pointer-events: none;
 }
 
@@ -4412,8 +4413,8 @@ body::before {
 }
 
 .catalog-book-content .catalog-grid {
-  width: min(100%, 920px);
-  max-width: 920px;
+  width: min(100%, 900px);
+  max-width: 900px;
   height: auto;
   align-self: start;
   justify-self: center;
@@ -4453,12 +4454,13 @@ body::before {
 }
 
 .catalog-book-pagination {
+  z-index: 6;
   display: grid;
   grid-template-columns: minmax(90px, 1fr) auto minmax(90px, 1fr);
   align-items: center;
   gap: 10px;
-  padding: 4px 2% 0;
-  color: rgb(58 34 18 / 88%);
+  padding: 5px 3% 1px;
+  color: rgb(58 31 12 / 92%);
   font-family: var(--heading-font);
   font-size: clamp(0.74rem, 0.86vw, 0.88rem);
   text-align: center;
@@ -4466,16 +4468,17 @@ body::before {
 
 .catalog-book-pagination button {
   width: fit-content;
-  min-height: 30px;
-  border: 0;
-  border-bottom: 1px solid rgb(101 60 29 / 34%);
-  border-radius: 0;
-  padding: 3px 8px;
-  color: #553116;
-  background: transparent;
-  box-shadow: none;
+  min-height: 32px;
+  border: 1px solid rgb(104 63 24 / 42%);
+  border-radius: 999px;
+  padding: 5px 11px;
+  color: rgb(48 25 10 / 95%);
+  background: rgb(234 190 112 / 22%);
+  box-shadow: inset 0 1px 0 rgb(255 231 178 / 28%);
   font-family: var(--heading-font);
   font-size: inherit;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgb(255 230 175 / 50%);
 }
 
 .catalog-book-pagination button:first-child {
@@ -4488,16 +4491,28 @@ body::before {
 
 .catalog-book-pagination button:hover:not(:disabled),
 .catalog-book-pagination button:focus-visible:not(:disabled) {
-  border-bottom-color: #9a672f;
-  color: #4c2d17;
-  background: rgb(116 73 33 / 7%);
-  transform: none;
+  border-color: rgb(126 75 28 / 62%);
+  color: #3c210e;
+  background: rgb(234 190 112 / 38%);
+  box-shadow: 0 3px 8px rgb(61 34 14 / 14%), inset 0 1px 0 rgb(255 235 190 / 38%);
+  transform: translateY(-1px);
 }
 
 .catalog-book-pagination button:disabled {
-  color: rgb(75 56 40 / 48%);
+  color: rgb(48 25 10 / 82%);
   cursor: default;
-  opacity: 1;
+  opacity: 0.42;
+}
+
+.catalog-book-pagination span {
+  border: 1px solid rgb(102 63 28 / 24%);
+  border-radius: 999px;
+  padding: 5px 12px;
+  color: rgb(54 29 12 / 90%);
+  background: rgb(255 229 171 / 18%);
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgb(255 235 190 / 42%);
+  white-space: nowrap;
 }
 
 .catalog-book-content .placeholder-panel,
@@ -4569,6 +4584,7 @@ body::before {
   }
 
   .catalog-bookmark {
+    width: auto;
     min-width: max-content;
     min-height: 28px;
     border-radius: 4px 4px 2px 2px;
