@@ -28,61 +28,73 @@ export function SectionPage({ section }: SectionPageProps) {
 
   return (
     <div className={`page-stack catalog-section-page catalog-section-page--${section}`}>
-      <section key={section} className="catalog-grimoire-interface" aria-labelledby="catalog-section-title">
-        <div className="catalog-grimoire-surface" aria-hidden="true" />
-        <div className="catalog-grimoire-inner">
-          <header className="catalog-grimoire-heading">
-            <p className="eyebrow">Розділ довідника</p>
-            <h1 id="catalog-section-title">{title}</h1>
-          </header>
+      <section key={section} className="catalog-grimoire-section" aria-labelledby="catalog-section-title">
+        <div className="catalog-grimoire-shell">
+          <div className="catalog-grimoire-header-layer" aria-hidden="true" />
+          <div className="catalog-grimoire-body-layer">
+            <span className="catalog-grimoire-side-ornament" aria-hidden="true" />
+            <span className="catalog-grimoire-spine" aria-hidden="true" />
+            <span className="catalog-grimoire-corner" aria-hidden="true" />
+            <div className="catalog-grimoire-inner">
+              <header className="catalog-grimoire-heading">
+                <p className="eyebrow">Розділ довідника</p>
+                <h1 id="catalog-section-title">{title}</h1>
+              </header>
 
-          <nav className="catalog-section-tabs" aria-label="Розділи довідника">
-            {referenceQuickAccess.map((item) =>
-              item.path && !item.isDisabled ? (
-                <Link
-                  key={item.title}
-                  to={item.path}
-                  className={item.path === `/${section}` ? 'catalog-section-tab catalog-section-tab-active' : 'catalog-section-tab'}
-                  aria-current={item.path === `/${section}` ? 'page' : undefined}
-                >
-                  {item.title}
-                </Link>
-              ) : (
-                <span key={item.title} className="catalog-section-tab catalog-section-tab-disabled" aria-disabled="true">
-                  {item.title}
-                  <small>Скоро</small>
-                </span>
-              ),
-            )}
-          </nav>
+              <nav className="catalog-section-tabs" aria-label="Розділи довідника">
+                {referenceQuickAccess.map((item) =>
+                  item.path && !item.isDisabled ? (
+                    <Link
+                      key={item.title}
+                      to={item.path}
+                      className={
+                        item.path === `/${section}`
+                          ? 'catalog-section-tab catalog-section-tab-active'
+                          : 'catalog-section-tab'
+                      }
+                      aria-current={item.path === `/${section}` ? 'page' : undefined}
+                    >
+                      {item.title}
+                    </Link>
+                  ) : (
+                    <span key={item.title} className="catalog-section-tab catalog-section-tab-disabled" aria-disabled="true">
+                      {item.title}
+                      <small>Скоро</small>
+                    </span>
+                  ),
+                )}
+              </nav>
 
-          <section className="content-section catalog-section-content">
-            <div className="toolbar catalog-toolbar catalog-search-only" role="search">
-              <label>
-                Пошук
-                <input
-                  type="search"
-                  placeholder="Пошук у розділі…"
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                />
-              </label>
+              <section className="content-section catalog-section-content">
+                <div className="toolbar catalog-toolbar catalog-search-only" role="search">
+                  <label>
+                    Пошук
+                    <input
+                      type="search"
+                      placeholder="Пошук у розділі…"
+                      value={search}
+                      onChange={(event) => setSearch(event.target.value)}
+                    />
+                  </label>
+                </div>
+
+                {catalog.isLoading ? (
+                  <div className="placeholder-panel">Завантажуємо матеріали...</div>
+                ) : catalog.errorMessage ? (
+                  <div className="placeholder-panel">Не вдалося завантажити матеріали: {catalog.errorMessage}</div>
+                ) : filteredEntries.length > 0 ? (
+                  <div className="catalog-grid">
+                    {filteredEntries.map((entry) => (
+                      <CatalogCard key={entry.id} entry={entry} />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState description="Спробуйте змінити пошук." />
+                )}
+              </section>
             </div>
-
-            {catalog.isLoading ? (
-              <div className="placeholder-panel">Завантажуємо матеріали...</div>
-            ) : catalog.errorMessage ? (
-              <div className="placeholder-panel">Не вдалося завантажити матеріали: {catalog.errorMessage}</div>
-            ) : filteredEntries.length > 0 ? (
-              <div className="catalog-grid">
-                {filteredEntries.map((entry) => (
-                  <CatalogCard key={entry.id} entry={entry} />
-                ))}
-              </div>
-            ) : (
-              <EmptyState description="Спробуйте змінити пошук." />
-            )}
-          </section>
+          </div>
+          <div className="catalog-grimoire-footer-layer" aria-hidden="true" />
         </div>
       </section>
     </div>

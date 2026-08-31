@@ -3819,72 +3819,164 @@ body::before {
 }
 
 .catalog-section-page {
-  width: min(1400px, calc(100vw - 64px));
+  width: min(1280px, calc(100vw - 64px));
   margin-inline: auto;
   gap: 0;
   background: #070a0f;
 }
 
-.catalog-grimoire-interface {
+.catalog-grimoire-section {
+  width: 100%;
+}
+
+.catalog-grimoire-shell {
+  --grimoire-header-image: none;
+  --grimoire-body-image: none;
+  --grimoire-footer-image: none;
+  --grimoire-side-image: none;
+  --grimoire-spine-image: none;
+  --grimoire-corner-image: none;
+  --grimoire-header-ratio: 4 / 1;
+  --grimoire-footer-ratio: 7 / 1;
+  --grimoire-side-width: 90px;
+  --grimoire-spine-width: 90px;
+  --grimoire-corner-width: 110px;
   position: relative;
   isolation: isolate;
-  min-height: 920px;
+  width: 100%;
+  margin-inline: auto;
   overflow: hidden;
-  border: 0;
-  border-radius: 0;
-  background-color: #070a0f;
-  background-position: top center, top center;
-  background-repeat: no-repeat, no-repeat;
-  background-size: 100% 100%, 100% 100%;
-  box-shadow: none;
+  background: #070a0f;
   animation: catalog-section-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-/* Using new vertical grimoire backgrounds */
-.catalog-section-page--races .catalog-grimoire-interface {
-  background-image:
-    url('/images/grimoire-races-page.png'),
-    linear-gradient(#070a0f, #070a0f);
+/* Using modular transparent grimoire parts */
+.catalog-section-page--races .catalog-grimoire-shell {
+  --grimoire-header-image: url('/images/grimoire/races/races-grimoire-header.png');
+  --grimoire-body-image: url('/images/grimoire/races/races-parchment-content.png');
+  --grimoire-footer-image: url('/images/grimoire/races/races-grimoire-footer.png');
+  --grimoire-side-image: url('/images/grimoire/races/races-side-parchment-strip.png');
+  --grimoire-spine-image: url('/images/grimoire/races/races-book-spine-right.png');
+  --grimoire-corner-image: url('/images/grimoire/races/races-corner-ornament.png');
+  --grimoire-header-ratio: 1314 / 318;
+  --grimoire-footer-ratio: 1315 / 170;
+  --grimoire-side-width: 84px;
+  --grimoire-spine-width: 112px;
+  --grimoire-corner-width: 150px;
 }
 
-.catalog-section-page--classes .catalog-grimoire-interface {
-  background-image:
-    url('/images/grimoire-classes-page.png'),
-    linear-gradient(#070a0f, #070a0f);
+.catalog-section-page--classes .catalog-grimoire-shell {
+  --grimoire-header-image: url('/images/grimoire/classes/classes-grimoire-header.png');
+  --grimoire-body-image: url('/images/grimoire/classes/classes-parchment-content.png');
+  --grimoire-footer-image: url('/images/grimoire/classes/classes-grimoire-footer.png');
+  --grimoire-side-image: url('/images/grimoire/classes/classes-side-ribbon-ornament.png');
+  --grimoire-spine-image: url('/images/grimoire/classes/classes-book-spine-right.png');
+  --grimoire-corner-image: url('/images/grimoire/classes/classes-corner-ornament.png');
+  --grimoire-header-ratio: 1305 / 305;
+  --grimoire-footer-ratio: 1285 / 199;
+  --grimoire-side-width: 150px;
+  --grimoire-spine-width: 150px;
+  --grimoire-corner-width: 54px;
 }
 
-.catalog-section-page--items .catalog-grimoire-interface {
-  background-image:
-    url('/images/grimoire-items-page.png'),
-    linear-gradient(#070a0f, #070a0f);
+.catalog-section-page--items .catalog-grimoire-shell {
+  --grimoire-header-image: url('/images/grimoire/items/items-grimoire-header.png');
+  --grimoire-body-image: url('/images/grimoire/items/items-parchment-content.png');
+  --grimoire-footer-image: url('/images/grimoire/items/items-grimoire-footer.png');
+  --grimoire-side-image: url('/images/grimoire/items/items-side-ribbon-ornament.png');
+  --grimoire-spine-image: url('/images/grimoire/items/items-book-spine-right.png');
+  --grimoire-corner-image: url('/images/grimoire/items/items-corner-ornament.png');
+  --grimoire-header-ratio: 1273 / 296;
+  --grimoire-footer-ratio: 1286 / 152;
+  --grimoire-side-width: 110px;
+  --grimoire-spine-width: 54px;
+  --grimoire-corner-width: 86px;
 }
 
-.catalog-section-page--spells .catalog-grimoire-interface {
-  background-image: linear-gradient(180deg, #0c0f14 0%, #070a0f 64%, #05070a 100%);
-}
-
-.catalog-grimoire-surface {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgb(7 10 15 / 78%) 0%, transparent 16%, transparent 84%, rgb(7 10 15 / 78%) 100%),
-    linear-gradient(180deg, rgb(7 10 15 / 12%) 0%, transparent 16%, transparent 76%, rgb(7 10 15 / 62%) 100%);
+.catalog-grimoire-header-layer,
+.catalog-grimoire-footer-layer {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   pointer-events: none;
+}
+
+.catalog-grimoire-header-layer {
+  aspect-ratio: var(--grimoire-header-ratio);
+  background-image: var(--grimoire-header-image);
+}
+
+.catalog-grimoire-footer-layer {
+  aspect-ratio: var(--grimoire-footer-ratio);
+  margin-top: -1px;
+  background-image: var(--grimoire-footer-image);
+}
+
+.catalog-grimoire-body-layer {
+  position: relative;
+  z-index: 1;
+  min-height: 480px;
+  margin-top: -1px;
+  background-color: transparent;
+  background-image: var(--grimoire-body-image);
+  background-position: top center;
+  background-repeat: repeat-y;
+  background-size: 100% auto;
+}
+
+.catalog-grimoire-side-ornament,
+.catalog-grimoire-spine,
+.catalog-grimoire-corner {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  pointer-events: none;
+  background-position: top center;
+  background-repeat: repeat-y;
+  background-size: 100% auto;
+}
+
+.catalog-grimoire-side-ornament {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--grimoire-side-width);
+  background-image: var(--grimoire-side-image);
+}
+
+.catalog-grimoire-spine {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--grimoire-spine-width);
+  background-image: var(--grimoire-spine-image);
+}
+
+.catalog-grimoire-corner {
+  bottom: 0;
+  left: 1.5%;
+  width: var(--grimoire-corner-width);
+  aspect-ratio: 1;
+  background-image: var(--grimoire-corner-image);
+  background-position: bottom left;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .catalog-grimoire-inner {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   display: grid;
+  width: min(76%, 1040px);
+  min-height: 480px;
   gap: clamp(14px, 2vw, 22px);
-  width: min(78%, 1080px);
-  min-height: 920px;
   margin-inline: auto;
-  padding: clamp(26px, 4.5vw, 58px) clamp(22px, 6vw, 82px) clamp(42px, 7vw, 90px);
+  padding: clamp(18px, 3vw, 42px) 0 clamp(54px, 6vw, 90px);
   background: transparent;
 }
-
 .catalog-grimoire-heading {
   display: grid;
   justify-items: center;
@@ -4161,6 +4253,7 @@ body::before {
 
 @media (max-width: 980px) {
   .catalog-grimoire-inner {
+    width: min(84%, 900px);
     padding: clamp(22px, 4vw, 36px) clamp(18px, 5vw, 48px) clamp(36px, 6vw, 60px);
   }
 
@@ -4175,21 +4268,29 @@ body::before {
 }
 
 @media (max-width: 640px) {
+  .app-main:has(.catalog-section-page) {
+    padding-inline: 0;
+  }
+
   .catalog-section-page {
     width: 100%;
   }
 
-  .catalog-grimoire-interface {
-    min-height: 100vh;
-    background-position: top center, top center;
-    background-size: 100% auto, 100% 100%;
+  .catalog-grimoire-shell {
+    width: 100%;
+  }
+
+  .catalog-grimoire-side-ornament,
+  .catalog-grimoire-spine,
+  .catalog-grimoire-corner {
+    display: none;
   }
 
   .catalog-grimoire-inner {
-    width: 100%;
-    min-height: 100vh;
+    width: calc(100% - 28px);
+    min-height: 0;
     gap: 13px;
-    padding: 20px 14px 28px;
+    padding: 18px 0 32px;
   }
 
   .catalog-grimoire-heading {
@@ -4229,7 +4330,7 @@ body::before {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .catalog-grimoire-interface,
+  .catalog-grimoire-shell,
   .catalog-section-page .catalog-card {
     animation: none;
   }
