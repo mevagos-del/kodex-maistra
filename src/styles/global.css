@@ -4191,8 +4191,8 @@ body::before {
   display: grid;
   min-width: 0;
   min-height: 0;
-  grid-template-rows: auto auto minmax(0, 1fr);
-  gap: clamp(5px, 0.75vw, 10px);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: clamp(3px, 0.5vw, 7px);
 }
 
 .catalog-book-heading {
@@ -4202,20 +4202,79 @@ body::before {
   text-align: center;
 }
 
-.catalog-book-heading .eyebrow {
-  margin: 0 0 1px;
-  color: rgb(75 48 27 / 72%);
-  font-size: clamp(0.62rem, 0.75vw, 0.76rem);
-  text-shadow: 0 1px 0 rgb(244 218 167 / 38%);
-}
-
 .catalog-book-heading h1 {
   margin: 0;
   color: #402918;
   font-family: var(--heading-font);
-  font-size: clamp(1.8rem, 3.1vw, 3rem);
+  font-size: clamp(1.45rem, 2.1vw, 2.1rem);
   line-height: 0.96;
   text-shadow: 0 1px 0 rgb(245 221 176 / 58%), 0 2px 7px rgb(50 29 13 / 18%);
+}
+
+.catalog-bookmarks {
+  position: absolute;
+  z-index: 6;
+  top: 18%;
+  right: -11.5%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  pointer-events: auto;
+}
+
+.catalog-bookmark {
+  display: inline-flex;
+  min-width: 86px;
+  min-height: 31px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid rgb(111 68 31 / 46%);
+  border-radius: 3px 9px 9px 3px;
+  padding: 6px 9px;
+  color: #3d2514;
+  background: linear-gradient(90deg, rgb(119 73 32 / 66%), rgb(208 160 82 / 58%));
+  box-shadow: 0 5px 11px rgb(0 0 0 / 16%);
+  font-family: var(--heading-font);
+  font-size: 0.76rem;
+  line-height: 1;
+  text-shadow: 0 1px 0 rgb(246 218 160 / 28%);
+  transition: color 180ms ease-out, border-color 180ms ease-out, filter 180ms ease-out, transform 180ms ease-out;
+}
+
+.catalog-bookmark:hover,
+.catalog-bookmark:focus-visible {
+  border-color: rgb(207 155 73 / 72%);
+  color: #241307;
+  filter: brightness(1.08);
+  transform: translateX(3px);
+}
+
+.catalog-bookmark:focus-visible {
+  outline: 2px solid rgb(214 169 74 / 58%);
+  outline-offset: 2px;
+}
+
+.catalog-bookmark--active {
+  border-color: rgb(226 181 93 / 76%);
+  color: #211207;
+  background: linear-gradient(90deg, rgb(226 181 93 / 88%), rgb(145 87 36 / 82%));
+  box-shadow: 0 6px 13px rgb(0 0 0 / 21%);
+  transform: translateX(4px);
+}
+
+.catalog-bookmark--disabled {
+  cursor: default;
+  opacity: 0.44;
+  pointer-events: none;
+}
+
+.catalog-bookmark small {
+  color: inherit;
+  font-family: var(--body-font);
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .catalog-book-content .catalog-section-tabs {
@@ -4251,29 +4310,22 @@ body::before {
   min-width: 0;
   min-height: 0;
   grid-template-rows: auto minmax(0, 1fr);
-  gap: clamp(7px, 0.9vw, 11px);
+  gap: clamp(5px, 0.7vw, 8px);
 }
 
 .catalog-book-content .catalog-toolbar {
   width: min(100%, 520px);
-}
-
-.catalog-book-content .catalog-toolbar label {
-  gap: 3px;
-  border-color: rgb(92 55 27 / 24%);
-  padding: 4px 6px 5px;
-  color: rgb(70 43 24 / 78%);
-  background: rgb(245 222 176 / 18%);
-  font-size: 0.66rem;
-  backdrop-filter: none;
+  display: block;
+  justify-self: center;
 }
 
 .catalog-book-content .catalog-toolbar input {
-  min-height: 30px;
+  width: 100%;
+  min-height: 35px;
   border-color: rgb(92 55 27 / 26%);
-  padding: 4px 8px;
+  padding: 5px 10px;
   color: var(--text-main);
-  background: rgb(35 24 17 / 72%);
+  background: rgb(35 24 17 / 62%);
 }
 
 .catalog-book-page {
@@ -4353,15 +4405,16 @@ body::before {
 
 .catalog-book-content .catalog-grid {
   width: 100%;
-  height: 100%;
+  height: auto;
+  align-self: center;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-rows: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: auto;
   gap: clamp(8px, 1vw, 14px);
-  align-content: stretch;
+  align-content: center;
 }
 
 .catalog-book-content .catalog-card {
-  height: 100%;
+  height: auto;
   min-height: 0;
   border-color: rgb(101 60 29 / 34%);
   background:
@@ -4371,7 +4424,8 @@ body::before {
 }
 
 .catalog-book-content .catalog-card__image {
-  height: clamp(82px, 6vw, 98px);
+  height: clamp(96px, 7vw, 110px);
+  object-position: center 38%;
 }
 
 .catalog-book-content .catalog-card__header {
@@ -4387,7 +4441,8 @@ body::before {
   grid-template-columns: minmax(90px, 1fr) auto minmax(90px, 1fr);
   align-items: center;
   gap: 10px;
-  color: rgb(67 42 24 / 78%);
+  padding-top: 2px;
+  color: rgb(58 34 18 / 88%);
   font-family: var(--heading-font);
   font-size: clamp(0.72rem, 0.82vw, 0.84rem);
   text-align: center;
@@ -4400,7 +4455,7 @@ body::before {
   border-bottom: 1px solid rgb(101 60 29 / 34%);
   border-radius: 0;
   padding: 3px 8px;
-  color: #67401f;
+  color: #553116;
   background: transparent;
   box-shadow: none;
   font-family: var(--heading-font);
@@ -4424,7 +4479,7 @@ body::before {
 }
 
 .catalog-book-pagination button:disabled {
-  color: rgb(78 61 45 / 38%);
+  color: rgb(75 56 40 / 48%);
   cursor: default;
   opacity: 1;
 }
@@ -4476,11 +4531,41 @@ body::before {
 
   .catalog-book-content {
     inset: 8% 10% 7%;
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+
+  .catalog-bookmarks {
+    position: static;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    gap: 4px;
+    overflow-x: auto;
+    padding: 1px 0 3px;
+    scrollbar-width: none;
+  }
+
+  .catalog-bookmarks::-webkit-scrollbar {
+    display: none;
+  }
+
+  .catalog-bookmark {
+    min-width: max-content;
+    min-height: 28px;
+    border-radius: 4px 4px 2px 2px;
+    padding: 4px 8px;
+    font-size: 0.72rem;
+  }
+
+  .catalog-bookmark:hover,
+  .catalog-bookmark:focus-visible,
+  .catalog-bookmark--active {
+    transform: translateY(-1px);
   }
 
   .catalog-book-content .catalog-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    grid-template-rows: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(2, auto);
   }
 
   .catalog-book-content .catalog-card__image {
@@ -4509,16 +4594,11 @@ body::before {
   }
 
   .catalog-book-heading h1 {
-    font-size: clamp(1.8rem, 10vw, 2.6rem);
+    font-size: clamp(1.5rem, 8vw, 2rem);
   }
 
-  .catalog-book-content .catalog-section-tabs {
-    justify-content: center;
-  }
-
-  .catalog-book-content .catalog-section-tab {
-    padding: 3px 8px;
-    font-size: 0.72rem;
+  .catalog-bookmarks {
+    justify-content: flex-start;
   }
 
   .catalog-book-content .catalog-toolbar {
@@ -4527,7 +4607,7 @@ body::before {
 
   .catalog-book-content .catalog-grid {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(3, auto);
     gap: 7px;
   }
 
@@ -4560,7 +4640,7 @@ body::before {
   }
 
   .catalog-book-content .catalog-card,
-  .catalog-book-content .catalog-section-tab,
+  .catalog-bookmark,
   .catalog-book-content .catalog-toolbar input,
   .catalog-book-pagination button {
     transition: none;

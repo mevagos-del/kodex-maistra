@@ -142,57 +142,54 @@ export function SectionPage({ section }: SectionPageProps) {
         <div className={`catalog-book-shell catalog-book-shell--${section}`}>
           <img className="catalog-book-bg" src={bookBackground} alt="" aria-hidden="true" />
           <div className="catalog-book-content">
-              <header className="catalog-book-heading">
-                <p className="eyebrow">Розділ довідника</p>
-                <h1 id="catalog-section-title">{title}</h1>
-              </header>
+            <header className="catalog-book-heading">
+              <h1 id="catalog-section-title">{title}</h1>
+            </header>
 
-              <nav className="catalog-section-tabs" aria-label="Розділи довідника">
-                {referenceQuickAccess.map((item) =>
-                  item.path && !item.isDisabled ? (
-                    <Link
-                      key={item.title}
-                      to={item.path}
-                      className={
-                        item.path === `/${section}`
-                          ? 'catalog-section-tab catalog-section-tab-active'
-                          : 'catalog-section-tab'
-                      }
-                      aria-current={item.path === `/${section}` ? 'page' : undefined}
-                    >
-                      {item.title}
-                    </Link>
-                  ) : (
-                    <span key={item.title} className="catalog-section-tab catalog-section-tab-disabled" aria-disabled="true">
-                      {item.title}
-                      <small>Скоро</small>
-                    </span>
-                  ),
-                )}
-              </nav>
+            <nav className="catalog-bookmarks" aria-label="Розділи довідника">
+              {referenceQuickAccess.map((item) =>
+                item.path && !item.isDisabled ? (
+                  <Link
+                    key={item.title}
+                    to={item.path}
+                    className={
+                      item.path === `/${section}`
+                        ? 'catalog-bookmark catalog-bookmark--active'
+                        : 'catalog-bookmark'
+                    }
+                    aria-current={item.path === `/${section}` ? 'page' : undefined}
+                  >
+                    {item.title}
+                  </Link>
+                ) : (
+                  <span key={item.title} className="catalog-bookmark catalog-bookmark--disabled" aria-disabled="true">
+                    {item.title}
+                    <small>Скоро</small>
+                  </span>
+                ),
+              )}
+            </nav>
 
-              <section className="content-section catalog-section-content">
-                <div className="toolbar catalog-toolbar catalog-search-only" role="search">
-                  <label>
-                    Пошук
-                    <input
-                      type="search"
-                      placeholder="Пошук у розділі…"
-                      value={search}
-                      onChange={(event) => handleSearchChange(event.target.value)}
-                    />
-                  </label>
-                </div>
+            <section className="content-section catalog-section-content">
+              <div className="toolbar catalog-toolbar catalog-search-only" role="search">
+                <input
+                  type="search"
+                  aria-label="Пошук"
+                  placeholder="Пошук у розділі…"
+                  value={search}
+                  onChange={(event) => handleSearchChange(event.target.value)}
+                />
+              </div>
 
-                <div
-                  className={`catalog-book-page${turnDirection ? ` is-turning-${turnDirection}` : ''}`}
-                  aria-busy={isAnimating}
-                >
-                  {turnDirection ? (
-                    <div className={`catalog-page-turn-layer catalog-page-turn-layer--${turnDirection}`} aria-hidden="true" />
-                  ) : null}
+              <div
+                className={`catalog-book-page${turnDirection ? ` is-turning-${turnDirection}` : ''}`}
+                aria-busy={isAnimating}
+              >
+                {turnDirection ? (
+                  <div className={`catalog-page-turn-layer catalog-page-turn-layer--${turnDirection}`} aria-hidden="true" />
+                ) : null}
 
-                  <div className={`catalog-book-page-content${turnDirection ? ` is-turning-${turnDirection}` : ''}`}>
+                <div className={`catalog-book-page-content${turnDirection ? ` is-turning-${turnDirection}` : ''}`}>
                     {catalog.isLoading ? (
                       <div className="placeholder-panel">Завантажуємо матеріали...</div>
                     ) : catalog.errorMessage ? (
@@ -228,9 +225,9 @@ export function SectionPage({ section }: SectionPageProps) {
                     ) : (
                       <EmptyState description="Спробуйте змінити пошуковий запит." />
                     )}
-                  </div>
                 </div>
-              </section>
+              </div>
+            </section>
           </div>
         </div>
       </section>
