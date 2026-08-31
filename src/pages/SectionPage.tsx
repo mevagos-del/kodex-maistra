@@ -139,6 +139,23 @@ export function SectionPage({ section }: SectionPageProps) {
   return (
     <div className={`page-stack catalog-section-page catalog-section-page--${section}`}>
       <section key={section} className="catalog-book-section" aria-labelledby="catalog-section-title">
+        <div className="catalog-codex-panel">
+          <div className="catalog-codex-panel__heading">
+            <p>Довідник / {title}</p>
+            <h1 id="catalog-section-title">{title}</h1>
+          </div>
+
+          <div className="toolbar catalog-toolbar catalog-search-only catalog-codex-panel__search" role="search">
+            <input
+              type="search"
+              aria-label={`Пошук у розділі ${title}`}
+              placeholder="Пошук у розділі…"
+              value={search}
+              onChange={(event) => handleSearchChange(event.target.value)}
+            />
+          </div>
+        </div>
+
         <div className={`catalog-book-shell catalog-book-shell--${section}`}>
           <img className="catalog-book-bg" src={bookBackground} alt="" aria-hidden="true" />
           <nav className="catalog-bookmarks" aria-label="Розділи довідника">
@@ -166,21 +183,6 @@ export function SectionPage({ section }: SectionPageProps) {
           </nav>
 
           <div className="catalog-book-content">
-            <div className="catalog-book-top">
-              <header className="catalog-book-heading">
-                <h1 id="catalog-section-title">{title}</h1>
-              </header>
-
-              <div className="toolbar catalog-toolbar catalog-search-only" role="search">
-                <input
-                  type="search"
-                  aria-label="Пошук"
-                  placeholder="Пошук у розділі…"
-                  value={search}
-                  onChange={(event) => handleSearchChange(event.target.value)}
-                />
-              </div>
-            </div>
 
             <section className="catalog-book-main">
               <div
