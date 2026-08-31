@@ -141,36 +141,36 @@ export function SectionPage({ section }: SectionPageProps) {
       <section key={section} className="catalog-book-section" aria-labelledby="catalog-section-title">
         <div className={`catalog-book-shell catalog-book-shell--${section}`}>
           <img className="catalog-book-bg" src={bookBackground} alt="" aria-hidden="true" />
+          <nav className="catalog-bookmarks" aria-label="Розділи довідника">
+            {referenceQuickAccess.map((item) =>
+              item.path && !item.isDisabled ? (
+                <Link
+                  key={item.title}
+                  to={item.path}
+                  className={
+                    item.path === `/${section}`
+                      ? 'catalog-bookmark catalog-bookmark--active'
+                      : 'catalog-bookmark'
+                  }
+                  aria-current={item.path === `/${section}` ? 'page' : undefined}
+                >
+                  {item.title}
+                </Link>
+              ) : (
+                <span key={item.title} className="catalog-bookmark catalog-bookmark--disabled" aria-disabled="true">
+                  {item.title}
+                  <small>Скоро</small>
+                </span>
+              ),
+            )}
+          </nav>
+
           <div className="catalog-book-content">
-            <header className="catalog-book-heading">
-              <h1 id="catalog-section-title">{title}</h1>
-            </header>
+            <div className="catalog-book-top">
+              <header className="catalog-book-heading">
+                <h1 id="catalog-section-title">{title}</h1>
+              </header>
 
-            <nav className="catalog-bookmarks" aria-label="Розділи довідника">
-              {referenceQuickAccess.map((item) =>
-                item.path && !item.isDisabled ? (
-                  <Link
-                    key={item.title}
-                    to={item.path}
-                    className={
-                      item.path === `/${section}`
-                        ? 'catalog-bookmark catalog-bookmark--active'
-                        : 'catalog-bookmark'
-                    }
-                    aria-current={item.path === `/${section}` ? 'page' : undefined}
-                  >
-                    {item.title}
-                  </Link>
-                ) : (
-                  <span key={item.title} className="catalog-bookmark catalog-bookmark--disabled" aria-disabled="true">
-                    {item.title}
-                    <small>Скоро</small>
-                  </span>
-                ),
-              )}
-            </nav>
-
-            <section className="content-section catalog-section-content">
               <div className="toolbar catalog-toolbar catalog-search-only" role="search">
                 <input
                   type="search"
@@ -180,7 +180,9 @@ export function SectionPage({ section }: SectionPageProps) {
                   onChange={(event) => handleSearchChange(event.target.value)}
                 />
               </div>
+            </div>
 
+            <section className="catalog-book-main">
               <div
                 className={`catalog-book-page${turnDirection ? ` is-turning-${turnDirection}` : ''}`}
                 aria-busy={isAnimating}
@@ -190,43 +192,43 @@ export function SectionPage({ section }: SectionPageProps) {
                 ) : null}
 
                 <div className={`catalog-book-page-content${turnDirection ? ` is-turning-${turnDirection}` : ''}`}>
-                    {catalog.isLoading ? (
-                      <div className="placeholder-panel">Завантажуємо матеріали...</div>
-                    ) : catalog.errorMessage ? (
-                      <div className="placeholder-panel">Не вдалося завантажити матеріали: {catalog.errorMessage}</div>
-                    ) : filteredEntries.length > 0 ? (
-                      <>
-                        <div className="catalog-grid">
-                          {visibleEntries.map((entry) => (
-                            <CatalogCard key={entry.id} entry={entry} />
-                          ))}
-                        </div>
-
-                        <nav className="catalog-book-pagination" aria-label="Сторінки каталогу">
-                          <button
-                            type="button"
-                            onClick={() => turnPage('previous')}
-                            disabled={activePage === 0 || isAnimating}
-                          >
-                            ‹ Назад
-                          </button>
-                          <span aria-live="polite">
-                            Сторінка {activePage + 1} з {totalPages}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => turnPage('next')}
-                            disabled={activePage >= totalPages - 1 || isAnimating}
-                          >
-                            Далі ›
-                          </button>
-                        </nav>
-                      </>
-                    ) : (
-                      <EmptyState description="Спробуйте змінити пошуковий запит." />
-                    )}
+                  {catalog.isLoading ? (
+                    <div className="placeholder-panel">Завантажуємо матеріали...</div>
+                  ) : catalog.errorMessage ? (
+                    <div className="placeholder-panel">Не вдалося завантажити матеріали: {catalog.errorMessage}</div>
+                  ) : filteredEntries.length > 0 ? (
+                    <div className="catalog-grid">
+                      {visibleEntries.map((entry) => (
+                        <CatalogCard key={entry.id} entry={entry} />
+                      ))}
+                    </div>
+                  ) : (
+                    <EmptyState description="Спробуйте змінити пошуковий запит." />
+                  )}
                 </div>
               </div>
+
+              {!catalog.isLoading && !catalog.errorMessage && filteredEntries.length > 0 ? (
+                <nav className="catalog-book-pagination" aria-label="Сторінки каталогу">
+                  <button
+                    type="button"
+                    onClick={() => turnPage('previous')}
+                    disabled={activePage === 0 || isAnimating}
+                  >
+                    ‹ Назад
+                  </button>
+                  <span aria-live="polite">
+                    Сторінка {activePage + 1} з {totalPages}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => turnPage('next')}
+                    disabled={activePage >= totalPages - 1 || isAnimating}
+                  >
+                    Далі ›
+                  </button>
+                </nav>
+              ) : null}
             </section>
           </div>
         </div>
