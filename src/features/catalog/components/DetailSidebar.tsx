@@ -20,6 +20,7 @@ type DetailSidebarProps = {
   badges?: string[];
   navigation?: SidebarNavigationItem[];
   fallbackImageUrl?: string;
+  variant?: 'race' | 'class' | 'item';
 };
 
 export function DetailSidebar({
@@ -35,12 +36,13 @@ export function DetailSidebar({
   badges = [],
   navigation = [],
   fallbackImageUrl,
+  variant,
 }: DetailSidebarProps) {
-  const isRaceSidebar = navigation.length > 0;
+  const isCodexSidebar = Boolean(variant);
 
   return (
-    <aside className={isRaceSidebar ? 'detail-v2-sidebar race-identity-sidebar' : 'detail-v2-sidebar'}>
-      <div className={isRaceSidebar ? 'detail-v2-identity-card race-identity-card' : 'detail-v2-identity-card'}>
+    <aside className={`detail-v2-sidebar${isCodexSidebar ? ` codex-identity-sidebar codex-identity-sidebar--${variant}` : ''}${variant === 'race' ? ' race-identity-sidebar' : ''}`}>
+      <div className={`detail-v2-identity-card${isCodexSidebar ? ' codex-identity-card' : ''}${variant === 'race' ? ' race-identity-card' : ''}`}>
         <div className="detail-v2-type">{label}</div>
         <h1>{title}</h1>
         {originalTitle ? <div className="detail-v2-original">{originalTitle}</div> : null}
@@ -51,9 +53,9 @@ export function DetailSidebar({
         ) : null}
         {description ? <p className="detail-v2-short-description">{description}</p> : null}
 
-        <div className={isRaceSidebar ? 'detail-v2-image-wrap race-portrait-frame' : 'detail-v2-image-wrap'}>
+        <div className={`detail-v2-image-wrap${isCodexSidebar ? ' codex-portrait-frame' : ''}${variant === 'race' ? ' race-portrait-frame' : ''}`}>
           <img
-            className={isRaceSidebar ? 'race-portrait' : undefined}
+            className={isCodexSidebar ? `codex-portrait${variant === 'race' ? ' race-portrait' : ''}` : undefined}
             src={imageUrl}
             alt={imageAlt}
             onError={fallbackImageUrl ? (event) => {

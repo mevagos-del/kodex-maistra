@@ -1,28 +1,39 @@
 import type { ReferenceInfo } from '../api/detailReference';
-import { factIconForLabel } from '../utils/codexIcons';
+import { classFactIconForLabel, factIconForLabel, itemFactIconForLabel } from '../utils/codexIcons';
 
 type MechanicInfoGridProps = {
   items: ReferenceInfo[];
-  variant?: 'race';
+  variant?: 'race' | 'class' | 'item';
+  itemType?: string | null;
+  itemCategory?: string | null;
 };
 
-export function MechanicInfoGrid({ items, variant }: MechanicInfoGridProps) {
+export function MechanicInfoGrid({ items, variant, itemType, itemCategory }: MechanicInfoGridProps) {
   if (items.length === 0) return null;
 
   return (
-    <div className={variant === 'race' ? 'detail-v2-stat-grid race-fact-grid' : 'detail-v2-stat-grid'}>
+    <div className={`detail-v2-stat-grid${variant ? ` codex-fact-grid codex-fact-grid--${variant}` : ''}`}>
       {items.map((item) => (
         <div
           key={`${item.label}-${item.value}`}
           className={[
             'detail-v2-stat-cell',
+            variant ? 'codex-fact-card' : '',
             variant === 'race' ? 'race-fact-card' : '',
-            item.value.length > 48 ? 'detail-v2-stat-cell--wide race-fact-card--wide' : '',
+            item.value.length > 48 ? 'detail-v2-stat-cell--wide codex-fact-card--wide race-fact-card--wide' : '',
           ].filter(Boolean).join(' ')}
         >
-          {variant === 'race' ? (
-            <span className="race-fact-icon" aria-hidden="true">
-              <img className="codex-icon codex-icon--fact" src={factIconForLabel(item.label)} alt="" />
+          {variant ? (
+            <span className="race-fact-icon codex-fact-icon" aria-hidden="true">
+              <img
+                className="codex-icon codex-icon--fact"
+                src={variant === 'race'
+                  ? factIconForLabel(item.label)
+                  : variant === 'class'
+                    ? classFactIconForLabel(item.label, item.value)
+                    : itemFactIconForLabel(item.label, itemType, itemCategory)}
+                alt=""
+              />
             </span>
           ) : null}
           <span className="race-fact-copy">

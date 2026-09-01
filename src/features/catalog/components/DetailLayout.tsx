@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 type DetailLayoutProps = {
   sidebar: ReactNode;
   children: ReactNode;
-  variant?: 'race';
+  variant?: 'race' | 'class' | 'item';
 };
 
 export function DetailLayout({ sidebar, children, variant }: DetailLayoutProps) {
@@ -16,8 +16,8 @@ export function DetailLayout({ sidebar, children, variant }: DetailLayoutProps) 
     </article>
   );
 
-  if (variant === 'race') {
-    return <div className="race-detail-stage">{layout}</div>;
+  if (variant) {
+    return <div className={`detail-codex-stage detail-codex-stage--${variant}${variant === 'race' ? ' race-detail-stage' : ''}`}>{layout}</div>;
   }
 
   return layout;

@@ -2,26 +2,29 @@ import ReactMarkdown from 'react-markdown';
 import { Link, useParams } from 'react-router-dom';
 import {
   abilityScoreCells,
-  gameplaySummary,
   groupedProficiencies,
-  itemRequirementRows,
-  quickSummaryItems,
   referenceCards,
   resistanceRows,
 } from '@/features/catalog/api/detailReference';
-import { DetailReferenceSection } from '@/features/catalog/components/DetailReferenceSection';
 import { DetailLayout } from '@/features/catalog/components/DetailLayout';
 import { DetailSidebar } from '@/features/catalog/components/DetailSidebar';
 import { EmptyState } from '@/features/catalog/components/EmptyState';
 import { MechanicInfoGrid } from '@/features/catalog/components/MechanicInfoGrid';
+import { ProgressionTable } from '@/features/catalog/components/ProgressionTable';
+import { QuickScanSection } from '@/features/catalog/components/QuickScanSection';
 import { RaceTraitSection } from '@/features/catalog/components/RaceTraitSection';
-import { StructuredContentBlock } from '@/features/catalog/components/StructuredContentBlock';
 import { SubraceSelector } from '@/features/catalog/components/SubraceSelector';
 import { sectionSlugForEntity } from '@/features/catalog/api/catalogApi';
 import { useCatalogEntry } from '@/features/catalog/hooks/useCatalogData';
-import type { CatalogEntry } from '@/features/catalog/types';
+import type { CatalogEntry, ClassEntry, ItemEntry } from '@/features/catalog/types';
 import { getDefaultImageUrl } from '@/lib/storage';
-import { abilityIconForLabel, registryIconForLabel } from '@/features/catalog/utils/codexIcons';
+import {
+  abilityIconForLabel,
+  classFeatureIconForTitle,
+  CODEX_ICONS,
+  itemIconForType,
+  registryIconForLabel,
+} from '@/features/catalog/utils/codexIcons';
 import type { EntityType } from '@/types/content';
 
 type ContentDetailPageProps = {
@@ -32,12 +35,6 @@ const entityLabels: Record<EntityType, string> = {
   race: 'Раса',
   class: 'Клас',
   item: 'Предмет',
-};
-
-const quickTitles: Record<EntityType, string> = {
-  race: 'Коротко про расу',
-  class: 'Коротко про клас',
-  item: 'Коротко про предмет',
 };
 
 const localRaceImageOverrides: Record<string, string> = {
@@ -83,10 +80,9 @@ function localizeRaceValue(value: string) {
 function mainInfoBlocks(entry: CatalogEntry) {
   const blocks: Array<{ label: string; value: string }> = [];
 
-  blocks.push({ label: 'Версія правил', value: rulesVersionLabel(entry.rules_version) });
-  blocks.push({ label: 'Тип контенту', value: contentTypeLabel(entry.content_type) });
-
   if (entry.entityType === 'race') {
+    blocks.push({ label: 'Версія правил', value: rulesVersionLabel(entry.rules_version) });
+    blocks.push({ label: 'Тип контенту', value: contentTypeLabel(entry.content_type) });
     addInfo(blocks, 'Тип істоти', entry.creature_type ? localizeRaceValue(entry.creature_type) : null);
     addInfo(blocks, 'Розмір', entry.size ? localizeRaceValue(entry.size) : null);
     addInfo(blocks, 'Швидкість', entry.speed ? localizeRaceValue(entry.speed) : null);
@@ -99,53 +95,25 @@ function mainInfoBlocks(entry: CatalogEntry) {
     addInfo(blocks, 'Кістка хітів', entry.hit_die);
     addInfo(blocks, 'Основна характеристика', entry.primary_ability);
     addInfo(blocks, 'Ряткидки', entry.saving_throws.join(', '));
-    addInfo(blocks, 'Володіння бронею', entry.armor_proficiencies.join(', '));
+    addInfo(blocks, 'Володіння обладунками', entry.armor_proficiencies.join(', '));
     addInfo(blocks, 'Володіння зброєю', entry.weapon_proficiencies.join(', '));
     addInfo(blocks, 'Володіння інструментами', entry.tool_proficiencies.join(', '));
     blocks.push({ label: 'Заклинання', value: booleanLabel(entry.has_spellcasting) });
   }
 
   if (entry.entityType === 'item') {
-    addInfo(blocks, 'Тип предмета', entry.item_type);
+    addInfo(blocks, 'Тип', entry.item_type);
     addInfo(blocks, 'Категорія', entry.category);
     addInfo(blocks, 'Рідкість', entry.rarity);
     addInfo(blocks, 'Ціна', entry.price);
     addInfo(blocks, 'Вага', entry.weight);
     blocks.push({ label: 'Магічний предмет', value: booleanLabel(entry.is_magical) });
-    blocks.push({ label: 'Потребує налаштування', value: booleanLabel(entry.requires_attunement) });
-    addInfo(blocks, 'Шкода', entry.damage);
-    addInfo(blocks, 'Тип шкоди', entry.damage_type);
-    addInfo(blocks, 'Дальність', entry.range);
-    addInfo(blocks, 'Клас захисту', entry.armor_class);
-    addInfo(blocks, 'Необхідна сила', entry.required_strength);
-    blocks.push({ label: 'Перешкода: Скритність', value: booleanLabel(entry.stealth_disadvantage) });
+    blocks.push({ label: 'Налаштування', value: booleanLabel(entry.requires_attunement) });
+    addInfo(blocks, 'Вимоги', entry.required_strength ? `Сила ${entry.required_strength}` : null);
     addInfo(blocks, 'Кількість', entry.quantity);
   }
 
   return blocks;
-}
-
-function mainSectionTitle(entry: CatalogEntry) {
-  if (entry.entityType === 'class') return 'Основні характеристики класу';
-  if (entry.entityType === 'item') return 'Основні характеристики предмета';
-  return 'Основні характеристики';
-}
-
-function SummarySection({ entry }: { entry: CatalogEntry }) {
-  const summary = gameplaySummary(entry);
-
-  if (summary.items.length === 0) return null;
-
-  return (
-    <section className="detail-v2-panel gameplay-summary-section">
-      <h2>{summary.title}</h2>
-      <ul className="reference-summary-list">
-        {summary.items.map((item) => (
-          <li key={item}>{item}</li>
-        ))}
-      </ul>
-    </section>
-  );
 }
 
 function DetailGroupPanel({ title, groups, presentation = 'chips', id, sectionNumber, showCodexIcons = false }: {
@@ -159,12 +127,12 @@ function DetailGroupPanel({ title, groups, presentation = 'chips', id, sectionNu
   const visibleGroups = groups.filter((group) => group.values.length > 0);
   if (visibleGroups.length === 0) return null;
 
-  const sectionClass = sectionNumber ? ' race-detail-section' : '';
+  const sectionClass = sectionNumber ? ' codex-detail-section race-detail-section' : '';
 
   return (
     <section id={id} className={`detail-v2-group-panel detail-v2-group-panel--${presentation}${sectionClass}`}>
       {sectionNumber ? (
-        <h2 className="race-section-title"><span>{sectionNumber}.</span> {title}</h2>
+        <h2 className="codex-detail-title race-section-title"><span>{sectionNumber}.</span> {title}</h2>
       ) : <h3>{title}</h3>}
       <div className="detail-v2-group-list">
         {visibleGroups.map((group) => (
@@ -248,14 +216,6 @@ function AbilityScoreGrid({ entry, id, sectionNumber }: {
   );
 }
 
-function ProficiencyGroups({ entry, presentation = 'chips' }: {
-  entry: Extract<CatalogEntry, { entityType: 'race' | 'class' }>;
-  presentation?: 'chips' | 'rows';
-}) {
-  const groups = groupedProficiencies(entry);
-  return <DetailGroupPanel title={entry.entityType === 'class' ? 'Володіння' : 'Володіння та навички'} groups={groups} presentation={presentation} />;
-}
-
 function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
   if (entry.entityType === 'race') {
     const resistanceInfo = resistanceRows(entry.race_traits, entry.proficiencies, entry.additional_skills);
@@ -273,47 +233,194 @@ function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
     );
   }
 
-  if (entry.entityType === 'class') {
-    return (
-      <>
-        <DetailReferenceSection title="Класові особливості" cards={referenceCards(entry.class_features, 'Особливість')} />
-        <div className="detail-v2-lower-grid">
-          <ProficiencyGroups entry={entry} />
-          <div className="detail-v2-column-stack">
-            <DetailReferenceSection title="Навички на вибір" cards={referenceCards(entry.skill_choices, 'Вибір')} />
-            <DetailReferenceSection title="Початкове спорядження" cards={referenceCards(entry.starting_equipment, 'Спорядження')} />
-            <DetailReferenceSection title="Підкласи" cards={referenceCards(entry.subclasses, 'Підклас')} />
-            {entry.has_spellcasting ? <DetailReferenceSection title="Заклинання" cards={referenceCards(entry.spellcasting, 'Заклинання')} /> : null}
-          </div>
-        </div>
-        <StructuredContentBlock title="Таблиця прогресії" value={entry.class_progression} />
-      </>
-    );
-  }
+  return null;
+}
 
-  const requirements = itemRequirementRows(entry);
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function safeText(value: unknown): string | null {
+  if (value === null || value === undefined || value === '') return null;
+  if (typeof value === 'boolean') return value ? 'Так' : 'Ні';
+  if (Array.isArray(value)) {
+    const parts = value.map(safeText).filter((part): part is string => Boolean(part));
+    return Array.from(new Set(parts)).join(', ') || null;
+  }
+  if (isRecord(value)) {
+    const parts = Object.values(value).map(safeText).filter((part): part is string => Boolean(part));
+    return Array.from(new Set(parts)).join(', ') || null;
+  }
+  const text = String(value).trim();
+  return text && text !== '[object Object]' && text !== 'object Object' ? text : null;
+}
+
+function choiceText(value: unknown) {
+  if (!isRecord(value)) return safeText(value);
+  const count = safeText(value.choose ?? value.count ?? value.amount);
+  const options = safeText(value.from ?? value.options ?? value.items);
+  if (count && options) return `Обери ${count} з переліку: ${options}.`;
+  return options ?? safeText(value);
+}
+
+function normalizeClassFeatures(entry: ClassEntry) {
+  const cards = referenceCards(entry.class_features, 'Уміння');
+  const spellcastingCards = entry.has_spellcasting ? referenceCards(entry.spellcasting, 'Заклинання') : [];
+  return [...cards, ...spellcastingCards].map((card) => {
+    const mechanicalEffect = card.rows.find((row) => row.label === 'Механічний ефект')?.value;
+    return {
+      ...card,
+      description: card.description ?? mechanicalEffect,
+      rows: card.rows.filter((row) => row.label !== 'Механічний ефект').map((row) => {
+      if (row.label === 'Використання' && /^(бонусна дія|дія|реакція)$/i.test(row.value)) return { ...row, label: 'Дія' };
+      if (/обмежена кількість|залежить від рівня|за правилами/i.test(row.value)) return { ...row, value: 'Не вказано у доступному джерелі' };
+      return row;
+    }),
+    };
+  });
+}
+
+function progressionFeatureCards(value: unknown) {
+  const rows = Array.isArray(value)
+    ? value
+    : isRecord(value)
+      ? (['rows', 'levels', 'progression', 'items'].map((key) => value[key]).find(Array.isArray) as unknown[] | undefined) ?? []
+      : [];
+
+  return rows.flatMap((row) => {
+    if (!isRecord(row)) return [];
+    const featureText = safeText(row.features ?? row.feature);
+    if (!featureText) return [];
+    const level = safeText(row.level);
+    return featureText.split(/[,;]+/).map((title) => title.trim()).filter(Boolean).map((title) => ({
+      title,
+      description: 'Точний опис уміння не вказано у доступному джерелі.',
+      rows: level ? [{ label: 'Рівень', value: level }] : [],
+    }));
+  });
+}
+
+function classProficiencyGroups(entry: ClassEntry) {
+  return [
+    { title: 'Обладунки', values: entry.armor_proficiencies },
+    { title: 'Зброя', values: entry.weapon_proficiencies },
+    { title: 'Інструменти', values: entry.tool_proficiencies },
+    { title: 'Ряткидки', values: entry.saving_throws },
+    { title: 'Навички', values: choiceText(entry.skill_choices) ? [choiceText(entry.skill_choices) as string] : [] },
+  ].filter((group) => group.values.length > 0);
+}
+
+const itemUsageLabels = new Set(['Використання', 'Тип дії', 'Відновлення', 'Тривалість', 'Дальність', 'Обмеження', 'Вимога']);
+
+function itemPropertyData(entry: ItemEntry) {
+  const cards = referenceCards(entry.properties, 'Властивість');
+  const coreRows = [
+    entry.damage ? { label: 'Шкода', value: [entry.damage, entry.damage_type].filter(Boolean).join(' ') } : null,
+    entry.range ? { label: 'Дальність', value: entry.range } : null,
+    entry.armor_class ? { label: 'Клас захисту', value: entry.armor_class } : null,
+  ].filter((row): row is { label: string; value: string } => Boolean(row));
+  const coreCard = coreRows.length > 0 ? [{ title: entry.title_ua, description: entry.short_description ?? undefined, rows: coreRows }] : [];
+  const allCards = [...coreCard, ...cards];
+  const variants = allCards.filter((card) => /варіант|покращ|\+\d/i.test(card.title));
+  const properties = allCards
+    .filter((card) => !variants.includes(card))
+    .map((card) => ({ ...card, rows: card.rows.filter((row) => !itemUsageLabels.has(row.label)) }));
+  const usageRows = allCards.flatMap((card) => card.rows.filter((row) => itemUsageLabels.has(row.label)));
+  return { properties, variants, usageRows };
+}
+
+function itemUsageGroups(entry: ItemEntry, propertyRows: Array<{ label: string; value: string }>) {
+  const rows = [
+    entry.required_strength ? { title: 'Вимоги', values: [`Сила ${entry.required_strength}`] } : null,
+    entry.range ? { title: 'Дальність', values: [entry.range] } : null,
+    entry.stealth_disadvantage ? { title: 'Скритність', values: ['Перешкода'] } : null,
+    entry.quantity ? { title: 'Кількість', values: [entry.quantity] } : null,
+    ...propertyRows.map((row) => ({ title: row.label === 'Тип дії' ? 'Активація' : row.label, values: [row.value] })),
+  ].filter((row): row is { title: string; values: string[] } => Boolean(row));
+  return rows.filter((row, index) => rows.findIndex((candidate) => candidate.title === row.title && candidate.values.join('|') === row.values.join('|')) === index);
+}
+
+function descriptionWithoutHeading(markdown: string | null, title: string, lead?: string | null) {
+  if (!markdown?.trim()) return null;
+  const lines = markdown.trim().split(/\r?\n/);
+  if (lines[0]?.replace(/^#{1,6}\s+/, '').trim().toLowerCase() === title.trim().toLowerCase()) lines.shift();
+  const technicalLine = /^(кістка хітів|основна характеристика|заклинальна характеристика|ряткидки|шкода|клас захисту|перешкода|вміст вказано)\s*:/i;
+  const normalizedLead = lead?.trim().toLowerCase();
+  return lines.filter((line) => {
+    const normalizedLine = line.trim().toLowerCase();
+    if (technicalLine.test(line.trim())) return false;
+    if (normalizedLead && normalizedLine && (normalizedLead.includes(normalizedLine) || normalizedLine.includes(normalizedLead))) return false;
+    return true;
+  }).join('\n').trim() || null;
+}
+
+function SourceFooter({ title, id }: { title?: string; id: string }) {
+  if (!title) return null;
+  return <footer id={id} className="codex-source-footer">Джерело: {title}</footer>;
+}
+
+function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ClassEntry; imageUrl: string; fallbackImageUrl: string }) {
+  const explicitFeatures = normalizeClassFeatures(entry);
+  const existingFeatureNames = new Set(explicitFeatures.map((feature) => feature.title.toLowerCase()));
+  const features = [...explicitFeatures, ...progressionFeatureCards(entry.class_progression).filter((feature) => !existingFeatureNames.has(feature.title.toLowerCase()))];
+  const equipment = referenceCards(entry.starting_equipment, 'Спорядження');
+  const subclasses = referenceCards(entry.subclasses, 'Підклас');
+  const description = descriptionWithoutHeading(entry.full_description_markdown, entry.title_ua, entry.short_description);
+  const navigation = [
+    { href: '#class-passport', label: 'Паспорт класу', number: 1 },
+    { href: '#class-progression', label: 'Таблиця прогресії', number: 2 },
+    ...(features.length ? [{ href: '#class-features', label: 'Уміння класу', number: 3 }] : []),
+    { href: '#class-proficiencies', label: 'Володіння', number: 4 },
+    ...(equipment.length ? [{ href: '#class-equipment', label: 'Спорядження', number: 5 }] : []),
+    ...(subclasses.length ? [{ href: '#class-subclasses', label: 'Підкласи', number: 6 }] : []),
+    ...(description ? [{ href: '#class-description', label: 'Опис', number: 7 }] : []),
+    ...(entry.source?.title ? [{ href: '#class-source', label: 'Джерело', number: 8 }] : []),
+  ];
 
   return (
-    <>
-      <DetailReferenceSection title="Властивості предмета" cards={referenceCards(entry.properties, 'Властивість')} />
-      <div className="detail-v2-lower-grid">
-        <DetailGroupPanel title="Вимоги та обмеження" groups={infoRowsToGroups(requirements)} />
-        <DetailGroupPanel
-          title="Вміст / кількість"
-          groups={[
-            {
-              title: 'Параметри',
-              values: [
-                entry.quantity ? `Кількість: ${entry.quantity}` : null,
-                entry.weight ? `Вага: ${entry.weight}` : null,
-                entry.price ? `Ціна: ${entry.price}` : null,
-              ].filter((item): item is string => Boolean(item)),
-            },
-          ]}
-        />
-      </div>
-      <SummarySection entry={entry} />
-    </>
+    <DetailLayout variant="class" sidebar={<DetailSidebar variant="class" imageUrl={imageUrl} imageAlt={entry.title_ua} fallbackImageUrl={fallbackImageUrl} label="Клас" title={entry.title_ua} originalTitle={entry.title_original} description={null} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} />}>
+      <section id="class-passport" className="detail-v2-panel codex-detail-section">
+        <h2 className="codex-detail-title"><span>1.</span> Паспорт класу</h2>
+        <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="class" />
+      </section>
+      <ProgressionTable id="class-progression" number={2} value={entry.class_progression} features={features} />
+      <QuickScanSection id="class-features" number={3} title="Уміння класу" cards={features} iconForCard={classFeatureIconForTitle} emptyMessage="Уміння класу не вказано у доступному джерелі." />
+      <DetailGroupPanel id="class-proficiencies" sectionNumber={4} title="Володіння" groups={classProficiencyGroups(entry)} presentation="rows" showCodexIcons />
+      <QuickScanSection id="class-equipment" number={5} title="Спорядження" cards={equipment} iconForCard={() => CODEX_ICONS.adventuringGear} />
+      <QuickScanSection id="class-subclasses" number={6} title="Підкласи" cards={subclasses} iconForCard={() => CODEX_ICONS.classes} />
+      {description ? <section id="class-description" className="detail-v2-description-panel codex-detail-section"><h2 className="codex-detail-title"><span>7.</span> Опис</h2><div className="markdown-content"><ReactMarkdown>{description}</ReactMarkdown></div></section> : null}
+      <SourceFooter id="class-source" title={entry.source?.title} />
+    </DetailLayout>
+  );
+}
+
+function ItemDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ItemEntry; imageUrl: string; fallbackImageUrl: string }) {
+  const propertyData = itemPropertyData(entry);
+  const properties = propertyData.properties;
+  const variants = propertyData.variants;
+  const usageGroups = itemUsageGroups(entry, propertyData.usageRows);
+  const description = descriptionWithoutHeading(entry.full_description_markdown, entry.title_ua, entry.short_description);
+  const navigation = [
+    { href: '#item-passport', label: 'Паспорт предмета', number: 1 },
+    ...(properties.length ? [{ href: '#item-properties', label: 'Властивості', number: 2 }] : []),
+    ...(usageGroups.length ? [{ href: '#item-usage', label: 'Правила використання', number: 3 }] : []),
+    ...(variants.length ? [{ href: '#item-variants', label: 'Варіанти / покращення', number: 4 }] : []),
+    ...(description ? [{ href: '#item-description', label: 'Опис', number: 5 }] : []),
+    ...(entry.source?.title ? [{ href: '#item-source', label: 'Джерело', number: 6 }] : []),
+  ];
+
+  return (
+    <DetailLayout variant="item" sidebar={<DetailSidebar variant="item" imageUrl={imageUrl} imageAlt={entry.title_ua} fallbackImageUrl={fallbackImageUrl} label="Предмет" title={entry.title_ua} originalTitle={entry.title_original} description={null} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} />}>
+      <section id="item-passport" className="detail-v2-panel codex-detail-section">
+        <h2 className="codex-detail-title"><span>1.</span> Паспорт предмета</h2>
+        <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="item" itemType={entry.item_type} itemCategory={entry.category} />
+      </section>
+      <QuickScanSection id="item-properties" number={2} title="Основний ефект / Властивості" cards={properties} iconForCard={() => itemIconForType(entry.item_type, entry.category, entry.is_magical ? 'магічний' : null)} emptyMessage="Властивості не вказано у доступному джерелі." />
+      <DetailGroupPanel id="item-usage" sectionNumber={3} title="Правила використання" groups={usageGroups} presentation="rows" showCodexIcons />
+      <QuickScanSection id="item-variants" number={4} title="Варіанти / покращення" cards={variants} iconForCard={() => CODEX_ICONS.choice} />
+      {description ? <section id="item-description" className="detail-v2-description-panel codex-detail-section"><h2 className="codex-detail-title"><span>5.</span> Опис</h2><div className="markdown-content"><ReactMarkdown>{description}</ReactMarkdown></div></section> : null}
+      <SourceFooter id="item-source" title={entry.source?.title} />
+    </DetailLayout>
   );
 }
 
@@ -364,14 +471,18 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
   const imageUrl = entry.entityType === 'race'
     ? localRaceImageOverrides[entry.slug] || entry.image_url?.trim() || defaultImageUrl
     : entry.image_url?.trim() || defaultImageUrl;
+  if (entry.entityType === 'class') {
+    return <ClassDetailContent entry={entry} imageUrl={imageUrl} fallbackImageUrl={defaultImageUrl} />;
+  }
+
+  if (entry.entityType === 'item') {
+    return <ItemDetailContent entry={entry} imageUrl={imageUrl} fallbackImageUrl={defaultImageUrl} />;
+  }
+
   const infoBlocks = mainInfoBlocks(entry);
-  const raceDescription = entry.entityType === 'race'
-    ? splitRaceDescription(entry.full_description_markdown, entry.title_ua)
-    : null;
-  const raceProficiencyGroups = entry.entityType === 'race'
-    ? groupedProficiencies(entry).filter((group) => group.title !== 'Мови')
-    : [];
-  const raceNavigation = entry.entityType === 'race' ? [
+  const raceDescription = splitRaceDescription(entry.full_description_markdown, entry.title_ua);
+  const raceProficiencyGroups = groupedProficiencies(entry).filter((group) => group.title !== 'Мови');
+  const raceNavigation = [
     { href: '#race-main', label: 'Основні характеристики', number: 1 },
     { href: '#race-abilities', label: 'Збільшення характеристик', number: 2 },
     ...(referenceCards(entry.race_traits, 'Риса').length > 0 ? [{ href: '#race-traits', label: 'Риси раси', number: 3 }] : []),
@@ -382,11 +493,11 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
     ...(hasUsefulValue(entry.subraces) ? [{ href: '#race-subraces', label: 'Підраси / варіанти', number: 6 }] : []),
     ...(raceDescription?.description ? [{ href: '#race-description', label: 'Опис', number: 7 }] : []),
     ...(entry.source?.title ? [{ href: '#race-source', label: 'Джерело', number: 8 }] : []),
-  ] : [];
+  ];
 
   return (
     <DetailLayout
-      variant={entry.entityType === 'race' ? 'race' : undefined}
+      variant="race"
       sidebar={
         <DetailSidebar
           imageUrl={imageUrl}
@@ -394,47 +505,36 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
           label={entityLabels[entity]}
           title={entry.title_ua}
           originalTitle={entry.title_original}
-          description={entry.entityType === 'race' ? null : entry.short_description}
-          tags={entry.entityType === 'race' ? [] : entry.tags}
-          quickTitle={quickTitles[entity]}
-          quickItems={entry.entityType === 'race' ? [] : quickSummaryItems(entry)}
-          badges={entry.entityType === 'race' ? [rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)] : []}
+          description={null}
+          tags={[]}
+          quickTitle=""
+          quickItems={[]}
+          badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]}
           navigation={raceNavigation}
-          fallbackImageUrl={entry.entityType === 'race' ? defaultImageUrl : undefined}
+          fallbackImageUrl={defaultImageUrl}
+          variant="race"
         />
       }
     >
-      <section id={entry.entityType === 'race' ? 'race-main' : undefined} className={`detail-v2-panel${entry.entityType === 'race' ? ' race-detail-section' : ''}`}>
-        {entry.entityType === 'race' ? (
-          <h2 className="race-section-title"><span>1.</span> Основні характеристики</h2>
-        ) : <h2>{mainSectionTitle(entry)}</h2>}
-        <MechanicInfoGrid items={infoBlocks} variant={entry.entityType === 'race' ? 'race' : undefined} />
+      <section id="race-main" className="detail-v2-panel race-detail-section">
+        <h2 className="race-section-title"><span>1.</span> Основні характеристики</h2>
+        <MechanicInfoGrid items={infoBlocks} variant="race" />
       </section>
 
-      {entry.entityType === 'race' ? <AbilityScoreGrid id="race-abilities" sectionNumber={2} entry={entry} /> : null}
-
-      {entry.entityType === 'class' ? <SummarySection entry={entry} /> : null}
+      <AbilityScoreGrid id="race-abilities" sectionNumber={2} entry={entry} />
 
       <RichReferenceBlocks entry={entry} />
 
-      {(entry.entityType === 'race' ? raceDescription?.description : entry.full_description_markdown) ? (
-        <section id={entry.entityType === 'race' ? 'race-description' : undefined} className={`detail-v2-description-panel${entry.entityType === 'race' ? ' race-detail-section' : ''}`}>
-          {entry.entityType === 'race' ? <h2 className="race-section-title"><span>7.</span> Опис</h2> : <h2>Опис</h2>}
+      {raceDescription.description ? (
+        <section id="race-description" className="detail-v2-description-panel race-detail-section">
+          <h2 className="race-section-title"><span>7.</span> Опис</h2>
           <div className="markdown-content">
-            <ReactMarkdown>{entry.entityType === 'race' ? raceDescription?.description : entry.full_description_markdown}</ReactMarkdown>
+            <ReactMarkdown>{raceDescription.description}</ReactMarkdown>
           </div>
         </section>
       ) : null}
 
-      {entry.source?.title ? (
-        entry.entityType === 'race' ? (
-          <footer id="race-source" className="race-attribution">Джерело: {entry.source.title}</footer>
-        ) : (
-          <section className="detail-v2-source-note">
-            <p>Джерело: {entry.source.title}. На основі відкритих правил SRD, якщо зазначено в джерелі. Текст адаптовано українською для довідника.</p>
-          </section>
-        )
-      ) : null}
+      {entry.source?.title ? <footer id="race-source" className="race-attribution">Джерело: {entry.source.title}</footer> : null}
     </DetailLayout>
   );
 }

@@ -37,6 +37,17 @@ export const CODEX_ICONS = {
   classes: '/icons/codex/36-icon-classes.png',
   items: '/icons/codex/37-icon-items.png',
   spells: '/icons/codex/38-icon-spells.png',
+  characters: '/icons/codex/39-icon-characters.png',
+  combatTracker: '/icons/codex/43-icon-combat-tracker.png',
+  weapon: '/icons/codex/45-icon-weapon.png',
+  armor: '/icons/codex/46-icon-armor.png',
+  adventuringGear: '/icons/codex/47-icon-adventuring-gear.png',
+  magicItem: '/icons/codex/48-icon-magic-item.png',
+  potion: '/icons/codex/49-icon-potion.png',
+  ring: '/icons/codex/50-icon-ring.png',
+  wand: '/icons/codex/51-icon-wand.png',
+  scroll: '/icons/codex/52-icon-scroll.png',
+  protection: '/icons/codex/55-icon-protection-spell.png',
 } as const;
 
 const factIcons: Record<string, string> = {
@@ -102,4 +113,55 @@ export function subraceIconForTitle(title: string) {
   return /гір|пагорб|кам|mountain|hill|stone/i.test(title)
     ? CODEX_ICONS.stoneMemory
     : CODEX_ICONS.choice;
+}
+
+export function classFactIconForLabel(label: string, value = '') {
+  const normalized = `${label} ${value}`.toLowerCase();
+  if (/кістк.*хіт/.test(normalized)) return CODEX_ICONS.dwarvenToughness;
+  if (/основн.*характер/.test(normalized)) {
+    const ability = Object.keys(abilityIcons).find((name) => normalized.includes(name.toLowerCase()));
+    return ability ? abilityIconForLabel(ability) : CODEX_ICONS.classes;
+  }
+  if (/ряткид/.test(normalized)) return CODEX_ICONS.savingThrow;
+  if (/обладунк|брон/.test(normalized)) return CODEX_ICONS.armorProficiency;
+  if (/збро/.test(normalized)) return CODEX_ICONS.weaponProficiency;
+  if (/інструмент/.test(normalized)) return CODEX_ICONS.tools;
+  if (/навич/.test(normalized)) return CODEX_ICONS.skillProficiency;
+  if (/заклин/.test(normalized)) return CODEX_ICONS.spells;
+  return CODEX_ICONS.classes;
+}
+
+export function classFeatureIconForTitle(title: string) {
+  const normalized = title.toLowerCase();
+  if (/заклин|магі|spell/.test(normalized)) return CODEX_ICONS.spells;
+  if (/ата|бій|combat|action/.test(normalized)) return CODEX_ICONS.combatTracker;
+  if (/хіт|здоров|витрив|друге дих/.test(normalized)) return CODEX_ICONS.dwarvenToughness;
+  if (/збро|weapon/.test(normalized)) return CODEX_ICONS.weaponProficiency;
+  if (/брон|захист|armor/.test(normalized)) return CODEX_ICONS.armorProficiency;
+  return CODEX_ICONS.choice;
+}
+
+export function itemIconForType(...values: Array<string | null | undefined>) {
+  const normalized = values.filter(Boolean).join(' ').toLowerCase();
+  if (/збро|меч|weapon|sword/.test(normalized)) return CODEX_ICONS.weapon;
+  if (/брон|обладунк|armor/.test(normalized)) return CODEX_ICONS.armor;
+  if (/зілл|potion/.test(normalized)) return CODEX_ICONS.potion;
+  if (/перст|кільц|ring/.test(normalized)) return CODEX_ICONS.ring;
+  if (/жезл|wand/.test(normalized)) return CODEX_ICONS.wand;
+  if (/сувій|scroll/.test(normalized)) return CODEX_ICONS.scroll;
+  if (/магі|magic/.test(normalized)) return CODEX_ICONS.magicItem;
+  if (/споряд|набір|gear|pack/.test(normalized)) return CODEX_ICONS.adventuringGear;
+  return CODEX_ICONS.items;
+}
+
+export function itemFactIconForLabel(label: string, itemType?: string | null, category?: string | null) {
+  const normalized = label.toLowerCase();
+  if (/тип|категор/.test(normalized)) return itemIconForType(itemType, category);
+  if (/рідкіст|магіч/.test(normalized)) return CODEX_ICONS.magicItem;
+  if (/налаштуван|вимог/.test(normalized)) return CODEX_ICONS.choice;
+  if (/ваг/.test(normalized)) return CODEX_ICONS.size;
+  if (/варт|цін/.test(normalized)) return CODEX_ICONS.items;
+  if (/шкод/.test(normalized)) return CODEX_ICONS.damageType;
+  if (/клас захист|захист/.test(normalized)) return CODEX_ICONS.protection;
+  return itemIconForType(itemType, category);
 }
