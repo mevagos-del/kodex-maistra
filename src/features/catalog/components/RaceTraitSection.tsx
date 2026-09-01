@@ -4,9 +4,12 @@ type RaceTraitSectionProps = {
   cards: ReferenceCard[];
 };
 
-const hiddenDetailLabels = new Set(['Механічний ефект', 'Опис']);
+type TraitFact = {
+  label: string;
+  value: string;
+};
 
-const detailLabelMap: Record<string, string> = {
+const scanLabelMap: Record<string, string> = {
   'Використання': 'Тип',
   'Тип дії': 'Тип',
   'Вимога': 'Умова',
@@ -14,6 +17,29 @@ const detailLabelMap: Record<string, string> = {
   'Переваги': 'Перевага',
   'Переваги на ряткидки': 'Перевага',
   'Стійкості': 'Стійкість',
+  'Стійкість до шкоди': 'Стійкість',
+};
+
+const visibleScanLabels = new Set([
+  'Тип',
+  'Дальність',
+  'Умова',
+  'Ряткидок',
+  'Характеристика',
+  'Перевага',
+  'Стійкість',
+  'Стан',
+]);
+
+const scanPriority: Record<string, number> = {
+  'Тип': 1,
+  'Дальність': 2,
+  'Ряткидок': 3,
+  'Характеристика': 4,
+  'Перевага': 5,
+  'Стійкість': 6,
+  'Стан': 7,
+  'Умова': 8,
 };
 
 function normalizeText(value: string) {
@@ -27,26 +53,38 @@ function comparableText(value: string) {
   return normalizeText(value).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
 }
 
-function traitDetails(card: ReferenceCard, ruleText?: string) {
-  const seen = new Set<string>();
-  const ruleComparable = ruleText ? comparableText(ruleText) : '';
+function addFact(facts: TraitFact[], seen: Set<string>, label: string, value: string) {
+  const normalizedValue = normalizeText(value);
+  const key = `${label}:${comparableText(normalizedValue)}`;
+  if (!normalizedValue || seen.has(key)) return;
+  seen.add(key);
+  facts.push({ label, value: normalizedValue });
+}
 
-  return card.rows.flatMap((row) => {
-    if (hiddenDetailLabels.has(row.label)) return [];
+function traitScanLine(card: ReferenceCard, ruleText: string) {
+  const facts: TraitFact[] = [];
+  const seen = new Set<string>();
+
+  for (const row of card.rows) {
+    if (row.label === 'Механічний ефект' || row.label === 'Опис') continue;
 
     let value = normalizeText(row.value);
-    if (row.label === 'Використання' && !/^постійно|пасив/i.test(value)) return [];
+    if (row.label === 'Використання' && !/^(постійно|пасив)/i.test(value)) continue;
 
-    const label = detailLabelMap[row.label] ?? row.label;
-    if (label === 'Тип' && /^постійно|пасив/i.test(value)) value = 'Постійна риса';
-    if (!value || comparableText(value) === ruleComparable) return [];
+    const label = scanLabelMap[row.label] ?? row.label;
+    if (!visibleScanLabels.has(label)) continue;
+    if (label === 'Тип' && /^(постійно|пасив)/i.test(value)) value = 'Постійна риса';
+    if (comparableText(value) === comparableText(ruleText)) continue;
 
-    const key = `${label}:${comparableText(value)}`;
-    if (seen.has(key)) return [];
-    seen.add(key);
+    addFact(facts, seen, label, value);
+  }
 
-    return [{ label, value }];
-  });
+  const distance = ruleText.match(/\b\d+\s*фт\b/i)?.[0];
+  if (distance) addFact(facts, seen, 'Дальність', distance);
+
+  return facts
+    .sort((left, right) => (scanPriority[left.label] ?? 99) - (scanPriority[right.label] ?? 99))
+    .slice(0, 3);
 }
 
 export function RaceTraitSection({ cards }: RaceTraitSectionProps) {
@@ -59,7 +97,7 @@ export function RaceTraitSection({ cards }: RaceTraitSectionProps) {
         {cards.map((card, index) => {
           const effect = card.rows.find((row) => row.label === 'Механічний ефект');
           const ruleText = normalizeText(effect?.value ?? card.description ?? '');
-          const details = traitDetails(card, ruleText);
+          const scanLine = traitScanLine(card, ruleText);
 
           return (
             <article key={`${card.title}-${index}`} className="race-trait-card">
@@ -68,18 +106,15 @@ export function RaceTraitSection({ cards }: RaceTraitSectionProps) {
                 <h3>{card.title}</h3>
               </header>
               {ruleText ? <p className="race-trait-card__description">{ruleText}</p> : null}
-              {details.length > 0 ? (
-                <div className="race-trait-card__details">
-                  <strong className="race-trait-card__details-title">Деталі</strong>
-                  <dl className="race-trait-card__details-grid">
-                    {details.map((row) => (
-                      <div key={`${row.label}-${row.value}`} className="race-trait-detail-row">
-                        <dt>{row.label}</dt>
-                        <dd>{row.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
+              {scanLine.length > 0 ? (
+                <dl className="race-trait-card__scan-line" aria-label="Короткі параметри риси">
+                  {scanLine.map((fact) => (
+                    <div key={`${fact.label}-${fact.value}`} className="race-trait-scan-fact">
+                      <dt>{fact.label}:</dt>
+                      <dd>{fact.value}</dd>
+                    </div>
+                  ))}
+                </dl>
               ) : null}
             </article>
           );

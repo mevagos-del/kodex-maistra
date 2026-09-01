@@ -184,6 +184,14 @@ function infoRowsToGroups(rows: Array<{ label: string; value: string }>) {
   return Array.from(grouped.entries()).map(([title, values]) => ({ title, values }));
 }
 
+function mechanicalIndexGroups(rows: Array<{ label: string; value: string }>) {
+  return infoRowsToGroups(rows.map((row) => {
+    if (row.label.startsWith('Стійкість')) return { ...row, label: 'Стійкості' };
+    if (row.label.includes('Переваг')) return { ...row, label: 'Переваги' };
+    return row;
+  }));
+}
+
 function AbilityScoreGrid({ entry }: { entry: Extract<CatalogEntry, { entityType: 'race' }> }) {
   const { cells, note } = abilityScoreCells(entry.ability_bonuses);
   const hasVisibleRule = cells.some((cell) => cell.isActive) || Boolean(note);
@@ -216,14 +224,14 @@ function ProficiencyGroups({ entry, presentation = 'chips' }: {
 
 function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
   if (entry.entityType === 'race') {
-    const resistanceInfo = resistanceRows(entry.proficiencies, entry.additional_skills);
+    const resistanceInfo = resistanceRows(entry.race_traits, entry.proficiencies, entry.additional_skills);
 
     return (
       <>
         <RaceTraitSection cards={referenceCards(entry.race_traits, 'Риса')} />
         <div className="detail-v2-lower-grid">
           <ProficiencyGroups entry={entry} presentation="rows" />
-          <DetailGroupPanel title="Стійкості та переваги" groups={infoRowsToGroups(resistanceInfo)} presentation="rows" />
+          <DetailGroupPanel title="Стійкості та переваги" groups={mechanicalIndexGroups(resistanceInfo)} presentation="rows" />
         </div>
         <SubraceSelector value={entry.subraces} />
       </>

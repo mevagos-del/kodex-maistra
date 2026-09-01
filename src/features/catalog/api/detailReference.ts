@@ -286,7 +286,8 @@ export function groupedProficiencies(entry: RaceEntry | ClassEntry): Array<{ tit
       .filter((item): item is string => Boolean(item))
       .map((item) => {
         if (title !== 'Інструменти' || !/вибір|вибором|на вибір/i.test(item) || /майстр/i.test(item)) return item;
-        return `${item} — конкретний інструмент визначте за правилами кампанії або погодьте з Майстром`;
+        const toolName = item.replace(/\s+(на вибір|за вибором).*$/i, '').trim();
+        return `${toolName} — за вибором або за домовленістю з Майстром`;
       });
 
     if (values.length > 0) groups.push({ title, values: Array.from(new Set(values)) });
