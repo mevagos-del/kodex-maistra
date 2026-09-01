@@ -19,6 +19,7 @@ type DetailSidebarProps = {
   quickItems: ReferenceInfo[];
   badges?: string[];
   navigation?: SidebarNavigationItem[];
+  fallbackImageUrl?: string;
 };
 
 export function DetailSidebar({
@@ -33,10 +34,13 @@ export function DetailSidebar({
   quickItems,
   badges = [],
   navigation = [],
+  fallbackImageUrl,
 }: DetailSidebarProps) {
+  const isRaceSidebar = navigation.length > 0;
+
   return (
-    <aside className="detail-v2-sidebar">
-      <div className="detail-v2-identity-card">
+    <aside className={isRaceSidebar ? 'detail-v2-sidebar race-identity-sidebar' : 'detail-v2-sidebar'}>
+      <div className={isRaceSidebar ? 'detail-v2-identity-card race-identity-card' : 'detail-v2-identity-card'}>
         <div className="detail-v2-type">{label}</div>
         <h1>{title}</h1>
         {originalTitle ? <div className="detail-v2-original">{originalTitle}</div> : null}
@@ -47,8 +51,19 @@ export function DetailSidebar({
         ) : null}
         {description ? <p className="detail-v2-short-description">{description}</p> : null}
 
-        <div className="detail-v2-image-wrap">
-          <img src={imageUrl} alt={imageAlt} />
+        <div className={isRaceSidebar ? 'detail-v2-image-wrap race-portrait-frame' : 'detail-v2-image-wrap'}>
+          <img
+            className={isRaceSidebar ? 'race-portrait' : undefined}
+            src={imageUrl}
+            alt={imageAlt}
+            onError={fallbackImageUrl ? (event) => {
+              const image = event.currentTarget;
+              if (image.dataset.fallbackApplied === 'true') return;
+              image.dataset.fallbackApplied = 'true';
+              image.src = fallbackImageUrl;
+              image.classList.add('race-portrait--fallback');
+            } : undefined}
+          />
         </div>
 
         {tags.length > 0 ? (

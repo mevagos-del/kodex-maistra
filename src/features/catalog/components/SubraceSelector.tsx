@@ -136,7 +136,7 @@ export function SubraceSelector({ value, id, sectionNumber }: SubraceSelectorPro
     <section id={id} className={`detail-v2-panel subrace-section${sectionNumber ? ' race-detail-section' : ''}`} aria-labelledby="subrace-selector-title">
       <div className="subrace-section__header">
         <h3 id="subrace-selector-title" className={sectionNumber ? 'race-section-title' : undefined}>{sectionNumber ? <span>{sectionNumber}.</span> : null} Підраси / варіанти</h3>
-        <p>Базові правила раси залишаються чинними. Нижче показані лише правила вибраної підраси або варіанта.</p>
+        <p>Показано лише особливості вибраної підраси або варіанта.</p>
       </div>
 
       <div className="subrace-selector" role="tablist" aria-label="Підраси або варіанти">

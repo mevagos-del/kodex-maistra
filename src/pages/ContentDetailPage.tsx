@@ -39,6 +39,12 @@ const quickTitles: Record<EntityType, string> = {
   item: 'Коротко про предмет',
 };
 
+const localRaceImageOverrides: Record<string, string> = {
+  dwarf: '/images/catalog/races/dwarf.webp',
+  elf: '/images/catalog/races/elf.webp',
+  human: '/images/catalog/races/human.webp',
+};
+
 function booleanLabel(value: boolean) {
   return value ? 'Так' : 'Ні';
 }
@@ -335,7 +341,10 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
     );
   }
 
-  const imageUrl = entry.image_url ?? getDefaultImageUrl(sectionSlug);
+  const defaultImageUrl = getDefaultImageUrl(sectionSlug);
+  const imageUrl = entry.entityType === 'race'
+    ? localRaceImageOverrides[entry.slug] || entry.image_url?.trim() || defaultImageUrl
+    : entry.image_url?.trim() || defaultImageUrl;
   const infoBlocks = mainInfoBlocks(entry);
   const raceDescription = entry.entityType === 'race'
     ? splitRaceDescription(entry.full_description_markdown, entry.title_ua)
@@ -372,6 +381,7 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
           quickItems={entry.entityType === 'race' ? [] : quickSummaryItems(entry)}
           badges={entry.entityType === 'race' ? [rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)] : []}
           navigation={raceNavigation}
+          fallbackImageUrl={entry.entityType === 'race' ? defaultImageUrl : undefined}
         />
       }
     >
