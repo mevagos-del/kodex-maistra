@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { subraceIconForTitle } from '../utils/codexIcons';
 
 const titleKeys = ['name', 'title', 'label'];
 const summaryKeys = ['summary', 'description', 'text', 'note'];
@@ -9,7 +10,6 @@ type SubraceRecord = Record<string, unknown>;
 type ParsedSubrace = {
   name: string;
   originalName?: string;
-  icon: string;
   tag?: string;
   summary?: string;
   record: SubraceRecord;
@@ -48,7 +48,7 @@ function parseSubraces(value: unknown): ParsedSubrace[] {
     .map((item, index): ParsedSubrace | null => {
       if (!isRecord(item)) {
         const text = cleanText(item);
-        return text ? { name: text, icon: '◆', record: { name: text } } : null;
+        return text ? { name: text, record: { name: text } } : null;
       }
 
       const name = titleKeys.map((key) => cleanText(item[key])).find(Boolean) ?? `Підраса ${index + 1}`;
@@ -57,7 +57,6 @@ function parseSubraces(value: unknown): ParsedSubrace[] {
       return {
         name,
         originalName: cleanText(item.original_name ?? item.originalTitle) ?? undefined,
-        icon: cleanText(item.icon) ?? '◆',
         tag: cleanText(item.tag ?? item.type) ?? undefined,
         summary,
         record: item,
@@ -151,7 +150,9 @@ export function SubraceSelector({ value, id, sectionNumber }: SubraceSelectorPro
               className={isActive ? 'subrace-selector__item subrace-selector__item-active' : 'subrace-selector__item'}
               onClick={() => setSelectedIndex(index)}
             >
-              <span className="subrace-selector__icon" aria-hidden="true">{subrace.icon}</span>
+              <span className="subrace-selector__icon subrace-selector__icon--codex" aria-hidden="true">
+                <img className="codex-icon codex-icon--subrace" src={subraceIconForTitle(subrace.name)} alt="" />
+              </span>
               <span className="subrace-selector__text">
                 <strong>{subrace.name}</strong>
                 {subrace.originalName ? <small>{subrace.originalName}</small> : null}

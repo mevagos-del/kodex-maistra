@@ -5792,6 +5792,103 @@ body::before {
   }
 }
 
+/* Project codex icons on race detail pages */
+.detail-v2-shell--race .codex-icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: auto;
+  filter: drop-shadow(0 0 8px rgb(214 168 92 / 20%));
+}
+
+.detail-v2-shell--race .race-fact-icon {
+  overflow: hidden;
+}
+
+.detail-v2-shell--race .codex-icon--fact {
+  width: 27px;
+  height: 27px;
+}
+
+.detail-v2-shell--race .race-ability-glyph {
+  display: grid;
+  place-items: center;
+}
+
+.detail-v2-shell--race .codex-icon--ability {
+  width: 28px;
+  height: 28px;
+  opacity: 0.48;
+  filter: grayscale(0.18) drop-shadow(0 0 5px rgb(214 168 92 / 12%));
+}
+
+.detail-v2-shell--race .detail-v2-score-cell-active .codex-icon--ability {
+  width: 31px;
+  height: 31px;
+  opacity: 1;
+  filter: drop-shadow(0 0 9px rgb(225 174 87 / 30%));
+}
+
+.detail-v2-shell--race .trait-icon-medallion {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.detail-v2-shell--race .trait-icon-medallion .codex-icon--trait {
+  width: 31px;
+  height: 31px;
+  filter: drop-shadow(0 0 7px rgb(214 168 92 / 22%));
+}
+
+.detail-v2-shell--race .detail-v2-group-title {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.detail-v2-shell--race .codex-icon--registry {
+  flex: 0 0 auto;
+  width: 23px;
+  height: 23px;
+  opacity: 0.88;
+  filter: drop-shadow(0 0 5px rgb(214 168 92 / 16%));
+}
+
+.detail-v2-shell--race .subrace-selector__icon--codex {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgb(214 168 92 / 30%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(214 168 92 / 11%), rgb(6 9 13 / 80%));
+}
+
+.detail-v2-shell--race .codex-icon--subrace {
+  width: 26px;
+  height: 26px;
+  filter: drop-shadow(0 0 6px rgb(214 168 92 / 18%));
+}
+
+@media (max-width: 680px) {
+  .detail-v2-shell--race .codex-icon--fact {
+    width: 24px;
+    height: 24px;
+  }
+
+  .detail-v2-shell--race .codex-icon--ability {
+    width: 25px;
+    height: 25px;
+  }
+
+  .detail-v2-shell--race .detail-v2-score-cell-active .codex-icon--ability {
+    width: 28px;
+    height: 28px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .detail-v2-shell--race .detail-v2-section-nav a {
     transition: none;

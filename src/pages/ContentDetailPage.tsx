@@ -21,6 +21,7 @@ import { sectionSlugForEntity } from '@/features/catalog/api/catalogApi';
 import { useCatalogEntry } from '@/features/catalog/hooks/useCatalogData';
 import type { CatalogEntry } from '@/features/catalog/types';
 import { getDefaultImageUrl } from '@/lib/storage';
+import { abilityIconForLabel, registryIconForLabel } from '@/features/catalog/utils/codexIcons';
 import type { EntityType } from '@/types/content';
 
 type ContentDetailPageProps = {
@@ -147,12 +148,13 @@ function SummarySection({ entry }: { entry: CatalogEntry }) {
   );
 }
 
-function DetailGroupPanel({ title, groups, presentation = 'chips', id, sectionNumber }: {
+function DetailGroupPanel({ title, groups, presentation = 'chips', id, sectionNumber, showCodexIcons = false }: {
   title: string;
   groups: Array<{ title: string; values: string[] }>;
   presentation?: 'chips' | 'rows';
   id?: string;
   sectionNumber?: number;
+  showCodexIcons?: boolean;
 }) {
   const visibleGroups = groups.filter((group) => group.values.length > 0);
   if (visibleGroups.length === 0) return null;
@@ -167,7 +169,10 @@ function DetailGroupPanel({ title, groups, presentation = 'chips', id, sectionNu
       <div className="detail-v2-group-list">
         {visibleGroups.map((group) => (
           <div key={group.title} className="detail-v2-group">
-            <strong className="detail-v2-group-title">{group.title}</strong>
+            <strong className="detail-v2-group-title">
+              {showCodexIcons ? <img className="codex-icon codex-icon--registry" src={registryIconForLabel(group.title)} alt="" /> : null}
+              <span>{group.title}</span>
+            </strong>
             {presentation === 'rows' ? (
               <div className="detail-v2-group-values">
                 {group.values.map((value) => <p key={`${group.title}-${value}`}>{value}</p>)}
@@ -211,14 +216,6 @@ function AbilityScoreGrid({ entry, id, sectionNumber }: {
 }) {
   const { cells, note } = abilityScoreCells(entry.ability_bonuses);
   const activeCells = cells.filter((cell) => cell.isActive);
-  const abilityGlyphs: Record<string, string> = {
-    'Сила': '◆',
-    'Спритність': '➶',
-    'Статура': '⬟',
-    'Інтелект': '▤',
-    'Мудрість': '◉',
-    'Харизма': '✦',
-  };
   const abilityAbbreviations: Record<string, string> = {
     'Сила': 'СИЛ',
     'Спритність': 'СПР',
@@ -239,7 +236,9 @@ function AbilityScoreGrid({ entry, id, sectionNumber }: {
       <div className="detail-v2-score-grid">
         {cells.map((cell) => (
           <div key={cell.label} className={cell.isActive ? 'detail-v2-score-cell detail-v2-score-cell-active' : 'detail-v2-score-cell detail-v2-score-cell-muted'}>
-            <span className="race-ability-glyph" aria-hidden="true">{abilityGlyphs[cell.label] ?? '◆'}</span>
+            <span className="race-ability-glyph" aria-hidden="true">
+              <img className="codex-icon codex-icon--ability" src={abilityIconForLabel(cell.label)} alt="" />
+            </span>
             <span className="race-ability-label" title={cell.label}>{abilityAbbreviations[cell.label] ?? cell.label}</span>
             <strong>{cell.value}</strong>
           </div>
@@ -266,8 +265,8 @@ function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
       <>
         <RaceTraitSection id="race-traits" sectionNumber={3} cards={referenceCards(entry.race_traits, 'Риса')} />
         <div className="detail-v2-lower-grid race-detail-compact-grid">
-          <DetailGroupPanel id="race-proficiencies" sectionNumber={4} title="Володіння та навички" groups={proficiencyGroups} presentation="rows" />
-          <DetailGroupPanel id="race-resistances" sectionNumber={5} title="Стійкості та переваги" groups={mechanicalIndexGroups(resistanceInfo)} presentation="rows" />
+          <DetailGroupPanel id="race-proficiencies" sectionNumber={4} title="Володіння та навички" groups={proficiencyGroups} presentation="rows" showCodexIcons />
+          <DetailGroupPanel id="race-resistances" sectionNumber={5} title="Стійкості та переваги" groups={mechanicalIndexGroups(resistanceInfo)} presentation="rows" showCodexIcons />
         </div>
         <SubraceSelector id="race-subraces" sectionNumber={6} value={entry.subraces} />
       </>
