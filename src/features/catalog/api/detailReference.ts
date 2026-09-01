@@ -25,16 +25,22 @@ export type AbilityScoreCell = {
 const abilityLabels: Record<string, string> = {
   strength: 'Сила',
   str: 'Сила',
+  'сила': 'Сила',
   dexterity: 'Спритність',
   dex: 'Спритність',
+  'спритність': 'Спритність',
   constitution: 'Статура',
   con: 'Статура',
+  'статура': 'Статура',
   intelligence: 'Інтелект',
   int: 'Інтелект',
+  'інтелект': 'Інтелект',
   wisdom: 'Мудрість',
   wis: 'Мудрість',
+  'мудрість': 'Мудрість',
   charisma: 'Харизма',
   cha: 'Харизма',
+  'харизма': 'Харизма',
 };
 
 const keyLabels: Record<string, string> = {
@@ -141,7 +147,7 @@ function formatBonus(value: unknown) {
   if (!text) return null;
   if (/^[+-]?\d+$/.test(text)) {
     const numeric = Number(text);
-    return numeric > 0 ? `+${numeric}` : `${numeric}`;
+    return numeric >= 0 ? `+${numeric}` : `${numeric}`;
   }
   return text;
 }
@@ -226,17 +232,40 @@ export function abilityBonusCards(value: unknown): ReferenceCard[] {
 }
 
 export function abilityScoreCells(value: unknown): { cells: AbilityScoreCell[]; note?: string } {
-  const scores = Object.entries({
-    strength: 'Сила',
-    dexterity: 'Спритність',
-    constitution: 'Статура',
-    intelligence: 'Інтелект',
-    wisdom: 'Мудрість',
-    charisma: 'Харизма',
-  }).map(([key, label]) => {
-    const rawValue = isRecord(value) ? value[key] : null;
-    const bonus = formatBonus(rawValue) ?? '+0';
-    return { label, value: bonus, isActive: bonus !== '+0' };
+  const orderedLabels = ['Сила', 'Спритність', 'Статура', 'Інтелект', 'Мудрість', 'Харизма'];
+  const bonusByLabel = new Map(orderedLabels.map((label) => [label, '+0']));
+
+  function assignBonus(rawAbility: unknown, rawBonus: unknown) {
+    const ability = cleanText(rawAbility);
+    const bonus = formatBonus(rawBonus);
+    if (!ability || !bonus) return;
+    const label = abilityLabels[ability.toLowerCase()] ?? ability;
+    if (bonusByLabel.has(label)) bonusByLabel.set(label, bonus);
+  }
+
+  if (isRecord(value)) {
+    for (const [key, rawBonus] of Object.entries(value)) {
+      if (abilityLabels[key.toLowerCase()]) assignBonus(key, rawBonus);
+    }
+
+    for (const key of ['items', 'bonuses', 'list', 'entries']) {
+      if (!Array.isArray(value[key])) continue;
+      for (const item of value[key]) {
+        if (!isRecord(item)) continue;
+        assignBonus(item.ability ?? item.stat ?? item.name ?? item.title, item.bonus ?? item.value ?? item.amount);
+      }
+    }
+  } else if (Array.isArray(value)) {
+    for (const item of value) {
+      if (!isRecord(item)) continue;
+      assignBonus(item.ability ?? item.stat ?? item.name ?? item.title, item.bonus ?? item.value ?? item.amount);
+    }
+  }
+
+  const scores = orderedLabels.map((label) => {
+    const bonus = bonusByLabel.get(label) ?? '+0';
+    const numericBonus = Number(bonus);
+    return { label, value: bonus, isActive: Number.isFinite(numericBonus) && numericBonus !== 0 };
   });
 
   if (isRecord(value)) {

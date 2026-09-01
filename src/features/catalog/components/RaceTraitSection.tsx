@@ -89,6 +89,17 @@ function traitScanLine(card: ReferenceCard, ruleText: string) {
     .slice(0, 3);
 }
 
+function traitGlyph(title: string) {
+  const normalized = title.toLowerCase();
+  if (/темн|зір|баченн/.test(normalized)) return '◉';
+  if (/отрут|стійк/.test(normalized)) return '⚗';
+  if (/витрив|здоров|хіт/.test(normalized)) return '♥';
+  if (/кам|підзем|ремес/.test(normalized)) return '◆';
+  if (/фей|магі|заклин/.test(normalized)) return '✧';
+  if (/мов|знан/.test(normalized)) return '⌘';
+  return '✦';
+}
+
 export function RaceTraitSection({ cards, id, sectionNumber }: RaceTraitSectionProps) {
   if (cards.length === 0) return null;
 
@@ -104,7 +115,7 @@ export function RaceTraitSection({ cards, id, sectionNumber }: RaceTraitSectionP
           return (
             <article key={`${card.title}-${index}`} className="race-trait-card">
               <header className="race-trait-card__header">
-                <div className="race-trait-card__mark" aria-hidden="true">✦</div>
+                <div className="race-trait-card__mark race-trait-icon" aria-hidden="true">{traitGlyph(card.title)}</div>
                 <h3>{card.title}</h3>
               </header>
               {ruleText ? <p className="race-trait-card__description">{ruleText}</p> : null}

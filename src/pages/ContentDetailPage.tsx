@@ -210,22 +210,41 @@ function AbilityScoreGrid({ entry, id, sectionNumber }: {
   sectionNumber: number;
 }) {
   const { cells, note } = abilityScoreCells(entry.ability_bonuses);
-  const hasVisibleRule = cells.some((cell) => cell.isActive) || Boolean(note);
-
-  if (!hasVisibleRule) return null;
+  const activeCells = cells.filter((cell) => cell.isActive);
+  const abilityGlyphs: Record<string, string> = {
+    'Сила': '◆',
+    'Спритність': '➶',
+    'Статура': '⬟',
+    'Інтелект': '▤',
+    'Мудрість': '◉',
+    'Харизма': '✦',
+  };
+  const abilityAbbreviations: Record<string, string> = {
+    'Сила': 'СИЛ',
+    'Спритність': 'СПР',
+    'Статура': 'СТАТ',
+    'Інтелект': 'ІНТ',
+    'Мудрість': 'МУД',
+    'Харизма': 'ХАР',
+  };
 
   return (
     <section id={id} className="detail-v2-panel race-detail-section">
       <h2 className="race-section-title"><span>{sectionNumber}.</span> Збільшення характеристик</h2>
+      <p className={activeCells.length > 0 ? 'race-ability-summary race-ability-summary--active' : 'race-ability-summary'}>
+        {activeCells.length > 0
+          ? <>Ключове підсилення: <strong>{activeCells.map((cell) => `${cell.label} ${cell.value}`).join(' · ')}</strong></>
+          : note ?? 'Фіксоване збільшення не задано'}
+      </p>
       <div className="detail-v2-score-grid">
         {cells.map((cell) => (
-          <div key={cell.label} className={cell.isActive ? 'detail-v2-score-cell detail-v2-score-cell-active' : 'detail-v2-score-cell'}>
-            <span title={cell.label}>{({ Сила: 'СИЛ', Спритність: 'СПР', Статура: 'СТАТ', Інтелект: 'ІНТ', Мудрість: 'МУД', Харизма: 'ХАР' } as Record<string, string>)[cell.label] ?? cell.label}</span>
+          <div key={cell.label} className={cell.isActive ? 'detail-v2-score-cell detail-v2-score-cell-active' : 'detail-v2-score-cell detail-v2-score-cell-muted'}>
+            <span className="race-ability-glyph" aria-hidden="true">{abilityGlyphs[cell.label] ?? '◆'}</span>
+            <span className="race-ability-label" title={cell.label}>{abilityAbbreviations[cell.label] ?? cell.label}</span>
             <strong>{cell.value}</strong>
           </div>
         ))}
       </div>
-      {note ? <p className="detail-v2-note">Додатково: {note}</p> : null}
     </section>
   );
 }
@@ -241,12 +260,13 @@ function ProficiencyGroups({ entry, presentation = 'chips' }: {
 function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
   if (entry.entityType === 'race') {
     const resistanceInfo = resistanceRows(entry.race_traits, entry.proficiencies, entry.additional_skills);
+    const proficiencyGroups = groupedProficiencies(entry).filter((group) => group.title !== 'Мови');
 
     return (
       <>
         <RaceTraitSection id="race-traits" sectionNumber={3} cards={referenceCards(entry.race_traits, 'Риса')} />
-        <div className="detail-v2-lower-grid">
-          <DetailGroupPanel id="race-proficiencies" sectionNumber={4} title="Володіння та навички" groups={groupedProficiencies(entry)} presentation="rows" />
+        <div className="detail-v2-lower-grid race-detail-compact-grid">
+          <DetailGroupPanel id="race-proficiencies" sectionNumber={4} title="Володіння та навички" groups={proficiencyGroups} presentation="rows" />
           <DetailGroupPanel id="race-resistances" sectionNumber={5} title="Стійкості та переваги" groups={mechanicalIndexGroups(resistanceInfo)} presentation="rows" />
         </div>
         <SubraceSelector id="race-subraces" sectionNumber={6} value={entry.subraces} />
@@ -349,20 +369,20 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
   const raceDescription = entry.entityType === 'race'
     ? splitRaceDescription(entry.full_description_markdown, entry.title_ua)
     : null;
-  const raceAbilityRules = entry.entityType === 'race' ? abilityScoreCells(entry.ability_bonuses) : null;
-  const hasRaceAbilityRules = Boolean(raceAbilityRules?.note || raceAbilityRules?.cells.some((cell) => cell.isActive));
+  const raceProficiencyGroups = entry.entityType === 'race'
+    ? groupedProficiencies(entry).filter((group) => group.title !== 'Мови')
+    : [];
   const raceNavigation = entry.entityType === 'race' ? [
     { href: '#race-main', label: 'Основні характеристики', number: 1 },
-    ...(hasRaceAbilityRules ? [{ href: '#race-abilities', label: 'Збільшення характеристик', number: 2 }] : []),
+    { href: '#race-abilities', label: 'Збільшення характеристик', number: 2 },
     ...(referenceCards(entry.race_traits, 'Риса').length > 0 ? [{ href: '#race-traits', label: 'Риси раси', number: 3 }] : []),
-    ...(groupedProficiencies(entry).length > 0 ? [{ href: '#race-proficiencies', label: 'Володіння та навички', number: 4 }] : []),
+    ...(raceProficiencyGroups.length > 0 ? [{ href: '#race-proficiencies', label: 'Володіння та навички', number: 4 }] : []),
     ...(resistanceRows(entry.race_traits, entry.proficiencies, entry.additional_skills).length > 0
       ? [{ href: '#race-resistances', label: 'Стійкості та переваги', number: 5 }]
       : []),
     ...(hasUsefulValue(entry.subraces) ? [{ href: '#race-subraces', label: 'Підраси / варіанти', number: 6 }] : []),
     ...(raceDescription?.description ? [{ href: '#race-description', label: 'Опис', number: 7 }] : []),
-    ...(raceDescription?.creation ? [{ href: '#race-creation', label: 'Під час створення персонажа', number: 8 }] : []),
-    ...(entry.source?.title ? [{ href: '#race-source', label: 'Джерело', number: 9 }] : []),
+    ...(entry.source?.title ? [{ href: '#race-source', label: 'Джерело', number: 8 }] : []),
   ] : [];
 
   return (
@@ -389,7 +409,7 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
         {entry.entityType === 'race' ? (
           <h2 className="race-section-title"><span>1.</span> Основні характеристики</h2>
         ) : <h2>{mainSectionTitle(entry)}</h2>}
-        <MechanicInfoGrid items={infoBlocks} />
+        <MechanicInfoGrid items={infoBlocks} variant={entry.entityType === 'race' ? 'race' : undefined} />
       </section>
 
       {entry.entityType === 'race' ? <AbilityScoreGrid id="race-abilities" sectionNumber={2} entry={entry} /> : null}
@@ -407,19 +427,9 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
         </section>
       ) : null}
 
-      {entry.entityType === 'race' && raceDescription?.creation ? (
-        <section id="race-creation" className="detail-v2-description-panel detail-v2-creation-panel race-detail-section">
-          <h2 className="race-section-title"><span>8.</span> Під час створення персонажа</h2>
-          <div className="markdown-content"><ReactMarkdown>{raceDescription.creation}</ReactMarkdown></div>
-        </section>
-      ) : null}
-
       {entry.source?.title ? (
         entry.entityType === 'race' ? (
-          <section id="race-source" className="detail-v2-source-note race-detail-section race-source-panel">
-            <h2 className="race-section-title"><span>9.</span> Джерело</h2>
-            <p>{entry.source.title}. На основі відкритих правил SRD, якщо зазначено в джерелі. Текст адаптовано українською для довідника.</p>
-          </section>
+          <footer id="race-source" className="race-attribution">Джерело: {entry.source.title}</footer>
         ) : (
           <section className="detail-v2-source-note">
             <p>Джерело: {entry.source.title}. На основі відкритих правил SRD, якщо зазначено в джерелі. Текст адаптовано українською для довідника.</p>
