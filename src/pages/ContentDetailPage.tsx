@@ -16,6 +16,7 @@ import { QuickScanSection } from '@/features/catalog/components/QuickScanSection
 import { RaceTraitSection } from '@/features/catalog/components/RaceTraitSection';
 import { SubraceSelector } from '@/features/catalog/components/SubraceSelector';
 import { SubclassSelector } from '@/features/catalog/components/SubclassSelector';
+import { SourceFooter } from '@/features/catalog/components/SourceFooter';
 import { sectionSlugForEntity } from '@/features/catalog/api/catalogApi';
 import { useCatalogEntry } from '@/features/catalog/hooks/useCatalogData';
 import type { CatalogEntry, ClassEntry, ItemEntry } from '@/features/catalog/types';
@@ -27,6 +28,7 @@ import {
   itemIconForType,
   registryIconForLabel,
 } from '@/features/catalog/utils/codexIcons';
+import { formatValueSafely, isRecord, isUsefulValue, referenceLevel, sourceRuleText } from '@/features/catalog/utils/detailContent';
 import type { EntityType } from '@/types/content';
 
 type ContentDetailPageProps = {
@@ -117,6 +119,16 @@ function mainInfoBlocks(entry: CatalogEntry) {
     addInfo(blocks, 'Рідкість', entry.rarity);
     addInfo(blocks, 'Вартість', entry.price);
     addInfo(blocks, 'Вага', entry.weight);
+    addInfo(blocks, 'Шкода', entry.damage);
+    addInfo(blocks, 'Тип шкоди', entry.damage_type);
+    addInfo(blocks, 'Клас захисту', entry.armor_class);
+    addInfo(blocks, 'Дальність', entry.range);
+    const versatileMatch = entry.full_description_markdown?.match(/універсальн\w*\s+([^\s.,;]+)/i);
+    const propertyNames = referenceCards(entry.properties, 'Властивість')
+      .map((property) => property.title)
+      .filter((title) => title !== 'Властивість');
+    if (versatileMatch) propertyNames.unshift(`Універсальна ${versatileMatch[1]}`);
+    addInfo(blocks, 'Властивості', Array.from(new Set(propertyNames)).join(', '));
     blocks.push({ label: 'Магічний предмет', value: booleanLabel(entry.is_magical) });
     blocks.push({ label: 'Налаштування', value: booleanLabel(entry.requires_attunement) });
     addInfo(blocks, 'Вимоги', entry.required_strength ? `Сила ${entry.required_strength}` : null);
@@ -245,32 +257,8 @@ function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
   return null;
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
 function safeText(value: unknown): string | null {
-  if (value === null || value === undefined || value === '') return null;
-  if (typeof value === 'boolean') return value ? 'Так' : 'Ні';
-  if (Array.isArray(value)) {
-    const parts = value.map(safeText).filter((part): part is string => Boolean(part));
-    return Array.from(new Set(parts)).join(', ') || null;
-  }
-  if (isRecord(value)) {
-    const parts = Object.values(value).map(safeText).filter((part): part is string => Boolean(part));
-    return Array.from(new Set(parts)).join(', ') || null;
-  }
-  const text = String(value).trim();
-  if (!text || text === '[object Object]' || text === 'object Object') return null;
-  return text.replace(/\bdisadvantage\b/gi, 'Невдача').replace(/\badvantage\b/gi, 'Перевага');
-}
-
-function preciseDescription(value?: string) {
-  if (!value?.trim()) return 'Опис не вказано у доступному джерелі.';
-  if (/обмежена кількість разів|залежить від рівня|може давати|відповідно до правил|за правилами класу|корисно в бою|підтримує роль|тактичний ризик|допомагає персонажу|посилює персонажа|робить героя сильнішим/i.test(value)) {
-    return 'Опис не вказано у доступному джерелі.';
-  }
-  return safeText(value) ?? 'Опис не вказано у доступному джерелі.';
+  return formatValueSafely(value);
 }
 
 function choiceText(value: unknown) {
@@ -288,10 +276,9 @@ function normalizeClassFeatures(entry: ClassEntry) {
     const mechanicalEffect = card.rows.find((row) => row.label === 'Механічний ефект')?.value;
     return {
       ...card,
-      description: preciseDescription(card.description ?? mechanicalEffect),
+      description: sourceRuleText(card.description ?? mechanicalEffect),
       rows: card.rows.filter((row) => row.label !== 'Механічний ефект').map((row) => {
         if (row.label === 'Використання' && /^(бонусна дія|дія|реакція)$/i.test(row.value)) return { ...row, label: 'Дія' };
-        if (/обмежена кількість|залежить від рівня|за правилами/i.test(row.value)) return { ...row, value: 'Не вказано у доступному джерелі' };
         return { ...row, value: safeText(row.value) ?? 'Не вказано' };
       }).sort((a, b) => (a.label === 'Рівень' ? -1 : b.label === 'Рівень' ? 1 : 0)),
     };
@@ -343,7 +330,7 @@ function itemPropertyData(entry: ItemEntry) {
   const normalizedCards = cards
     .filter((card) => !(versatileMatch && /універсаль/i.test(card.title)))
     .map((card) => card.description || card.rows.some((row) => row.value !== 'Так')
-      ? { ...card, description: card.description ? preciseDescription(card.description) : undefined, rows: card.rows.map((row) => ({ ...row, value: safeText(row.value) ?? 'Не вказано' })) }
+      ? { ...card, description: card.description ? sourceRuleText(card.description) : undefined, rows: card.rows.map((row) => ({ ...row, value: safeText(row.value) ?? 'Не вказано' })) }
       : { ...card, description: 'Точне значення не вказано у доступному джерелі.', rows: [] });
   const allCards = [...coreCard, ...normalizedCards];
   const variants = allCards.filter((card) => /варіант|покращ|\+\d/i.test(card.title));
@@ -379,16 +366,12 @@ function descriptionWithoutHeading(markdown: string | null, title: string, lead?
   }).join('\n').trim() || null;
 }
 
-function SourceFooter({ title, id }: { title?: string; id: string }) {
-  if (!title) return null;
-  return <footer id={id} className="codex-source-footer">Джерело: {title}</footer>;
-}
-
 function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ClassEntry; imageUrl: string; fallbackImageUrl: string }) {
   const explicitFeatures = normalizeClassFeatures(entry);
-  const existingFeatureNames = new Set(explicitFeatures.map((feature) => feature.title.toLowerCase()));
-  const features = [...explicitFeatures, ...progressionFeatureCards(entry.class_progression).filter((feature) => !existingFeatureNames.has(feature.title.toLowerCase()))];
-  const hasSubclasses = hasUsefulValue(entry.subclasses);
+  const existingFeatureKeys = new Set(explicitFeatures.map((feature) => `${feature.title.toLowerCase()}|${referenceLevel(feature)}`));
+  const features = [...explicitFeatures, ...progressionFeatureCards(entry.class_progression)
+    .filter((feature) => !existingFeatureKeys.has(`${feature.title.toLowerCase()}|${referenceLevel(feature)}`))];
+  const hasSubclasses = isUsefulValue(entry.subclasses);
   const navigation = [
     { href: '#class-passport', label: 'Паспорт класу', number: 1 },
     { href: '#class-progression', label: 'Таблиця прогресії', number: 2 },
@@ -443,13 +426,6 @@ function ItemDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ItemE
       <SourceFooter id="item-source" title={entry.source?.title} />
     </DetailLayout>
   );
-}
-
-function hasUsefulValue(value: unknown): boolean {
-  if (value === null || value === undefined || value === '') return false;
-  if (Array.isArray(value)) return value.some(hasUsefulValue);
-  if (typeof value === 'object') return Object.values(value as Record<string, unknown>).some(hasUsefulValue);
-  return true;
 }
 
 function splitRaceDescription(markdown: string | null, title: string) {
@@ -511,7 +487,7 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
     ...(resistanceRows(entry.race_traits, entry.proficiencies, entry.additional_skills).length > 0
       ? [{ href: '#race-resistances', label: 'Стійкості та переваги', number: 5 }]
       : []),
-    ...(hasUsefulValue(entry.subraces) ? [{ href: '#race-subraces', label: 'Підраси / варіанти', number: 6 }] : []),
+    ...(isUsefulValue(entry.subraces) ? [{ href: '#race-subraces', label: 'Підраси / варіанти', number: 6 }] : []),
     ...(raceDescription?.description ? [{ href: '#race-description', label: 'Опис', number: 7 }] : []),
     ...(entry.source?.title ? [{ href: '#race-source', label: 'Джерело', number: 8 }] : []),
   ];

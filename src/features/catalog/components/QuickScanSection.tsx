@@ -1,4 +1,5 @@
 import type { ReferenceCard } from '../api/detailReference';
+import { createReferenceAnchors } from '../utils/detailContent';
 
 type QuickScanSectionProps = {
   id: string;
@@ -9,10 +10,6 @@ type QuickScanSectionProps = {
   emptyMessage?: string;
 };
 
-function cardId(title: string) {
-  return `feature-${title.toLowerCase().replace(/[^a-zа-яіїєґ0-9]+/gi, '-').replace(/^-|-$/g, '')}`;
-}
-
 export function QuickScanSection({ id, number, title, cards, iconForCard, emptyMessage }: QuickScanSectionProps) {
   if (cards.length === 0 && !emptyMessage) return null;
 
@@ -21,10 +18,10 @@ export function QuickScanSection({ id, number, title, cards, iconForCard, emptyM
       <h2 className="codex-detail-title"><span>{number}.</span> {title}</h2>
       {cards.length > 0 ? (
         <div className="codex-rule-list">
-          {cards.map((card, index) => {
+          {createReferenceAnchors(cards).map(({ card, id: cardId }, index) => {
             const facts = card.rows.filter((row) => row.label !== 'Опис' && row.value !== card.description).slice(0, 3);
             return (
-              <article id={cardId(card.title)} className="codex-rule-card" key={`${card.title}-${index}`}>
+              <article id={cardId} className="codex-rule-card" key={cardId || `${card.title}-${index}`}>
                 <span className="codex-rule-icon" aria-hidden="true">
                   <img className="codex-icon codex-icon--feature" src={iconForCard(card.title)} alt="" />
                 </span>

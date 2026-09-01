@@ -1,5 +1,6 @@
 import type { ReferenceCard } from '../api/detailReference';
 import { CODEX_ICONS } from '../utils/codexIcons';
+import { createReferenceAnchors, formatLabelUk, formatValueSafely, isRecord, referenceLevel } from '../utils/detailContent';
 
 type ProgressionTableProps = { id: string; number: number; value: unknown; features: ReferenceCard[] };
 
@@ -16,29 +17,18 @@ const labels: Record<string, string> = {
 function labelForKey(key: string) {
   if (labels[key]) return labels[key];
   if (/[а-яіїєґ]/i.test(key)) return key.replace(/_/g, ' ');
-  return key
+  const generated = key
     .split('_')
     .map((part) => ({
       count: 'Кількість', die: 'Кістка', known: 'Відомі', attacks: 'Атаки', attack: 'Атака',
       spell: 'Закляття', spells: 'Закляття', level: 'Рівень', resource: 'Ресурс', points: 'Бали',
     }[part] ?? 'Показник'))
     .join(' ');
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function featureCardId(title: string) {
-  return `feature-${title.toLowerCase().replace(/[^a-zа-яіїєґ0-9]+/gi, '-').replace(/^-|-$/g, '')}`;
+  return generated === 'Показник' ? formatLabelUk(key) : generated;
 }
 
 function safeText(value: unknown): string {
-  if (value === null || value === undefined || value === '') return '';
-  if (typeof value === 'boolean') return value ? 'Так' : 'Ні';
-  if (Array.isArray(value)) return Array.from(new Set(value.map(safeText).filter(Boolean))).join(', ');
-  if (isRecord(value)) return Array.from(new Set(Object.values(value).map(safeText).filter(Boolean))).join(', ');
-  return String(value).trim();
+  return formatValueSafely(value) ?? '';
 }
 
 function rowsFrom(value: unknown) {
@@ -84,7 +74,12 @@ export function ProgressionTable({ id, number, value, features }: ProgressionTab
   const bonusKey = keys.includes('proficiency_bonus') ? 'proficiency_bonus' : 'bonus';
   const extraKeys = keys.filter((key) => !['level', 'bonus', 'proficiency_bonus', 'features', 'feature', 'resources'].includes(key));
   const visibleKeys = ['level', bonusKey, 'features', 'resources', ...extraKeys];
-  const featureCardsByTitle = new Map(features.map((feature) => [feature.title.toLowerCase(), feature]));
+  const featureAnchors = createReferenceAnchors(features);
+  const anchorForFeature = (name: string, level: string) => {
+    const normalizedName = name.toLowerCase();
+    return featureAnchors.find(({ card }) => card.title.toLowerCase() === normalizedName && numericLevel(referenceLevel(card))?.toString() === level)?.id
+      ?? featureAnchors.find(({ card }) => card.title.toLowerCase() === normalizedName)?.id;
+  };
 
   return (
     <section id={id} className="detail-v2-panel codex-detail-section">
@@ -101,7 +96,10 @@ export function ProgressionTable({ id, number, value, features }: ProgressionTab
                 const names = key === 'features'
                   ? Array.from(new Set([...sourceFeatureNames, ...(featureNamesByLevel.get(level) ?? [])]))
                   : [];
-                return <td key={key}>{names.length > 0 ? names.map((name) => featureCardsByTitle.has(name.toLowerCase()) ? <a key={name} href={`#${featureCardId(name)}`}>{name}</a> : <span key={name}>{name}</span>) : valueText || '—'}</td>;
+                return <td key={key}>{names.length > 0 ? names.map((name, nameIndex) => {
+                  const anchor = anchorForFeature(name, level);
+                  return anchor ? <a key={`${name}-${nameIndex}`} href={`#${anchor}`}>{name}</a> : <span key={`${name}-${nameIndex}`}>{name}</span>;
+                }) : valueText || '—'}</td>;
               })}</tr>;
             })}</tbody>
           </table>
