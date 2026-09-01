@@ -115,9 +115,11 @@ function detailGroups(record: SubraceRecord): Array<{ title: string; values: str
 
 type SubraceSelectorProps = {
   value: unknown;
+  id?: string;
+  sectionNumber?: number;
 };
 
-export function SubraceSelector({ value }: SubraceSelectorProps) {
+export function SubraceSelector({ value, id, sectionNumber }: SubraceSelectorProps) {
   const subraces = useMemo(() => parseSubraces(value), [value]);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -131,9 +133,9 @@ export function SubraceSelector({ value }: SubraceSelectorProps) {
   const groups = detailGroups(selected.record);
 
   return (
-    <section className="detail-v2-panel subrace-section" aria-labelledby="subrace-selector-title">
+    <section id={id} className={`detail-v2-panel subrace-section${sectionNumber ? ' race-detail-section' : ''}`} aria-labelledby="subrace-selector-title">
       <div className="subrace-section__header">
-        <h3 id="subrace-selector-title">Підраси / варіанти</h3>
+        <h3 id="subrace-selector-title" className={sectionNumber ? 'race-section-title' : undefined}>{sectionNumber ? <span>{sectionNumber}.</span> : null} Підраси / варіанти</h3>
         <p>Базові правила раси залишаються чинними. Нижче показані лише правила вибраної підраси або варіанта.</p>
       </div>
 

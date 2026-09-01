@@ -2,6 +2,8 @@ import type { ReferenceCard } from '../api/detailReference';
 
 type RaceTraitSectionProps = {
   cards: ReferenceCard[];
+  id: string;
+  sectionNumber: number;
 };
 
 type TraitFact = {
@@ -87,12 +89,12 @@ function traitScanLine(card: ReferenceCard, ruleText: string) {
     .slice(0, 3);
 }
 
-export function RaceTraitSection({ cards }: RaceTraitSectionProps) {
+export function RaceTraitSection({ cards, id, sectionNumber }: RaceTraitSectionProps) {
   if (cards.length === 0) return null;
 
   return (
-    <section className="detail-v2-panel race-traits-panel">
-      <h2>Риси раси</h2>
+    <section id={id} className="detail-v2-panel race-traits-panel race-detail-section">
+      <h2 className="race-section-title"><span>{sectionNumber}.</span> Риси раси</h2>
       <div className="race-trait-list">
         {cards.map((card, index) => {
           const effect = card.rows.find((row) => row.label === 'Механічний ефект');

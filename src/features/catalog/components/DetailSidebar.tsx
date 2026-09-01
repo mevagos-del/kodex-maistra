@@ -1,6 +1,12 @@
 import type { ReferenceInfo } from '../api/detailReference';
 import { TagList } from './TagList';
 
+type SidebarNavigationItem = {
+  href: string;
+  label: string;
+  number: number;
+};
+
 type DetailSidebarProps = {
   imageUrl: string;
   imageAlt: string;
@@ -11,6 +17,8 @@ type DetailSidebarProps = {
   tags: string[];
   quickTitle: string;
   quickItems: ReferenceInfo[];
+  badges?: string[];
+  navigation?: SidebarNavigationItem[];
 };
 
 export function DetailSidebar({
@@ -23,6 +31,8 @@ export function DetailSidebar({
   tags,
   quickTitle,
   quickItems,
+  badges = [],
+  navigation = [],
 }: DetailSidebarProps) {
   return (
     <aside className="detail-v2-sidebar">
@@ -30,6 +40,11 @@ export function DetailSidebar({
         <div className="detail-v2-type">{label}</div>
         <h1>{title}</h1>
         {originalTitle ? <div className="detail-v2-original">{originalTitle}</div> : null}
+        {badges.length > 0 ? (
+          <div className="detail-v2-status-list" aria-label="Статус матеріалу">
+            {badges.map((badge) => <span key={badge}>{badge}</span>)}
+          </div>
+        ) : null}
         {description ? <p className="detail-v2-short-description">{description}</p> : null}
 
         <div className="detail-v2-image-wrap">
@@ -42,6 +57,22 @@ export function DetailSidebar({
           </div>
         ) : null}
       </div>
+
+      {navigation.length > 0 ? (
+        <nav className="detail-v2-section-nav" aria-label="Перехід по розділах">
+          <h2>Перехід по розділах</h2>
+          <ol>
+            {navigation.map((item) => (
+              <li key={item.href}>
+                <a href={item.href}>
+                  <span aria-hidden="true">{String(item.number).padStart(2, '0')}</span>
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      ) : null}
 
       {quickItems.length > 0 ? (
         <section className="detail-v2-quick-card">

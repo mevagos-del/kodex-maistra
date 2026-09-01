@@ -141,17 +141,23 @@ function SummarySection({ entry }: { entry: CatalogEntry }) {
   );
 }
 
-function DetailGroupPanel({ title, groups, presentation = 'chips' }: {
+function DetailGroupPanel({ title, groups, presentation = 'chips', id, sectionNumber }: {
   title: string;
   groups: Array<{ title: string; values: string[] }>;
   presentation?: 'chips' | 'rows';
+  id?: string;
+  sectionNumber?: number;
 }) {
   const visibleGroups = groups.filter((group) => group.values.length > 0);
   if (visibleGroups.length === 0) return null;
 
+  const sectionClass = sectionNumber ? ' race-detail-section' : '';
+
   return (
-    <section className={`detail-v2-group-panel detail-v2-group-panel--${presentation}`}>
-      <h3>{title}</h3>
+    <section id={id} className={`detail-v2-group-panel detail-v2-group-panel--${presentation}${sectionClass}`}>
+      {sectionNumber ? (
+        <h2 className="race-section-title"><span>{sectionNumber}.</span> {title}</h2>
+      ) : <h3>{title}</h3>}
       <div className="detail-v2-group-list">
         {visibleGroups.map((group) => (
           <div key={group.title} className="detail-v2-group">
@@ -192,19 +198,23 @@ function mechanicalIndexGroups(rows: Array<{ label: string; value: string }>) {
   }));
 }
 
-function AbilityScoreGrid({ entry }: { entry: Extract<CatalogEntry, { entityType: 'race' }> }) {
+function AbilityScoreGrid({ entry, id, sectionNumber }: {
+  entry: Extract<CatalogEntry, { entityType: 'race' }>;
+  id: string;
+  sectionNumber: number;
+}) {
   const { cells, note } = abilityScoreCells(entry.ability_bonuses);
   const hasVisibleRule = cells.some((cell) => cell.isActive) || Boolean(note);
 
   if (!hasVisibleRule) return null;
 
   return (
-    <section className="detail-v2-panel">
-      <h2>Збільшення характеристик</h2>
+    <section id={id} className="detail-v2-panel race-detail-section">
+      <h2 className="race-section-title"><span>{sectionNumber}.</span> Збільшення характеристик</h2>
       <div className="detail-v2-score-grid">
         {cells.map((cell) => (
           <div key={cell.label} className={cell.isActive ? 'detail-v2-score-cell detail-v2-score-cell-active' : 'detail-v2-score-cell'}>
-            <span>{cell.label}</span>
+            <span title={cell.label}>{({ Сила: 'СИЛ', Спритність: 'СПР', Статура: 'СТАТ', Інтелект: 'ІНТ', Мудрість: 'МУД', Харизма: 'ХАР' } as Record<string, string>)[cell.label] ?? cell.label}</span>
             <strong>{cell.value}</strong>
           </div>
         ))}
@@ -228,12 +238,12 @@ function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
 
     return (
       <>
-        <RaceTraitSection cards={referenceCards(entry.race_traits, 'Риса')} />
+        <RaceTraitSection id="race-traits" sectionNumber={3} cards={referenceCards(entry.race_traits, 'Риса')} />
         <div className="detail-v2-lower-grid">
-          <ProficiencyGroups entry={entry} presentation="rows" />
-          <DetailGroupPanel title="Стійкості та переваги" groups={mechanicalIndexGroups(resistanceInfo)} presentation="rows" />
+          <DetailGroupPanel id="race-proficiencies" sectionNumber={4} title="Володіння та навички" groups={groupedProficiencies(entry)} presentation="rows" />
+          <DetailGroupPanel id="race-resistances" sectionNumber={5} title="Стійкості та переваги" groups={mechanicalIndexGroups(resistanceInfo)} presentation="rows" />
         </div>
-        <SubraceSelector value={entry.subraces} />
+        <SubraceSelector id="race-subraces" sectionNumber={6} value={entry.subraces} />
       </>
     );
   }
@@ -282,6 +292,13 @@ function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
   );
 }
 
+function hasUsefulValue(value: unknown): boolean {
+  if (value === null || value === undefined || value === '') return false;
+  if (Array.isArray(value)) return value.some(hasUsefulValue);
+  if (typeof value === 'object') return Object.values(value as Record<string, unknown>).some(hasUsefulValue);
+  return true;
+}
+
 function splitRaceDescription(markdown: string | null, title: string) {
   if (!markdown?.trim()) return { description: null, creation: null };
   const marker = /^#{1,6}\s+Під час створення персонажа\s*$/im;
@@ -323,9 +340,25 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
   const raceDescription = entry.entityType === 'race'
     ? splitRaceDescription(entry.full_description_markdown, entry.title_ua)
     : null;
+  const raceAbilityRules = entry.entityType === 'race' ? abilityScoreCells(entry.ability_bonuses) : null;
+  const hasRaceAbilityRules = Boolean(raceAbilityRules?.note || raceAbilityRules?.cells.some((cell) => cell.isActive));
+  const raceNavigation = entry.entityType === 'race' ? [
+    { href: '#race-main', label: 'Основні характеристики', number: 1 },
+    ...(hasRaceAbilityRules ? [{ href: '#race-abilities', label: 'Збільшення характеристик', number: 2 }] : []),
+    ...(referenceCards(entry.race_traits, 'Риса').length > 0 ? [{ href: '#race-traits', label: 'Риси раси', number: 3 }] : []),
+    ...(groupedProficiencies(entry).length > 0 ? [{ href: '#race-proficiencies', label: 'Володіння та навички', number: 4 }] : []),
+    ...(resistanceRows(entry.race_traits, entry.proficiencies, entry.additional_skills).length > 0
+      ? [{ href: '#race-resistances', label: 'Стійкості та переваги', number: 5 }]
+      : []),
+    ...(hasUsefulValue(entry.subraces) ? [{ href: '#race-subraces', label: 'Підраси / варіанти', number: 6 }] : []),
+    ...(raceDescription?.description ? [{ href: '#race-description', label: 'Опис', number: 7 }] : []),
+    ...(raceDescription?.creation ? [{ href: '#race-creation', label: 'Під час створення персонажа', number: 8 }] : []),
+    ...(entry.source?.title ? [{ href: '#race-source', label: 'Джерело', number: 9 }] : []),
+  ] : [];
 
   return (
     <DetailLayout
+      variant={entry.entityType === 'race' ? 'race' : undefined}
       sidebar={
         <DetailSidebar
           imageUrl={imageUrl}
@@ -337,23 +370,27 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
           tags={entry.entityType === 'race' ? [] : entry.tags}
           quickTitle={quickTitles[entity]}
           quickItems={entry.entityType === 'race' ? [] : quickSummaryItems(entry)}
+          badges={entry.entityType === 'race' ? [rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)] : []}
+          navigation={raceNavigation}
         />
       }
     >
-      <section className="detail-v2-panel">
-        <h2>{mainSectionTitle(entry)}</h2>
+      <section id={entry.entityType === 'race' ? 'race-main' : undefined} className={`detail-v2-panel${entry.entityType === 'race' ? ' race-detail-section' : ''}`}>
+        {entry.entityType === 'race' ? (
+          <h2 className="race-section-title"><span>1.</span> Основні характеристики</h2>
+        ) : <h2>{mainSectionTitle(entry)}</h2>}
         <MechanicInfoGrid items={infoBlocks} />
       </section>
 
-      {entry.entityType === 'race' ? <AbilityScoreGrid entry={entry} /> : null}
+      {entry.entityType === 'race' ? <AbilityScoreGrid id="race-abilities" sectionNumber={2} entry={entry} /> : null}
 
       {entry.entityType === 'class' ? <SummarySection entry={entry} /> : null}
 
       <RichReferenceBlocks entry={entry} />
 
       {(entry.entityType === 'race' ? raceDescription?.description : entry.full_description_markdown) ? (
-        <section className="detail-v2-description-panel">
-          <h2>Опис</h2>
+        <section id={entry.entityType === 'race' ? 'race-description' : undefined} className={`detail-v2-description-panel${entry.entityType === 'race' ? ' race-detail-section' : ''}`}>
+          {entry.entityType === 'race' ? <h2 className="race-section-title"><span>7.</span> Опис</h2> : <h2>Опис</h2>}
           <div className="markdown-content">
             <ReactMarkdown>{entry.entityType === 'race' ? raceDescription?.description : entry.full_description_markdown}</ReactMarkdown>
           </div>
@@ -361,16 +398,23 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
       ) : null}
 
       {entry.entityType === 'race' && raceDescription?.creation ? (
-        <section className="detail-v2-description-panel detail-v2-creation-panel">
-          <h2>Під час створення персонажа</h2>
+        <section id="race-creation" className="detail-v2-description-panel detail-v2-creation-panel race-detail-section">
+          <h2 className="race-section-title"><span>8.</span> Під час створення персонажа</h2>
           <div className="markdown-content"><ReactMarkdown>{raceDescription.creation}</ReactMarkdown></div>
         </section>
       ) : null}
 
       {entry.source?.title ? (
-        <section className="detail-v2-source-note">
-          <p>Джерело: {entry.source.title}. На основі відкритих правил SRD, якщо зазначено в джерелі. Текст адаптовано українською для довідника.</p>
-        </section>
+        entry.entityType === 'race' ? (
+          <section id="race-source" className="detail-v2-source-note race-detail-section race-source-panel">
+            <h2 className="race-section-title"><span>9.</span> Джерело</h2>
+            <p>{entry.source.title}. На основі відкритих правил SRD, якщо зазначено в джерелі. Текст адаптовано українською для довідника.</p>
+          </section>
+        ) : (
+          <section className="detail-v2-source-note">
+            <p>Джерело: {entry.source.title}. На основі відкритих правил SRD, якщо зазначено в джерелі. Текст адаптовано українською для довідника.</p>
+          </section>
+        )
       ) : null}
     </DetailLayout>
   );
