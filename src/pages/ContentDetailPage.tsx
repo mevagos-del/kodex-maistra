@@ -9,11 +9,13 @@ import {
 import { DetailLayout } from '@/features/catalog/components/DetailLayout';
 import { DetailSidebar } from '@/features/catalog/components/DetailSidebar';
 import { EmptyState } from '@/features/catalog/components/EmptyState';
+import { EquipmentSection } from '@/features/catalog/components/EquipmentSection';
 import { MechanicInfoGrid } from '@/features/catalog/components/MechanicInfoGrid';
 import { ProgressionTable } from '@/features/catalog/components/ProgressionTable';
 import { QuickScanSection } from '@/features/catalog/components/QuickScanSection';
 import { RaceTraitSection } from '@/features/catalog/components/RaceTraitSection';
 import { SubraceSelector } from '@/features/catalog/components/SubraceSelector';
+import { SubclassSelector } from '@/features/catalog/components/SubclassSelector';
 import { sectionSlugForEntity } from '@/features/catalog/api/catalogApi';
 import { useCatalogEntry } from '@/features/catalog/hooks/useCatalogData';
 import type { CatalogEntry, ClassEntry, ItemEntry } from '@/features/catalog/types';
@@ -66,6 +68,13 @@ function addInfo(blocks: Array<{ label: string; value: string }>, label: string,
   if (value) blocks.push({ label, value });
 }
 
+function classSkillSummary(value: unknown) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const record = value as Record<string, unknown>;
+  const count = record.choose ?? record.count ?? record.amount;
+  return typeof count === 'number' || typeof count === 'string' ? `Обрати ${count}` : null;
+}
+
 const raceTermLabels: Record<string, string> = {
   humanoid: 'Гуманоїд', 'гуманоїд': 'Гуманоїд', medium: 'Середній', 'середній': 'Середній',
   small: 'Малий', 'малий': 'Малий', common: 'Спільна', 'спільна': 'Спільна',
@@ -98,6 +107,7 @@ function mainInfoBlocks(entry: CatalogEntry) {
     addInfo(blocks, 'Володіння обладунками', entry.armor_proficiencies.join(', '));
     addInfo(blocks, 'Володіння зброєю', entry.weapon_proficiencies.join(', '));
     addInfo(blocks, 'Володіння інструментами', entry.tool_proficiencies.join(', '));
+    addInfo(blocks, 'Навички', classSkillSummary(entry.skill_choices));
     blocks.push({ label: 'Заклинання', value: booleanLabel(entry.has_spellcasting) });
   }
 
@@ -105,12 +115,11 @@ function mainInfoBlocks(entry: CatalogEntry) {
     addInfo(blocks, 'Тип', entry.item_type);
     addInfo(blocks, 'Категорія', entry.category);
     addInfo(blocks, 'Рідкість', entry.rarity);
-    addInfo(blocks, 'Ціна', entry.price);
+    addInfo(blocks, 'Вартість', entry.price);
     addInfo(blocks, 'Вага', entry.weight);
     blocks.push({ label: 'Магічний предмет', value: booleanLabel(entry.is_magical) });
     blocks.push({ label: 'Налаштування', value: booleanLabel(entry.requires_attunement) });
     addInfo(blocks, 'Вимоги', entry.required_strength ? `Сила ${entry.required_strength}` : null);
-    addInfo(blocks, 'Кількість', entry.quantity);
   }
 
   return blocks;
@@ -252,7 +261,16 @@ function safeText(value: unknown): string | null {
     return Array.from(new Set(parts)).join(', ') || null;
   }
   const text = String(value).trim();
-  return text && text !== '[object Object]' && text !== 'object Object' ? text : null;
+  if (!text || text === '[object Object]' || text === 'object Object') return null;
+  return text.replace(/\bdisadvantage\b/gi, 'Невдача').replace(/\badvantage\b/gi, 'Перевага');
+}
+
+function preciseDescription(value?: string) {
+  if (!value?.trim()) return 'Опис не вказано у доступному джерелі.';
+  if (/обмежена кількість разів|залежить від рівня|може давати|відповідно до правил|за правилами класу|корисно в бою|підтримує роль|тактичний ризик|допомагає персонажу|посилює персонажа|робить героя сильнішим/i.test(value)) {
+    return 'Опис не вказано у доступному джерелі.';
+  }
+  return safeText(value) ?? 'Опис не вказано у доступному джерелі.';
 }
 
 function choiceText(value: unknown) {
@@ -270,12 +288,12 @@ function normalizeClassFeatures(entry: ClassEntry) {
     const mechanicalEffect = card.rows.find((row) => row.label === 'Механічний ефект')?.value;
     return {
       ...card,
-      description: card.description ?? mechanicalEffect,
+      description: preciseDescription(card.description ?? mechanicalEffect),
       rows: card.rows.filter((row) => row.label !== 'Механічний ефект').map((row) => {
-      if (row.label === 'Використання' && /^(бонусна дія|дія|реакція)$/i.test(row.value)) return { ...row, label: 'Дія' };
-      if (/обмежена кількість|залежить від рівня|за правилами/i.test(row.value)) return { ...row, value: 'Не вказано у доступному джерелі' };
-      return row;
-    }),
+        if (row.label === 'Використання' && /^(бонусна дія|дія|реакція)$/i.test(row.value)) return { ...row, label: 'Дія' };
+        if (/обмежена кількість|залежить від рівня|за правилами/i.test(row.value)) return { ...row, value: 'Не вказано у доступному джерелі' };
+        return { ...row, value: safeText(row.value) ?? 'Не вказано' };
+      }).sort((a, b) => (a.label === 'Рівень' ? -1 : b.label === 'Рівень' ? 1 : 0)),
     };
   });
 }
@@ -314,13 +332,20 @@ const itemUsageLabels = new Set(['Використання', 'Тип дії', '�
 
 function itemPropertyData(entry: ItemEntry) {
   const cards = referenceCards(entry.properties, 'Властивість');
+  const versatileMatch = entry.full_description_markdown?.match(/універсальн\w*\s+([^\s.,;]+)/i);
   const coreRows = [
     entry.damage ? { label: 'Шкода', value: [entry.damage, entry.damage_type].filter(Boolean).join(' ') } : null,
     entry.range ? { label: 'Дальність', value: entry.range } : null,
     entry.armor_class ? { label: 'Клас захисту', value: entry.armor_class } : null,
+    versatileMatch ? { label: 'Властивість', value: `універсальна ${versatileMatch[1]}` } : null,
   ].filter((row): row is { label: string; value: string } => Boolean(row));
   const coreCard = coreRows.length > 0 ? [{ title: entry.title_ua, description: entry.short_description ?? undefined, rows: coreRows }] : [];
-  const allCards = [...coreCard, ...cards];
+  const normalizedCards = cards
+    .filter((card) => !(versatileMatch && /універсаль/i.test(card.title)))
+    .map((card) => card.description || card.rows.some((row) => row.value !== 'Так')
+      ? { ...card, description: card.description ? preciseDescription(card.description) : undefined, rows: card.rows.map((row) => ({ ...row, value: safeText(row.value) ?? 'Не вказано' })) }
+      : { ...card, description: 'Точне значення не вказано у доступному джерелі.', rows: [] });
+  const allCards = [...coreCard, ...normalizedCards];
   const variants = allCards.filter((card) => /варіант|покращ|\+\d/i.test(card.title));
   const properties = allCards
     .filter((card) => !variants.includes(card))
@@ -333,7 +358,7 @@ function itemUsageGroups(entry: ItemEntry, propertyRows: Array<{ label: string; 
   const rows = [
     entry.required_strength ? { title: 'Вимоги', values: [`Сила ${entry.required_strength}`] } : null,
     entry.range ? { title: 'Дальність', values: [entry.range] } : null,
-    entry.stealth_disadvantage ? { title: 'Скритність', values: ['Перешкода'] } : null,
+    entry.stealth_disadvantage ? { title: 'Скритність', values: ['Невдача'] } : null,
     entry.quantity ? { title: 'Кількість', values: [entry.quantity] } : null,
     ...propertyRows.map((row) => ({ title: row.label === 'Тип дії' ? 'Активація' : row.label, values: [row.value] })),
   ].filter((row): row is { title: string; values: string[] } => Boolean(row));
@@ -344,7 +369,7 @@ function descriptionWithoutHeading(markdown: string | null, title: string, lead?
   if (!markdown?.trim()) return null;
   const lines = markdown.trim().split(/\r?\n/);
   if (lines[0]?.replace(/^#{1,6}\s+/, '').trim().toLowerCase() === title.trim().toLowerCase()) lines.shift();
-  const technicalLine = /^(кістка хітів|основна характеристика|заклинальна характеристика|ряткидки|шкода|клас захисту|перешкода|вміст вказано)\s*:/i;
+  const technicalLine = /^(кістка хітів|основна характеристика|заклинальна характеристика|ряткидки|шкода|клас захисту|перешкода|вміст вказано)\s*:?/i;
   const normalizedLead = lead?.trim().toLowerCase();
   return lines.filter((line) => {
     const normalizedLine = line.trim().toLowerCase();
@@ -363,18 +388,15 @@ function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: Clas
   const explicitFeatures = normalizeClassFeatures(entry);
   const existingFeatureNames = new Set(explicitFeatures.map((feature) => feature.title.toLowerCase()));
   const features = [...explicitFeatures, ...progressionFeatureCards(entry.class_progression).filter((feature) => !existingFeatureNames.has(feature.title.toLowerCase()))];
-  const equipment = referenceCards(entry.starting_equipment, 'Спорядження');
-  const subclasses = referenceCards(entry.subclasses, 'Підклас');
-  const description = descriptionWithoutHeading(entry.full_description_markdown, entry.title_ua, entry.short_description);
+  const hasSubclasses = hasUsefulValue(entry.subclasses);
   const navigation = [
     { href: '#class-passport', label: 'Паспорт класу', number: 1 },
     { href: '#class-progression', label: 'Таблиця прогресії', number: 2 },
-    ...(features.length ? [{ href: '#class-features', label: 'Уміння класу', number: 3 }] : []),
+    { href: '#class-features', label: 'Уміння класу', number: 3 },
     { href: '#class-proficiencies', label: 'Володіння', number: 4 },
-    ...(equipment.length ? [{ href: '#class-equipment', label: 'Спорядження', number: 5 }] : []),
-    ...(subclasses.length ? [{ href: '#class-subclasses', label: 'Підкласи', number: 6 }] : []),
-    ...(description ? [{ href: '#class-description', label: 'Опис', number: 7 }] : []),
-    ...(entry.source?.title ? [{ href: '#class-source', label: 'Джерело', number: 8 }] : []),
+    { href: '#class-equipment', label: 'Спорядження', number: 5 },
+    ...(hasSubclasses ? [{ href: '#class-subclasses', label: 'Підкласи', number: 6 }] : []),
+    ...(entry.source?.title ? [{ href: '#class-source', label: 'Джерело', number: 7 }] : []),
   ];
 
   return (
@@ -386,9 +408,8 @@ function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: Clas
       <ProgressionTable id="class-progression" number={2} value={entry.class_progression} features={features} />
       <QuickScanSection id="class-features" number={3} title="Уміння класу" cards={features} iconForCard={classFeatureIconForTitle} emptyMessage="Уміння класу не вказано у доступному джерелі." />
       <DetailGroupPanel id="class-proficiencies" sectionNumber={4} title="Володіння" groups={classProficiencyGroups(entry)} presentation="rows" showCodexIcons />
-      <QuickScanSection id="class-equipment" number={5} title="Спорядження" cards={equipment} iconForCard={() => CODEX_ICONS.adventuringGear} />
-      <QuickScanSection id="class-subclasses" number={6} title="Підкласи" cards={subclasses} iconForCard={() => CODEX_ICONS.classes} />
-      {description ? <section id="class-description" className="detail-v2-description-panel codex-detail-section"><h2 className="codex-detail-title"><span>7.</span> Опис</h2><div className="markdown-content"><ReactMarkdown>{description}</ReactMarkdown></div></section> : null}
+      <EquipmentSection id="class-equipment" number={5} value={entry.starting_equipment} />
+      <SubclassSelector id="class-subclasses" number={6} value={entry.subclasses} />
       <SourceFooter id="class-source" title={entry.source?.title} />
     </DetailLayout>
   );

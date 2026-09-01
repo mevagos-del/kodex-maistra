@@ -1,4 +1,5 @@
 import type { ReferenceCard } from '../api/detailReference';
+import { CODEX_ICONS } from '../utils/codexIcons';
 
 type ProgressionTableProps = { id: string; number: number; value: unknown; features: ReferenceCard[] };
 
@@ -50,43 +51,61 @@ function rowsFrom(value: unknown) {
   return [];
 }
 
+function numericLevel(value: unknown) {
+  const match = safeText(value).match(/\d+/);
+  return match ? Number(match[0]) : null;
+}
+
 export function ProgressionTable({ id, number, value, features }: ProgressionTableProps) {
-  const rows = rowsFrom(value);
+  const sourceRows = rowsFrom(value);
+  const rowsByLevel = new Map<number, Record<string, unknown>>();
+  for (const row of sourceRows) {
+    const level = numericLevel(row.level);
+    if (level && level >= 1 && level <= 20) rowsByLevel.set(level, { ...(rowsByLevel.get(level) ?? {}), ...row, level });
+  }
+  const rows = Array.from({ length: 20 }, (_, index) => rowsByLevel.get(index + 1) ?? { level: index + 1 });
   const featureNamesByLevel = new Map<string, string[]>();
   for (const feature of features) {
     const level = feature.rows.find((row) => row.label === 'Рівень')?.value ?? '';
-    if (level) featureNamesByLevel.set(level, [...(featureNamesByLevel.get(level) ?? []), feature.title]);
+    const normalizedLevel = numericLevel(level)?.toString() ?? '';
+    if (normalizedLevel) featureNamesByLevel.set(normalizedLevel, [...(featureNamesByLevel.get(normalizedLevel) ?? []), feature.title]);
   }
 
-  const keys = Array.from(new Set(rows.flatMap((row) => Object.keys(row))))
-    .filter((key) => rows.some((row) => safeText(row[key])))
+  const excludedKeys = new Set(['name', 'title', 'description', 'text', 'note', 'mechanical_effect', 'effect', 'usage', 'action_type', 'recovery', 'limitation']);
+  const keys = Array.from(new Set(sourceRows.flatMap((row) => Object.keys(row))))
+    .filter((key) => !excludedKeys.has(key))
+    .filter((key) => sourceRows.some((row) => safeText(row[key])))
     .sort((a, b) => {
       const order = ['level', 'bonus', 'proficiency_bonus', 'features', 'feature'];
       const ai = order.indexOf(a);
       const bi = order.indexOf(b);
       return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
     });
-  const hasFeatureColumn = keys.some((key) => key === 'features' || key === 'feature');
-  const visibleKeys = hasFeatureColumn ? keys : [...keys, 'features'];
+  const bonusKey = keys.includes('proficiency_bonus') ? 'proficiency_bonus' : 'bonus';
+  const extraKeys = keys.filter((key) => !['level', 'bonus', 'proficiency_bonus', 'features', 'feature', 'resources'].includes(key));
+  const visibleKeys = ['level', bonusKey, 'features', 'resources', ...extraKeys];
+  const featureCardsByTitle = new Map(features.map((feature) => [feature.title.toLowerCase(), feature]));
 
   return (
     <section id={id} className="detail-v2-panel codex-detail-section">
-      <h2 className="codex-detail-title"><span>{number}.</span> Таблиця прогресії</h2>
-      {rows.length === 0 ? <p className="codex-empty-note">Таблицю прогресії не вказано у доступному джерелі.</p> : (
-        <div className="codex-progression-wrap">
+      <h2 className="codex-detail-title"><img className="codex-icon codex-title-icon" src={CODEX_ICONS.combatTracker} alt="" /><span>{number}.</span> Таблиця прогресії</h2>
+      <div className="codex-progression-wrap">
           <table className="codex-progression-table">
             <thead><tr>{visibleKeys.map((key) => <th key={key}>{labelForKey(key)}</th>)}</tr></thead>
             <tbody>{rows.map((row, index) => {
               const level = safeText(row.level);
               return <tr key={`${level}-${index}`}>{visibleKeys.map((key) => {
                 const valueText = safeText(row[key]);
-                const names = key === 'features' && !valueText ? featureNamesByLevel.get(level) ?? [] : [];
-                return <td key={key}>{names.length > 0 ? names.map((name) => <a key={name} href={`#${featureCardId(name)}`}>{name}</a>) : valueText || '—'}</td>;
+                const sourceFeatureText = key === 'features' ? safeText(row.features ?? row.feature) : '';
+                const sourceFeatureNames = sourceFeatureText.split(/[,;]+/).map((name) => name.trim()).filter(Boolean);
+                const names = key === 'features'
+                  ? Array.from(new Set([...sourceFeatureNames, ...(featureNamesByLevel.get(level) ?? [])]))
+                  : [];
+                return <td key={key}>{names.length > 0 ? names.map((name) => featureCardsByTitle.has(name.toLowerCase()) ? <a key={name} href={`#${featureCardId(name)}`}>{name}</a> : <span key={name}>{name}</span>) : valueText || '—'}</td>;
               })}</tr>;
             })}</tbody>
           </table>
         </div>
-      )}
     </section>
   );
 }
