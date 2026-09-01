@@ -8,6 +8,7 @@ import type {
   RaceEntry,
   SectionCounts,
 } from '../types';
+import { findOfficialEntry, hasStaticOfficialDataset, listOfficialEntries } from './officialCatalogRepository';
 
 const contentSelect = `
   *,
@@ -82,27 +83,43 @@ export async function fetchPublishedSections(): Promise<PublishedSection[]> {
 }
 
 export async function fetchCatalogList(entity: EntityType): Promise<CatalogEntry[]> {
-  if (!supabase) return [];
+  const officialEntries = listOfficialEntries(entity);
+  if (!supabase) return officialEntries;
 
-  const { data, error } = await supabase
+  let query = supabase
     .from(tableForEntity(entity))
     .select(contentSelect)
     .eq('publication_status', 'published')
     .order('title_ua', { ascending: true });
+  if (hasStaticOfficialDataset(entity)) {
+    query = query.in('content_type', ['homebrew', 'campaign']);
+  }
+  const { data, error } = await query;
 
-  if (error) throw error;
-  return (data ?? []).map((row) => normalizeByEntity(entity, row));
+  if (error) {
+    if (hasStaticOfficialDataset(entity)) return officialEntries;
+    throw error;
+  }
+  const dynamicEntries = (data ?? []).map((row) => normalizeByEntity(entity, row));
+  const officialSlugs = new Set(officialEntries.map((entry) => entry.slug));
+  return [...officialEntries, ...dynamicEntries.filter((entry) => !officialSlugs.has(entry.slug))]
+    .sort((a, b) => a.title_ua.localeCompare(b.title_ua, 'uk'));
 }
 
 export async function fetchCatalogEntryBySlug(entity: EntityType, slug: string): Promise<CatalogEntry | null> {
+  const officialEntry = findOfficialEntry(entity, slug);
+  if (officialEntry) return officialEntry;
   if (!supabase) return null;
 
-  const { data, error } = await supabase
+  let query = supabase
     .from(tableForEntity(entity))
     .select(contentSelect)
     .eq('publication_status', 'published')
-    .eq('slug', slug)
-    .maybeSingle();
+    .eq('slug', slug);
+  if (hasStaticOfficialDataset(entity)) {
+    query = query.in('content_type', ['homebrew', 'campaign']);
+  }
+  const { data, error } = await query.maybeSingle();
 
   if (error) throw error;
   return data ? normalizeByEntity(entity, data) : null;
@@ -133,42 +150,32 @@ export async function fetchItemBySlug(slug: string) {
 }
 
 export async function fetchRecentlyAddedMaterials(limit = 6): Promise<CatalogEntry[]> {
-  if (!supabase) return [];
-
   const [races, classes, items] = await Promise.all([
-    supabase.from('races').select(contentSelect).eq('publication_status', 'published').order('created_at', { ascending: false }).limit(limit),
-    supabase.from('classes').select(contentSelect).eq('publication_status', 'published').order('created_at', { ascending: false }).limit(limit),
-    supabase.from('items').select(contentSelect).eq('publication_status', 'published').order('created_at', { ascending: false }).limit(limit),
+    fetchCatalogList('race'),
+    fetchCatalogList('class'),
+    fetchCatalogList('item'),
   ]);
 
-  const firstError = races.error ?? classes.error ?? items.error;
-  if (firstError) throw firstError;
-
   return [
-    ...(races.data ?? []).map(normalizeRace),
-    ...(classes.data ?? []).map(normalizeClass),
-    ...(items.data ?? []).map(normalizeItem),
+    ...races,
+    ...classes,
+    ...items,
   ]
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     .slice(0, limit);
 }
 
 export async function countPublishedMaterials(): Promise<SectionCounts> {
-  if (!supabase) return { races: 0, classes: 0, items: 0 };
-
   const [races, classes, items] = await Promise.all([
-    supabase.from('races').select('id', { count: 'exact', head: true }).eq('publication_status', 'published'),
-    supabase.from('classes').select('id', { count: 'exact', head: true }).eq('publication_status', 'published'),
-    supabase.from('items').select('id', { count: 'exact', head: true }).eq('publication_status', 'published'),
+    fetchCatalogList('race'),
+    fetchCatalogList('class'),
+    fetchCatalogList('item'),
   ]);
 
-  const firstError = races.error ?? classes.error ?? items.error;
-  if (firstError) throw firstError;
-
   return {
-    races: races.count ?? 0,
-    classes: classes.count ?? 0,
-    items: items.count ?? 0,
+    races: races.length,
+    classes: classes.length,
+    items: items.length,
   };
 }
 

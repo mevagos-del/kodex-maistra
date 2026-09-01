@@ -10,7 +10,10 @@ const labels: Record<string, string> = {
   spell_slots: 'Комірки заклять', known_spells: 'Відомі закляття', spells_known: 'Відомі закляття',
   subclass: 'Підклас', extra_attack: 'Додаткова атака',
   rage: 'Лють', rages: 'Лють', uses: 'Використання', action_surge: 'Сплеск дії',
-  second_wind: 'Друге дихання', cantrips_known: 'Відомі замовляння', prepared_spells: 'Підготовлені закляття',
+  rage_damage: 'Шкода люті', weapon_mastery: 'Майстерність зброї',
+  second_wind: 'Друге дихання', cantrips: 'Замовляння', cantrips_known: 'Відомі замовляння', prepared_spells: 'Підготовлені закляття',
+  slot_1: '1 рів.', slot_2: '2 рів.', slot_3: '3 рів.', slot_4: '4 рів.', slot_5: '5 рів.',
+  slot_6: '6 рів.', slot_7: '7 рів.', slot_8: '8 рів.', slot_9: '9 рів.',
   class_resource: 'Ресурс класу', resource_die: 'Кістка ресурсу',
 };
 

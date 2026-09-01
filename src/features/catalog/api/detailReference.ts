@@ -61,6 +61,8 @@ const keyLabels: Record<string, string> = {
   dc_formula: 'СК ряткидка',
   damage: 'Шкода',
   damage_type: 'Тип шкоди',
+  property: 'Властивість',
+  armor_class: 'Клас захисту',
   scaling: 'Масштабування',
   requirement: 'Вимога',
   limitation: 'Обмеження',

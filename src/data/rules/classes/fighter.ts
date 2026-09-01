@@ -1,0 +1,65 @@
+import { MISSING_SOURCE_TEXT, SRD_52_SOURCE } from '../source';
+import type { OfficialClassEntry, OfficialProgressionRow } from '../types';
+import { featuresFromProgression } from './shared';
+
+const progression: OfficialProgressionRow[] = [
+  { level: 1, proficiencyBonus: '+2', features: ['Бойовий стиль', 'Друге дихання', 'Майстерність зброї'], resources: { second_wind: 2, weapon_mastery: 3 } },
+  { level: 2, proficiencyBonus: '+2', features: ['Сплеск дії (1 використання)', 'Тактичний розум'], resources: { second_wind: 2, weapon_mastery: 3 } },
+  { level: 3, proficiencyBonus: '+2', features: ['Підклас воїна'], resources: { second_wind: 2, weapon_mastery: 3 } },
+  { level: 4, proficiencyBonus: '+2', features: ['Збільшення характеристик'], resources: { second_wind: 3, weapon_mastery: 4 } },
+  { level: 5, proficiencyBonus: '+3', features: ['Додаткова атака', 'Тактичне переміщення'], resources: { second_wind: 3, weapon_mastery: 4 } },
+  { level: 6, proficiencyBonus: '+3', features: ['Збільшення характеристик'], resources: { second_wind: 3, weapon_mastery: 4 } },
+  { level: 7, proficiencyBonus: '+3', features: ['Особливість підкласу (7 рівень)'], resources: { second_wind: 3, weapon_mastery: 4 } },
+  { level: 8, proficiencyBonus: '+3', features: ['Збільшення характеристик'], resources: { second_wind: 3, weapon_mastery: 4 } },
+  { level: 9, proficiencyBonus: '+4', features: ['Незламність (1 використання)', 'Тактична майстерність'], resources: { second_wind: 3, weapon_mastery: 4 } },
+  { level: 10, proficiencyBonus: '+4', features: ['Особливість підкласу (10 рівень)'], resources: { second_wind: 4, weapon_mastery: 5 } },
+  { level: 11, proficiencyBonus: '+4', features: ['Дві додаткові атаки'], resources: { second_wind: 4, weapon_mastery: 5 } },
+  { level: 12, proficiencyBonus: '+4', features: ['Збільшення характеристик'], resources: { second_wind: 4, weapon_mastery: 5 } },
+  { level: 13, proficiencyBonus: '+5', features: ['Незламність (2 використання)', 'Вивчені атаки'], resources: { second_wind: 4, weapon_mastery: 5 } },
+  { level: 14, proficiencyBonus: '+5', features: ['Збільшення характеристик'], resources: { second_wind: 4, weapon_mastery: 5 } },
+  { level: 15, proficiencyBonus: '+5', features: ['Особливість підкласу (15 рівень)'], resources: { second_wind: 4, weapon_mastery: 5 } },
+  { level: 16, proficiencyBonus: '+5', features: ['Збільшення характеристик'], resources: { second_wind: 4, weapon_mastery: 6 } },
+  { level: 17, proficiencyBonus: '+6', features: ['Сплеск дії (2 використання)', 'Незламність (3 використання)'], resources: { second_wind: 4, weapon_mastery: 6 } },
+  { level: 18, proficiencyBonus: '+6', features: ['Особливість підкласу (18 рівень)'], resources: { second_wind: 4, weapon_mastery: 6 } },
+  { level: 19, proficiencyBonus: '+6', features: ['Епічний дар'], resources: { second_wind: 4, weapon_mastery: 6 } },
+  { level: 20, proficiencyBonus: '+6', features: ['Три додаткові атаки'], resources: { second_wind: 4, weapon_mastery: 6 } },
+];
+
+export const fighter: OfficialClassEntry = {
+  entity: 'class',
+  slug: 'fighter',
+  nameUk: 'Воїн',
+  nameOriginal: 'Fighter',
+  status: 'official',
+  hitDie: 'd10',
+  primaryAbility: 'Сила або Спритність',
+  savingThrows: ['Сила', 'Статура'],
+  armorProficiencies: ['легкі обладунки', 'середні обладунки', 'важкі обладунки', 'щити'],
+  weaponProficiencies: ['проста зброя', 'військова зброя'],
+  toolProficiencies: [],
+  skillChoices: { choose: 2, from: ['Акробатика', 'Догляд за тваринами', 'Атлетика', 'Історія', 'Проникливість', 'Залякування', 'Переконання', 'Сприйняття', 'Виживання'] },
+  hasSpellcasting: false,
+  progression,
+  features: featuresFromProgression('fighter', progression),
+  startingEquipment: [
+    { title: 'Варіант A', items: ['Кольчуга, дворучний меч, ціп, 8 дротиків, набір дослідника підземель та 4 зм'] },
+    { title: 'Варіант B', items: ['Клепана шкіряна броня, скімітар, короткий меч, довгий лук, 20 стріл, сагайдак, набір дослідника підземель та 11 зм'] },
+    { title: 'Варіант C', items: ['155 зм'] },
+  ],
+  subclasses: [{
+    id: 'fighter-champion',
+    slug: 'champion',
+    nameUk: 'Чемпіон',
+    nameOriginal: 'Champion',
+    chosenAtLevel: 3,
+    features: [
+      { id: 'champion-improved-critical', nameUk: 'Покращений критичний удар', nameOriginal: 'Improved Critical', level: 3, sourceText: MISSING_SOURCE_TEXT, anchorId: 'subclass-champion-improved-critical' },
+      { id: 'champion-remarkable-athlete', nameUk: 'Видатний атлет', nameOriginal: 'Remarkable Athlete', level: 3, sourceText: MISSING_SOURCE_TEXT, anchorId: 'subclass-champion-remarkable-athlete' },
+      { id: 'champion-additional-fighting-style', nameUk: 'Додатковий бойовий стиль', nameOriginal: 'Additional Fighting Style', level: 7, sourceText: MISSING_SOURCE_TEXT, anchorId: 'subclass-champion-additional-fighting-style' },
+      { id: 'champion-heroic-warrior', nameUk: 'Героїчний воїн', nameOriginal: 'Heroic Warrior', level: 10, sourceText: MISSING_SOURCE_TEXT, anchorId: 'subclass-champion-heroic-warrior' },
+      { id: 'champion-superior-critical', nameUk: 'Вищий критичний удар', nameOriginal: 'Superior Critical', level: 15, sourceText: MISSING_SOURCE_TEXT, anchorId: 'subclass-champion-superior-critical' },
+      { id: 'champion-survivor', nameUk: 'Уцілілий', nameOriginal: 'Survivor', level: 18, sourceText: MISSING_SOURCE_TEXT, anchorId: 'subclass-champion-survivor' },
+    ],
+  }],
+  source: SRD_52_SOURCE,
+};
