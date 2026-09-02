@@ -10,7 +10,20 @@ import { human } from './human';
 import { orc } from './orc';
 import { tiefling } from './tiefling';
 
-export const officialRaces: OfficialRaceEntry[] = [
+export const OFFICIAL_2024_RACE_SLUGS = [
+  'aasimar',
+  'dragonborn',
+  'dwarf',
+  'elf',
+  'gnome',
+  'goliath',
+  'halfling',
+  'human',
+  'orc',
+  'tiefling',
+] as const;
+
+const officialRaceBySlug: Record<(typeof OFFICIAL_2024_RACE_SLUGS)[number], OfficialRaceEntry> = {
   aasimar,
   dragonborn,
   dwarf,
@@ -21,4 +34,8 @@ export const officialRaces: OfficialRaceEntry[] = [
   human,
   orc,
   tiefling,
-];
+};
+
+export const officialRaces: OfficialRaceEntry[] = OFFICIAL_2024_RACE_SLUGS.map(
+  (slug) => officialRaceBySlug[slug],
+);
