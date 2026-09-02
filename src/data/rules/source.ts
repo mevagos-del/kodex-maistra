@@ -9,3 +9,11 @@ export const SRD_52_SOURCE: OfficialRuleSource = {
 };
 
 export const MISSING_SOURCE_TEXT = 'Опис не вказано у доступному джерелі.';
+
+export const PHB_2024_SOURCE: OfficialRuleSource = {
+  id: 'phb-2024',
+  title: 'Player’s Handbook 2024',
+  url: 'https://www.dndbeyond.com/sources/dnd/phb-2024',
+  license: 'Офіційне видання Wizards of the Coast',
+  sourceType: 'official',
+};

@@ -21,6 +21,10 @@ type DetailSidebarProps = {
   navigation?: SidebarNavigationItem[];
   fallbackImageUrl?: string;
   variant?: 'race' | 'class' | 'item';
+  hideImage?: boolean;
+  subclasses?: Array<{ name: string; originalName?: string }>;
+  selectedSubclassIndex?: number;
+  onSelectSubclass?: (index: number) => void;
 };
 
 export function DetailSidebar({
@@ -37,6 +41,10 @@ export function DetailSidebar({
   navigation = [],
   fallbackImageUrl,
   variant,
+  hideImage = false,
+  subclasses = [],
+  selectedSubclassIndex = 0,
+  onSelectSubclass,
 }: DetailSidebarProps) {
   const isCodexSidebar = Boolean(variant);
 
@@ -53,7 +61,7 @@ export function DetailSidebar({
         ) : null}
         {description ? <p className="detail-v2-short-description">{description}</p> : null}
 
-        <div className={`detail-v2-image-wrap${isCodexSidebar ? ' codex-portrait-frame' : ''}${variant === 'race' ? ' race-portrait-frame' : ''}`}>
+        {!hideImage ? <div className={`detail-v2-image-wrap${isCodexSidebar ? ' codex-portrait-frame' : ''}${variant === 'race' ? ' race-portrait-frame' : ''}`}>
           <img
             className={isCodexSidebar ? `codex-portrait${variant === 'race' ? ' race-portrait' : ''}` : undefined}
             src={imageUrl}
@@ -66,7 +74,7 @@ export function DetailSidebar({
               image.classList.add('race-portrait--fallback');
             } : undefined}
           />
-        </div>
+        </div> : null}
 
         {tags.length > 0 ? (
           <div className="detail-v2-tags">
@@ -89,6 +97,27 @@ export function DetailSidebar({
             ))}
           </ol>
         </nav>
+      ) : null}
+
+      {subclasses.length > 0 ? (
+        <section className="class-sidebar-subclasses" aria-labelledby="class-sidebar-subclasses-title">
+          <h2 id="class-sidebar-subclasses-title">Підкласи</h2>
+          <div className="class-sidebar-subclass-list" role="tablist" aria-label="Підкласи класу">
+            {subclasses.map((subclass, index) => (
+              <button
+                key={`${subclass.name}-${index}`}
+                type="button"
+                role="tab"
+                aria-selected={selectedSubclassIndex === index}
+                className={selectedSubclassIndex === index ? 'class-sidebar-subclass class-sidebar-subclass--active' : 'class-sidebar-subclass'}
+                onClick={() => onSelectSubclass?.(index)}
+              >
+                <span>{subclass.name}</span>
+                {subclass.originalName ? <small>{subclass.originalName}</small> : null}
+              </button>
+            ))}
+          </div>
+        </section>
       ) : null}
 
       {quickItems.length > 0 ? (

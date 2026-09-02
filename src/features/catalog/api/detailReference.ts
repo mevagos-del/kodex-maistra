@@ -9,6 +9,7 @@ export type ReferenceCard = {
   title: string;
   description?: string;
   rows: ReferenceInfo[];
+  anchorId?: string;
 };
 
 export type GameplaySummary = {
@@ -287,6 +288,7 @@ export function referenceCards(value: unknown, fallbackTitle: string): Reference
           title: titleForRecord(item, `${fallbackTitle} ${index + 1}`),
           description: descriptionForRecord(item),
           rows: rowsForRecord(item),
+          anchorId: cleanText(item.anchor_id) ?? undefined,
         };
       }
 

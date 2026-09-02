@@ -1,6 +1,6 @@
-import { MISSING_SOURCE_TEXT, SRD_52_SOURCE } from '../source';
+import { PHB_2024_SOURCE, SRD_52_SOURCE } from '../source';
 import type { OfficialClassEntry, OfficialProgressionRow } from '../types';
-import { featuresFromProgression } from './shared';
+import { createSubclass, featuresFromProgression } from './shared';
 
 const slotRows = [
   [2, '—', '—', '—', '—', '—', '—', '—', '—'], [3, '—', '—', '—', '—', '—', '—', '—', '—'],
@@ -24,6 +24,26 @@ const featureNames = [
 ];
 const cantrips = [3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
 const prepared = [4, 5, 6, 7, 9, 10, 11, 12, 14, 15, 16, 16, 17, 18, 19, 21, 22, 23, 24, 25];
+
+const descriptions: Record<string, string> = {
+  'Накладання заклять': 'Маєш книгу заклять і можеш накладати підготовлені закляття Чарівника, використовуючи Інтелект як заклинальну характеристику. Кількість підготовлених заклять і комірок кожного рівня вказана в таблиці прогресії.',
+  'Знавець ритуалів': 'Можеш накладати як ритуал будь-яке закляття з позначкою «Ритуал» зі своєї книги заклять; для цього закляття не обов’язково має бути підготовленим.',
+  'Відновлення магії': 'Після короткого відпочинку можеш відновити витрачені комірки заклять із сумарним рівнем не більшим за половину рівня Чарівника, округлену вгору. Жодна відновлена комірка не може бути 6 рівня або вищою. Повторно використовуєш цю здатність після тривалого відпочинку.',
+  'Науковець': 'Обери одну навичку, якою володієш: Арканознавство, Історія, Розслідування, Медицина, Природа або Релігія. Отримуєш Експертизу в обраній навичці.',
+  'Підклас чарівника': 'Обираєш підклас Чарівника. Особливості вибраного підкласу показано окремо в розділі «Підкласи».',
+  'Збільшення характеристик': 'Отримуєш рису «Збільшення характеристик» або іншу рису, вимогам якої відповідаєш.',
+  'Запам’ятовування закляття': 'Після короткого відпочинку можеш вивчити свою книгу заклять і замінити одне підготовлене закляття Чарівника іншим закляттям із книги.',
+  'Майстерність заклять': 'Обери одне закляття Чарівника 1 рівня та одне 2 рівня зі своєї книги заклять із часом накладання «дія». Ці закляття завжди підготовлені, і можеш накладати їх на базовому рівні без витрачання комірки.',
+  'Епічний дар': 'Отримуєш рису Епічного дару або іншу рису, вимогам якої відповідаєш.',
+  'Фірмові закляття': 'Обери два закляття Чарівника 3 рівня зі своєї книги заклять. Вони завжди підготовлені, і кожне з них можеш один раз накласти на 3 рівні без витрачання комірки; відновлюєш обидва використання після короткого або тривалого відпочинку.',
+};
+
+const originalNames: Record<string, string> = {
+  'Накладання заклять': 'Spellcasting', 'Знавець ритуалів': 'Ritual Adept', 'Відновлення магії': 'Arcane Recovery',
+  'Науковець': 'Scholar', 'Підклас чарівника': 'Wizard Subclass', 'Збільшення характеристик': 'Ability Score Improvement',
+  'Запам’ятовування закляття': 'Memorize Spell', 'Майстерність заклять': 'Spell Mastery',
+  'Епічний дар': 'Epic Boon', 'Фірмові закляття': 'Signature Spells',
+};
 
 const progression: OfficialProgressionRow[] = slotRows.map((slots, index) => ({
   level: index + 1,
@@ -51,24 +71,16 @@ export const wizard: OfficialClassEntry = {
   skillChoices: { choose: 2, from: ['Арканознавство', 'Історія', 'Проникливість', 'Розслідування', 'Медицина', 'Природа', 'Релігія'] },
   hasSpellcasting: true,
   progression,
-  features: featuresFromProgression('wizard', progression),
+  features: featuresFromProgression('wizard', progression, descriptions, originalNames),
   startingEquipment: [
     { title: 'Варіант A', items: ['2 кинджали, магічний фокус (бойовий посох), мантія, книга заклять, набір науковця та 5 зм'] },
     { title: 'Варіант B', items: ['55 зм'] },
   ],
-  subclasses: [{
-    id: 'wizard-evoker',
-    slug: 'evoker',
-    nameUk: 'Евокатор',
-    nameOriginal: 'Evoker',
-    chosenAtLevel: 3,
-    features: [
-      { id: 'evoker-evocation-savant', nameUk: 'Знавець евокації', nameOriginal: 'Evocation Savant', level: 3, sourceText: MISSING_SOURCE_TEXT, anchorId: 'subclass-evoker-evocation-savant' },
-      { id: 'evoker-potent-cantrip', nameUk: 'Потужне замовляння', nameOriginal: 'Potent Cantrip', level: 3, sourceText: MISSING_SOURCE_TEXT, anchorId: 'subclass-evoker-potent-cantrip' },
-      { id: 'evoker-sculpt-spells', nameUk: 'Формування заклять', nameOriginal: 'Sculpt Spells', level: 6, sourceText: MISSING_SOURCE_TEXT, anchorId: 'subclass-evoker-sculpt-spells' },
-      { id: 'evoker-empowered-evocation', nameUk: 'Посилена евокація', nameOriginal: 'Empowered Evocation', level: 10, sourceText: MISSING_SOURCE_TEXT, anchorId: 'subclass-evoker-empowered-evocation' },
-      { id: 'evoker-overchannel', nameUk: 'Перенапруження', nameOriginal: 'Overchannel', level: 14, sourceText: MISSING_SOURCE_TEXT, anchorId: 'subclass-evoker-overchannel' },
-    ],
-  }],
+  subclasses: [
+    createSubclass('wizard', 'evoker', 'Евокатор', 'Evoker', [[3, 'Знавець евокації', 'Evocation Savant'], [3, 'Потужне замовляння', 'Potent Cantrip'], [6, 'Формування заклять', 'Sculpt Spells'], [10, 'Посилена евокація', 'Empowered Evocation'], [14, 'Перенапруження', 'Overchannel']], SRD_52_SOURCE),
+    createSubclass('wizard', 'abjurer', 'Аб’юратор', 'Abjurer', [[3, 'Знавець аб’юрації', 'Abjuration Savant'], [3, 'Магічний захист', 'Arcane Ward'], [6, 'Проєктований захист', 'Projected Ward'], [10, 'Руйнівник заклять', 'Spell Breaker'], [14, 'Стійкість до заклять', 'Spell Resistance']], PHB_2024_SOURCE),
+    createSubclass('wizard', 'diviner', 'Віщун', 'Diviner', [[3, 'Знавець віщування', 'Divination Savant'], [3, 'Передвістя', 'Portent'], [6, 'Майстерне віщування', 'Expert Divination'], [10, 'Третє око', 'The Third Eye'], [14, 'Велике передвістя', 'Greater Portent']], PHB_2024_SOURCE),
+    createSubclass('wizard', 'illusionist', 'Ілюзіоніст', 'Illusionist', [[3, 'Знавець ілюзій', 'Illusion Savant'], [3, 'Покращені ілюзії', 'Improved Illusions'], [6, 'Фантазмальні істоти', 'Phantasmal Creatures'], [10, 'Ілюзорне я', 'Illusory Self'], [14, 'Ілюзорна реальність', 'Illusory Reality']], PHB_2024_SOURCE),
+  ],
   source: SRD_52_SOURCE,
 };

@@ -56,10 +56,12 @@ export type OfficialEquipmentGroup = {
 export type OfficialSubclass = {
   id: string;
   slug: string;
+  classSlug: string;
   nameUk: string;
   nameOriginal: string;
   chosenAtLevel: number;
   features: OfficialFeature[];
+  source: OfficialRuleSource;
 };
 
 export type OfficialClassEntry = OfficialCatalogBase & {

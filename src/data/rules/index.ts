@@ -1,6 +1,6 @@
 export { officialClasses } from './classes';
 export { officialItems } from './items';
-export { SRD_52_SOURCE } from './source';
+export { PHB_2024_SOURCE, SRD_52_SOURCE } from './source';
 export type {
   OfficialCatalogEntry,
   OfficialCatalogBase,

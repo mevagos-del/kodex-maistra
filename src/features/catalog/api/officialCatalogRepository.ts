@@ -1,20 +1,20 @@
 import { officialClasses, officialItems } from '@/data/rules';
 import type {
-  OfficialCatalogEntry,
   OfficialClassEntry,
   OfficialFeature,
   OfficialItemEntry,
+  OfficialRuleSource,
 } from '@/data/rules/types';
 import type { EntityType } from '@/types/content';
 import type { CatalogEntry, ClassEntry, ItemEntry } from '../types';
 
 const PUBLISHED_AT = '2025-04-22T00:00:00.000Z';
 
-function sourceSummary(entry: OfficialCatalogEntry) {
+function sourceSummary(source: OfficialRuleSource) {
   return {
-    id: entry.source.id,
-    title: entry.source.title,
-    source_type: entry.source.sourceType,
+    id: source.id,
+    title: source.title,
+    source_type: source.sourceType,
   } as const;
 }
 
@@ -41,7 +41,7 @@ function classToCatalogEntry(entry: OfficialClassEntry): ClassEntry {
     full_description_markdown: null,
     image_url: null,
     source_id: entry.source.id,
-    source: sourceSummary(entry),
+    source: sourceSummary(entry.source),
     tags: ['клас', 'офіційний'],
     publication_status: 'published',
     rules_version: '2024',
@@ -70,6 +70,7 @@ function classToCatalogEntry(entry: OfficialClassEntry): ClassEntry {
       name: subclass.nameUk,
       original_name: subclass.nameOriginal,
       choose_level: subclass.chosenAtLevel,
+      source: sourceSummary(subclass.source),
       features: subclass.features.map(featureRecord),
     })),
     spellcasting: entry.hasSpellcasting ? { ability: entry.primaryAbility } : {},
@@ -88,7 +89,7 @@ function itemToCatalogEntry(entry: OfficialItemEntry): ItemEntry {
     full_description_markdown: entry.sourceText ?? null,
     image_url: null,
     source_id: entry.source.id,
-    source: sourceSummary(entry),
+    source: sourceSummary(entry.source),
     tags: ['предмет', 'офіційний'],
     publication_status: 'published',
     rules_version: '2024',

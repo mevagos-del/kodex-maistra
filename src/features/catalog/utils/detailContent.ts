@@ -62,7 +62,7 @@ export function referenceLevel(card: ReferenceCard) {
 export function createReferenceAnchors(cards: ReferenceCard[], prefix = 'feature') {
   const counts = new Map<string, number>();
   return cards.map((card) => {
-    const base = `${prefix}-${slugPart(card.title)}${referenceLevel(card) ? `-level-${slugPart(referenceLevel(card))}` : ''}`;
+    const base = card.anchorId ?? `${prefix}-${slugPart(card.title)}${referenceLevel(card) ? `-level-${slugPart(referenceLevel(card))}` : ''}`;
     const occurrence = (counts.get(base) ?? 0) + 1;
     counts.set(base, occurrence);
     return { card, id: occurrence === 1 ? base : `${base}-${occurrence}` };

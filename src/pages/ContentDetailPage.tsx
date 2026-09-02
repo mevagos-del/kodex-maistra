@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Link, useParams } from 'react-router-dom';
 import {
@@ -29,6 +30,7 @@ import {
   registryIconForLabel,
 } from '@/features/catalog/utils/codexIcons';
 import { formatValueSafely, isRecord, isUsefulValue, referenceLevel, sourceRuleText } from '@/features/catalog/utils/detailContent';
+import { parseSubclasses } from '@/features/catalog/utils/subclassData';
 import type { EntityType } from '@/types/content';
 
 type ContentDetailPageProps = {
@@ -372,6 +374,8 @@ function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: Clas
   const features = [...explicitFeatures, ...progressionFeatureCards(entry.class_progression)
     .filter((feature) => !existingFeatureKeys.has(`${feature.title.toLowerCase()}|${referenceLevel(feature)}`))];
   const hasSubclasses = isUsefulValue(entry.subclasses);
+  const subclasses = parseSubclasses(entry.subclasses);
+  const [selectedSubclassIndex, setSelectedSubclassIndex] = useState(0);
   const navigation = [
     { href: '#class-passport', label: 'Паспорт класу', number: 1 },
     { href: '#class-progression', label: 'Таблиця прогресії', number: 2 },
@@ -383,7 +387,7 @@ function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: Clas
   ];
 
   return (
-    <DetailLayout variant="class" sidebar={<DetailSidebar variant="class" imageUrl={imageUrl} imageAlt={entry.title_ua} fallbackImageUrl={fallbackImageUrl} label="Клас" title={entry.title_ua} originalTitle={entry.title_original} description={null} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} />}>
+    <DetailLayout variant="class" sidebar={<DetailSidebar variant="class" imageUrl={imageUrl} imageAlt={entry.title_ua} fallbackImageUrl={fallbackImageUrl} hideImage label="Клас" title={entry.title_ua} originalTitle={entry.title_original} description={null} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} subclasses={subclasses} selectedSubclassIndex={selectedSubclassIndex} onSelectSubclass={setSelectedSubclassIndex} />}>
       <section id="class-passport" className="detail-v2-panel codex-detail-section">
         <h2 className="codex-detail-title"><span>1.</span> Паспорт класу</h2>
         <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="class" />
@@ -392,7 +396,7 @@ function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: Clas
       <QuickScanSection id="class-features" number={3} title="Уміння класу" cards={features} iconForCard={classFeatureIconForTitle} emptyMessage="Уміння класу не вказано у доступному джерелі." />
       <DetailGroupPanel id="class-proficiencies" sectionNumber={4} title="Володіння" groups={classProficiencyGroups(entry)} presentation="rows" showCodexIcons />
       <EquipmentSection id="class-equipment" number={5} value={entry.starting_equipment} />
-      <SubclassSelector id="class-subclasses" number={6} value={entry.subclasses} />
+      <SubclassSelector id="class-subclasses" number={6} value={entry.subclasses} selectedIndex={selectedSubclassIndex} onSelectedIndexChange={setSelectedSubclassIndex} showTabs={false} />
       <SourceFooter id="class-source" title={entry.source?.title} />
     </DetailLayout>
   );
