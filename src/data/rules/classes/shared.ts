@@ -13,6 +13,7 @@ export function featuresFromProgression(
 ): OfficialFeature[] {
   const seen = new Set<string>();
   return progression.flatMap((row) => row.features.flatMap((name) => {
+    if (/^(особливість підкласу|subclass feature|підкласова особливість)/i.test(name.trim())) return [];
     const key = name.toLowerCase();
     if (seen.has(key)) return [];
     seen.add(key);
@@ -35,6 +36,7 @@ export function createSubclass(
   nameOriginal: string,
   levels: Array<[number, string, string]>,
   source: OfficialRuleSource,
+  descriptions: Record<string, string> = {},
 ): OfficialSubclass {
   return {
     id: `${classSlug}-${slugValue}`,
@@ -49,7 +51,7 @@ export function createSubclass(
       nameUk: featureNameUk,
       nameOriginal: featureNameOriginal,
       level,
-      sourceText: MISSING_SOURCE_TEXT,
+      sourceText: descriptions[featureNameUk] ?? MISSING_SOURCE_TEXT,
       anchorId: `subclass-${classSlug}-${slugValue}-${slug(featureNameOriginal)}`,
       scanLine: { level },
     })),

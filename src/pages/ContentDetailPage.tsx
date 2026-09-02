@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Link, useParams } from 'react-router-dom';
 import {
@@ -278,6 +278,7 @@ function normalizeClassFeatures(entry: ClassEntry) {
     const mechanicalEffect = card.rows.find((row) => row.label === 'Механічний ефект')?.value;
     return {
       ...card,
+      kind: 'base' as const,
       description: sourceRuleText(card.description ?? mechanicalEffect),
       rows: card.rows.filter((row) => row.label !== 'Механічний ефект').map((row) => {
         if (row.label === 'Використання' && /^(бонусна дія|дія|реакція)$/i.test(row.value)) return { ...row, label: 'Дія' };
@@ -299,10 +300,11 @@ function progressionFeatureCards(value: unknown) {
     const featureText = safeText(row.features ?? row.feature);
     if (!featureText) return [];
     const level = safeText(row.level);
-    return featureText.split(/[,;]+/).map((title) => title.trim()).filter(Boolean).map((title) => ({
+    return featureText.split(/[,;]+/).map((title) => title.trim()).filter((title) => title && !/^(особливість підкласу|subclass feature|підкласова особливість)/i.test(title)).map((title) => ({
       title,
       description: 'Точний опис уміння не вказано у доступному джерелі.',
       rows: level ? [{ label: 'Рівень', value: level }] : [],
+      kind: 'base' as const,
     }));
   });
 }
@@ -371,11 +373,37 @@ function descriptionWithoutHeading(markdown: string | null, title: string, lead?
 function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ClassEntry; imageUrl: string; fallbackImageUrl: string }) {
   const explicitFeatures = normalizeClassFeatures(entry);
   const existingFeatureKeys = new Set(explicitFeatures.map((feature) => `${feature.title.toLowerCase()}|${referenceLevel(feature)}`));
-  const features = [...explicitFeatures, ...progressionFeatureCards(entry.class_progression)
+  const baseFeatures = [...explicitFeatures, ...progressionFeatureCards(entry.class_progression)
     .filter((feature) => !existingFeatureKeys.has(`${feature.title.toLowerCase()}|${referenceLevel(feature)}`))];
   const hasSubclasses = isUsefulValue(entry.subclasses);
   const subclasses = parseSubclasses(entry.subclasses);
   const [selectedSubclassIndex, setSelectedSubclassIndex] = useState(0);
+  const [highlightedFeatureAnchor, setHighlightedFeatureAnchor] = useState<string | null>(null);
+  const highlightTimer = useRef<number | null>(null);
+  const selectedSubclass = subclasses[Math.min(selectedSubclassIndex, Math.max(subclasses.length - 1, 0))];
+  const features = [...baseFeatures, ...(selectedSubclass?.features ?? [])].sort((left, right) => {
+    const levelDifference = Number.parseInt(referenceLevel(left), 10) - Number.parseInt(referenceLevel(right), 10);
+    if (Number.isFinite(levelDifference) && levelDifference !== 0) return levelDifference;
+    if (left.kind !== right.kind) return left.kind === 'base' ? -1 : 1;
+    return left.title.localeCompare(right.title, 'uk');
+  });
+
+  useEffect(() => () => {
+    if (highlightTimer.current !== null) window.clearTimeout(highlightTimer.current);
+  }, []);
+
+  const navigateToFeature = (anchor: string) => {
+    if (highlightTimer.current !== null) window.clearTimeout(highlightTimer.current);
+    window.history.replaceState(null, '', `#${anchor}`);
+    setHighlightedFeatureAnchor(anchor);
+    window.requestAnimationFrame(() => {
+      document.getElementById(anchor)?.scrollIntoView({
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    });
+    highlightTimer.current = window.setTimeout(() => setHighlightedFeatureAnchor(null), 3200);
+  };
   const navigation = [
     { href: '#class-passport', label: 'Паспорт класу', number: 1 },
     { href: '#class-progression', label: 'Таблиця прогресії', number: 2 },
@@ -392,11 +420,11 @@ function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: Clas
         <h2 className="codex-detail-title"><span>1.</span> Паспорт класу</h2>
         <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="class" />
       </section>
-      <ProgressionTable id="class-progression" number={2} value={entry.class_progression} features={features} />
-      <QuickScanSection id="class-features" number={3} title="Уміння класу" cards={features} iconForCard={classFeatureIconForTitle} emptyMessage="Уміння класу не вказано у доступному джерелі." />
+      <ProgressionTable id="class-progression" number={2} value={entry.class_progression} features={features} onFeatureNavigate={navigateToFeature} />
+      <QuickScanSection id="class-features" number={3} title="Уміння класу" cards={features} iconForCard={classFeatureIconForTitle} emptyMessage="Уміння класу не вказано у доступному джерелі." groupByLevel highlightedAnchor={highlightedFeatureAnchor} />
       <DetailGroupPanel id="class-proficiencies" sectionNumber={4} title="Володіння" groups={classProficiencyGroups(entry)} presentation="rows" showCodexIcons />
       <EquipmentSection id="class-equipment" number={5} value={entry.starting_equipment} />
-      <SubclassSelector id="class-subclasses" number={6} value={entry.subclasses} selectedIndex={selectedSubclassIndex} onSelectedIndexChange={setSelectedSubclassIndex} showTabs={false} />
+      <SubclassSelector id="class-subclasses" number={6} value={entry.subclasses} selectedIndex={selectedSubclassIndex} onSelectedIndexChange={setSelectedSubclassIndex} showTabs={false} showFeatures={false} />
       <SourceFooter id="class-source" title={entry.source?.title} />
     </DetailLayout>
   );

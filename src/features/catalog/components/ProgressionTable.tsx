@@ -2,7 +2,7 @@ import type { ReferenceCard } from '../api/detailReference';
 import { CODEX_ICONS } from '../utils/codexIcons';
 import { createReferenceAnchors, formatLabelUk, formatValueSafely, isRecord, referenceLevel } from '../utils/detailContent';
 
-type ProgressionTableProps = { id: string; number: number; value: unknown; features: ReferenceCard[] };
+type ProgressionTableProps = { id: string; number: number; value: unknown; features: ReferenceCard[]; onFeatureNavigate?: (anchor: string) => void };
 
 const labels: Record<string, string> = {
   level: 'Рівень', bonus: 'Бонус майстерності', proficiency_bonus: 'Бонус майстерності',
@@ -49,7 +49,7 @@ function numericLevel(value: unknown) {
   return match ? Number(match[0]) : null;
 }
 
-export function ProgressionTable({ id, number, value, features }: ProgressionTableProps) {
+export function ProgressionTable({ id, number, value, features, onFeatureNavigate }: ProgressionTableProps) {
   const sourceRows = rowsFrom(value);
   const rowsByLevel = new Map<number, Record<string, unknown>>();
   for (const row of sourceRows) {
@@ -78,6 +78,7 @@ export function ProgressionTable({ id, number, value, features }: ProgressionTab
   const extraKeys = keys.filter((key) => !['level', 'bonus', 'proficiency_bonus', 'features', 'feature', 'resources'].includes(key));
   const visibleKeys = ['level', bonusKey, 'features', 'resources', ...extraKeys];
   const featureAnchors = createReferenceAnchors(features);
+  const featureByAnchor = new Map(featureAnchors.map((entry) => [entry.id, entry.card]));
   const anchorForFeature = (name: string, level: string) => {
     const normalizedName = name.toLowerCase();
     return featureAnchors.find(({ card }) => card.title.toLowerCase() === normalizedName && numericLevel(referenceLevel(card))?.toString() === level)?.id
@@ -96,12 +97,24 @@ export function ProgressionTable({ id, number, value, features }: ProgressionTab
                 const valueText = safeText(row[key]);
                 const sourceFeatureText = key === 'features' ? safeText(row.features ?? row.feature) : '';
                 const sourceFeatureNames = sourceFeatureText.split(/[,;]+/).map((name) => name.trim()).filter(Boolean);
+                const selectedSubclassFeatures = featureNamesByLevel.get(level)?.filter((name) => {
+                  const anchor = anchorForFeature(name, level);
+                  return anchor ? featureByAnchor.get(anchor)?.kind === 'subclass' : false;
+                }) ?? [];
                 const names = key === 'features'
-                  ? Array.from(new Set([...sourceFeatureNames, ...(featureNamesByLevel.get(level) ?? [])]))
+                  ? Array.from(new Set([
+                      ...sourceFeatureNames.filter((name) => selectedSubclassFeatures.length === 0 || !/^(особливість підкласу|subclass feature|підкласова особливість)/i.test(name)),
+                      ...(featureNamesByLevel.get(level) ?? []),
+                    ]))
                   : [];
                 return <td key={key}>{names.length > 0 ? names.map((name, nameIndex) => {
                   const anchor = anchorForFeature(name, level);
-                  return anchor ? <a key={`${name}-${nameIndex}`} href={`#${anchor}`}>{name}</a> : <span key={`${name}-${nameIndex}`}>{name}</span>;
+                  const isSubclass = anchor ? featureByAnchor.get(anchor)?.kind === 'subclass' : false;
+                  return anchor ? <a className={isSubclass ? 'codex-progression-feature codex-progression-feature--subclass' : 'codex-progression-feature'} key={`${name}-${nameIndex}`} href={`#${anchor}`} onClick={(event) => {
+                    if (!onFeatureNavigate) return;
+                    event.preventDefault();
+                    onFeatureNavigate(anchor);
+                  }}>{name}{isSubclass ? <small>Підклас</small> : null}</a> : <span key={`${name}-${nameIndex}`}>{name}</span>;
                 }) : valueText || '—'}</td>;
               })}</tr>;
             })}</tbody>

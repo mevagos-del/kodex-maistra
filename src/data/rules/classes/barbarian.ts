@@ -57,6 +57,13 @@ const originalNames: Record<string, string> = {
   'Первісний чемпіон': 'Primal Champion',
 };
 
+const berserkerDescriptions: Record<string, string> = {
+  'Шал': 'Якщо під час Люті використовуєш Безрозсудну атаку, завдаєш додаткової шкоди першій цілі, у яку влучаєш у свій хід атакою, що використовує Силу. Кинь кількість к6, рівну бонусу Шкоди люті, і додай результати; тип цієї шкоди збігається з типом шкоди зброї або беззбройного удару.',
+  'Бездумна лють': 'Поки активна твоя Лють, маєш імунітет до станів Зачарований і Наляканий. Якщо входиш у Лють у будь-якому з цих станів, цей стан на тобі завершується.',
+  'Відплата': 'Коли істота в межах 5 фт від тебе завдає тобі шкоди, можеш Реакцією здійснити проти неї одну атаку ближнього бою зброєю або беззбройний удар.',
+  'Залякувальна присутність': 'Бонусною дією змушуєш кожну вибрану тобою істоту в 30-футовій Еманації від тебе зробити ряткидок Мудрості зі СК 8 + модифікатор Сили + бонус майстерності. У разі провалу істота має стан Наляканий протягом 1 хвилини й повторює ряткидок наприкінці кожного свого ходу, завершуючи ефект у разі успіху. Після використання відновлюєш цю здатність після тривалого відпочинку або витрачаєш одне використання Люті, щоб відновити її без дії.',
+};
+
 export const barbarian: OfficialClassEntry = {
   entity: 'class',
   slug: 'barbarian',
@@ -78,7 +85,7 @@ export const barbarian: OfficialClassEntry = {
     { title: 'Варіант B', items: ['75 зм'] },
   ],
   subclasses: [
-    createSubclass('barbarian', 'berserker', 'Шлях берсерка', 'Path of the Berserker', [[3, 'Шал', 'Frenzy'], [6, 'Бездумна лють', 'Mindless Rage'], [10, 'Відплата', 'Retaliation'], [14, 'Залякувальна присутність', 'Intimidating Presence']], SRD_52_SOURCE),
+    createSubclass('barbarian', 'berserker', 'Шлях берсерка', 'Path of the Berserker', [[3, 'Шал', 'Frenzy'], [6, 'Бездумна лють', 'Mindless Rage'], [10, 'Відплата', 'Retaliation'], [14, 'Залякувальна присутність', 'Intimidating Presence']], SRD_52_SOURCE, berserkerDescriptions),
     createSubclass('barbarian', 'wild-heart', 'Шлях дикого серця', 'Path of the Wild Heart', [[3, 'Промовець із тваринами', 'Animal Speaker'], [3, 'Лють дикої природи', 'Rage of the Wilds'], [6, 'Аспект дикої природи', 'Aspect of the Wilds'], [10, 'Промовець природи', 'Nature Speaker'], [14, 'Сила дикої природи', 'Power of the Wilds']], PHB_2024_SOURCE),
     createSubclass('barbarian', 'world-tree', 'Шлях Світового дерева', 'Path of the World Tree', [[3, 'Життєва сила дерева', 'Vitality of the Tree'], [6, 'Гілки дерева', 'Branches of the Tree'], [10, 'Ударне коріння', 'Battering Roots'], [14, 'Подорож деревом', 'Travel Along the Tree']], PHB_2024_SOURCE),
     createSubclass('barbarian', 'zealot', 'Шлях фанатика', 'Path of the Zealot', [[3, 'Божественна лють', 'Divine Fury'], [3, 'Воїн богів', 'Warrior of the Gods'], [6, 'Фанатичний фокус', 'Fanatical Focus'], [10, 'Фанатична присутність', 'Zealous Presence'], [14, 'Лють богів', 'Rage of the Gods']], PHB_2024_SOURCE),

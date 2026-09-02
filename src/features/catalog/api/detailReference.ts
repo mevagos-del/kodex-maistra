@@ -10,6 +10,8 @@ export type ReferenceCard = {
   description?: string;
   rows: ReferenceInfo[];
   anchorId?: string;
+  kind?: 'base' | 'subclass';
+  subclassName?: string;
 };
 
 export type GameplaySummary = {

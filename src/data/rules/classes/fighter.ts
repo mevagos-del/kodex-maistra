@@ -65,6 +65,15 @@ const originalNames: Record<string, string> = {
   'Незламність (3 використання)': 'Indomitable (Three Uses)', 'Епічний дар': 'Epic Boon', 'Три додаткові атаки': 'Three Extra Attacks',
 };
 
+const championDescriptions: Record<string, string> = {
+  'Покращений критичний удар': 'Твої кидки атаки зброєю та беззбройними ударами завдають критичного влучання, якщо на к20 випало 19 або 20.',
+  'Видатний атлет': 'Маєш Перевагу на кидки Ініціативи та перевірки Сили (Атлетика). Крім того, відразу після критичного влучання можеш переміститися на відстань до половини своєї Швидкості, не провокуючи атак при нагоді.',
+  'Додатковий бойовий стиль': 'Отримуєш ще одну рису Бойового стилю на свій вибір.',
+  'Героїчний воїн': 'Під час бою, якщо починаєш свій хід без Героїчного натхнення, можеш надати його собі.',
+  'Вищий критичний удар': 'Твої кидки атаки зброєю та беззбройними ударами завдають критичного влучання, якщо на к20 випало 18–20.',
+  'Уцілілий': 'Маєш Перевагу на ряткидки від смерті. Якщо на такій ряткидці випало 18–20, отримуєш перевагу результату 20. На початку кожного свого ходу відновлюєш хіти, рівні 5 + модифікатор Статури, якщо маєш половину або менше максимуму хітів і щонайменше 1 хіт.',
+};
+
 export const fighter: OfficialClassEntry = {
   entity: 'class',
   slug: 'fighter',
@@ -87,7 +96,7 @@ export const fighter: OfficialClassEntry = {
     { title: 'Варіант C', items: ['155 зм'] },
   ],
   subclasses: [
-    createSubclass('fighter', 'champion', 'Чемпіон', 'Champion', [[3, 'Покращений критичний удар', 'Improved Critical'], [3, 'Видатний атлет', 'Remarkable Athlete'], [7, 'Додатковий бойовий стиль', 'Additional Fighting Style'], [10, 'Героїчний воїн', 'Heroic Warrior'], [15, 'Вищий критичний удар', 'Superior Critical'], [18, 'Уцілілий', 'Survivor']], SRD_52_SOURCE),
+    createSubclass('fighter', 'champion', 'Чемпіон', 'Champion', [[3, 'Покращений критичний удар', 'Improved Critical'], [3, 'Видатний атлет', 'Remarkable Athlete'], [7, 'Додатковий бойовий стиль', 'Additional Fighting Style'], [10, 'Героїчний воїн', 'Heroic Warrior'], [15, 'Вищий критичний удар', 'Superior Critical'], [18, 'Уцілілий', 'Survivor']], SRD_52_SOURCE, championDescriptions),
     createSubclass('fighter', 'battle-master', 'Майстер бойових мистецтв', 'Battle Master', [[3, 'Бойова перевага', 'Combat Superiority'], [3, 'Учень війни', 'Student of War'], [7, 'Пізнай свого ворога', 'Know Your Enemy'], [10, 'Покращена бойова перевага', 'Improved Combat Superiority'], [15, 'Невтомний', 'Relentless'], [18, 'Неперевершена бойова перевага', 'Ultimate Combat Superiority']], PHB_2024_SOURCE),
     createSubclass('fighter', 'eldritch-knight', 'Містичний лицар', 'Eldritch Knight', [[3, 'Накладання заклять', 'Spellcasting'], [3, 'Бойовий зв’язок', 'War Bond'], [7, 'Бойова магія', 'War Magic'], [10, 'Містичний удар', 'Eldritch Strike'], [15, 'Містичний ривок', 'Arcane Charge'], [18, 'Покращена бойова магія', 'Improved War Magic']], PHB_2024_SOURCE),
     createSubclass('fighter', 'psi-warrior', 'Псі-воїн', 'Psi Warrior', [[3, 'Псіонічна сила', 'Psionic Power'], [7, 'Телекінетичний адепт', 'Telekinetic Adept'], [10, 'Захищений розум', 'Guarded Mind'], [15, 'Оплот сили', 'Bulwark of Force'], [18, 'Майстер телекінезу', 'Telekinetic Master']], PHB_2024_SOURCE),

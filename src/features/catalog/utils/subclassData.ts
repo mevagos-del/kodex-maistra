@@ -39,6 +39,8 @@ export function parseSubclasses(value: unknown): ParsedSubclass[] {
       const mechanicalEffect = card.rows.find((row) => row.label === 'Механічний ефект')?.value;
       return {
         ...card,
+        kind: 'subclass' as const,
+        subclassName: name,
         description: card.description ?? mechanicalEffect ?? 'Опис не вказано у доступному джерелі.',
         rows: card.rows.filter((row) => row.label !== 'Механічний ефект'),
       };
