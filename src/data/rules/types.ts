@@ -38,6 +38,15 @@ export type OfficialFeature = {
   sourceText: string;
   anchorId: string;
   scanLine?: Record<string, string | number>;
+  options?: OfficialFeatureOption[];
+};
+
+export type OfficialFeatureOption = {
+  id: string;
+  nameUk: string;
+  nameOriginal?: string;
+  sourceText: string;
+  scanLine?: Record<string, string | number>;
 };
 
 export type OfficialProgressionRow = {

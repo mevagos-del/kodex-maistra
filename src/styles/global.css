@@ -108,8 +108,8 @@
 
 .detail-v2-shell--class .codex-identity-sidebar {
   min-width: 0;
-  max-height: none;
-  overflow: visible;
+  max-height: calc(100vh - 106px);
+  overflow: hidden;
 }
 
 .detail-v2-shell--class .codex-identity-card,
@@ -127,7 +127,8 @@
   text-shadow: 0 2px 0 #120904;
 }
 
-.detail-v2-shell--class .codex-identity-card h1 {
+.detail-v2-shell--class .codex-identity-card h1,
+.detail-v2-shell--item .codex-identity-card h1 {
   max-width: 100%;
   min-width: 0;
   font-size: clamp(2rem, 3vw, 3.1rem);
@@ -191,6 +192,9 @@
 
 .class-sidebar-subclasses {
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  flex: 1 1 auto;
+  min-height: 132px;
   gap: 9px;
   padding-top: 14px;
   border-top: 1px solid rgb(203 145 62 / 24%);
@@ -207,8 +211,14 @@
 
 .class-sidebar-subclass-list {
   display: grid;
+  align-content: start;
   gap: 6px;
   min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 3px;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(208 151 70 / 42%) transparent;
 }
 
 .class-sidebar-subclass {
@@ -491,6 +501,52 @@
 .codex-rule-scan dd { margin: 0; color: rgb(226 217 198 / 75%); }
 .codex-empty-note { margin: 0; color: rgb(220 209 188 / 68%); }
 
+.codex-rule-options {
+  margin-top: 12px;
+  border-top: 1px solid rgb(203 145 62 / 20%);
+  padding-top: 10px;
+}
+
+.codex-rule-options summary {
+  width: fit-content;
+  color: #dcb36b;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.codex-rule-options summary span {
+  color: rgb(222 207 178 / 58%);
+  font-size: 0.78em;
+}
+
+.codex-rule-option-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 10px;
+}
+
+.codex-rule-option {
+  min-width: 0;
+  padding: 11px 12px;
+  border: 1px solid rgb(198 139 58 / 24%);
+  border-radius: 9px;
+  background: linear-gradient(180deg, rgb(16 20 25 / 82%), rgb(7 10 14 / 88%));
+}
+
+.codex-rule-option h4 {
+  margin: 0;
+  color: #edd096;
+  font-family: var(--heading-font);
+  font-size: 0.95rem;
+}
+
+.codex-rule-option p {
+  margin: 5px 0 0;
+  color: rgb(236 228 212 / 82%);
+  line-height: 1.5;
+}
+
 .codex-progression-wrap {
   overflow-x: auto;
   border: 1px solid rgb(198 139 58 / 27%);
@@ -507,22 +563,10 @@
 .codex-progression-table a { display: block; color: #e1b76c; font-weight: 750; }
 .codex-progression-table a + a { margin-top: 4px; }
 
-.codex-progression-feature small {
-  display: inline-block;
-  margin-left: 6px;
-  color: rgb(213 200 174 / 54%);
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
 .codex-progression-table .codex-progression-feature--subclass {
   color: #8fc58c;
   text-decoration-color: rgb(88 170 95 / 44%);
 }
-
-.codex-progression-feature--subclass small { color: rgb(132 194 132 / 72%); }
 
 .subclass-integrated-note {
   margin: 0;
@@ -644,6 +688,7 @@
   .detail-v2-shell--class .detail-v2-group,
   .detail-v2-shell--item .detail-v2-group { grid-template-columns: 1fr; gap: 5px; }
   .subclass-panel > header { display: grid; }
+  .codex-rule-option-list { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

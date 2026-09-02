@@ -12,6 +12,7 @@ export type ReferenceCard = {
   anchorId?: string;
   kind?: 'base' | 'subclass';
   subclassName?: string;
+  options?: ReferenceCard[];
 };
 
 export type GameplaySummary = {
@@ -291,6 +292,7 @@ export function referenceCards(value: unknown, fallbackTitle: string): Reference
           description: descriptionForRecord(item),
           rows: rowsForRecord(item),
           anchorId: cleanText(item.anchor_id) ?? undefined,
+          options: referenceCards(item.options ?? item.choices, 'Варіант'),
         };
       }
 

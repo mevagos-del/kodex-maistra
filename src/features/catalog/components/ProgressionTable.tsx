@@ -114,7 +114,7 @@ export function ProgressionTable({ id, number, value, features, onFeatureNavigat
                     if (!onFeatureNavigate) return;
                     event.preventDefault();
                     onFeatureNavigate(anchor);
-                  }}>{name}{isSubclass ? <small>Підклас</small> : null}</a> : <span key={`${name}-${nameIndex}`}>{name}</span>;
+                  }}>{name}</a> : <span key={`${name}-${nameIndex}`}>{name}</span>;
                 }) : valueText || '—'}</td>;
               })}</tr>;
             })}</tbody>

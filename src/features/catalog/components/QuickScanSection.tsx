@@ -54,6 +54,19 @@ export function QuickScanSection({ id, number, title, cards, iconForCard, emptyM
                       {facts.map((fact) => <div key={`${fact.label}-${fact.value}`}><dt>{fact.label}:</dt><dd><RuleText>{fact.value}</RuleText></dd></div>)}
                     </dl>
                   ) : null}
+                  {card.options && card.options.length > 0 ? (
+                    <details className="codex-rule-options">
+                      <summary>Доступні варіанти <span>{card.options.length}</span></summary>
+                      <div className="codex-rule-option-list">
+                        {card.options.map((option) => (
+                          <article className="codex-rule-option" key={option.anchorId ?? option.title}>
+                            <h4>{option.title}</h4>
+                            {option.description ? <p><RuleText>{option.description}</RuleText></p> : null}
+                          </article>
+                        ))}
+                      </div>
+                    </details>
+                  ) : null}
                 </div>
               </article>
             );

@@ -1,5 +1,5 @@
 import { MISSING_SOURCE_TEXT } from '../source';
-import type { OfficialFeature, OfficialProgressionRow, OfficialRuleSource, OfficialSubclass } from '../types';
+import type { OfficialFeature, OfficialFeatureOption, OfficialProgressionRow, OfficialRuleSource, OfficialSubclass } from '../types';
 
 function slug(value: string) {
   return value.toLowerCase().replace(/[^a-zа-яіїєґ0-9]+/gi, '-').replace(/^-|-$/g, '');
@@ -10,6 +10,7 @@ export function featuresFromProgression(
   progression: OfficialProgressionRow[],
   descriptions: Record<string, string> = {},
   originalNames: Record<string, string> = {},
+  options: Record<string, OfficialFeatureOption[]> = {},
 ): OfficialFeature[] {
   const seen = new Set<string>();
   return progression.flatMap((row) => row.features.flatMap((name) => {
@@ -25,6 +26,7 @@ export function featuresFromProgression(
       sourceText: descriptions[name] ?? MISSING_SOURCE_TEXT,
       anchorId: `feature-${slug(name)}-level-${row.level}`,
       scanLine: { level: row.level },
+      options: options[name],
     }];
   }));
 }

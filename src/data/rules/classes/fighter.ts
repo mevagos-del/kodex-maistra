@@ -1,5 +1,5 @@
 import { PHB_2024_SOURCE, SRD_52_SOURCE } from '../source';
-import type { OfficialClassEntry, OfficialProgressionRow } from '../types';
+import type { OfficialClassEntry, OfficialFeatureOption, OfficialProgressionRow } from '../types';
 import { createSubclass, featuresFromProgression } from './shared';
 
 const baseProgression: OfficialProgressionRow[] = [
@@ -65,6 +65,33 @@ const originalNames: Record<string, string> = {
   'Незламність (3 використання)': 'Indomitable (Three Uses)', 'Епічний дар': 'Epic Boon', 'Три додаткові атаки': 'Three Extra Attacks',
 };
 
+const fightingStyleOptions: OfficialFeatureOption[] = [
+  {
+    id: 'fighting-style-archery',
+    nameUk: 'Стрільба',
+    nameOriginal: 'Archery',
+    sourceText: 'Отримуєш бонус +2 до кидків атаки далекобійною зброєю.',
+  },
+  {
+    id: 'fighting-style-defense',
+    nameUk: 'Оборона',
+    nameOriginal: 'Defense',
+    sourceText: 'Поки носиш легкі, середні або важкі обладунки, отримуєш бонус +1 до Класу захисту.',
+  },
+  {
+    id: 'fighting-style-great-weapon-fighting',
+    nameUk: 'Бій великою зброєю',
+    nameOriginal: 'Great Weapon Fighting',
+    sourceText: 'Коли кидаєш шкоду атаки зброєю ближнього бою, яку тримаєш двома руками, можеш вважати результат 1 або 2 на кості шкоди результатом 3. Для цього зброя повинна мати властивість «Дворучна» або «Універсальна».',
+  },
+  {
+    id: 'fighting-style-two-weapon-fighting',
+    nameUk: 'Бій двома зброями',
+    nameOriginal: 'Two-Weapon Fighting',
+    sourceText: 'Коли здійснюєш додаткову атаку завдяки властивості зброї «Легка», можеш додати модифікатор характеристики до шкоди цієї атаки, якщо ще не додаєш його.',
+  },
+];
+
 const championDescriptions: Record<string, string> = {
   'Покращений критичний удар': 'Твої кидки атаки зброєю та беззбройними ударами завдають критичного влучання, якщо на к20 випало 19 або 20.',
   'Видатний атлет': 'Маєш Перевагу на кидки Ініціативи та перевірки Сили (Атлетика). Крім того, відразу після критичного влучання можеш переміститися на відстань до половини своєї Швидкості, не провокуючи атак при нагоді.',
@@ -89,7 +116,9 @@ export const fighter: OfficialClassEntry = {
   skillChoices: { choose: 2, from: ['Акробатика', 'Догляд за тваринами', 'Атлетика', 'Історія', 'Проникливість', 'Залякування', 'Переконання', 'Сприйняття', 'Виживання'] },
   hasSpellcasting: false,
   progression,
-  features: featuresFromProgression('fighter', progression, descriptions, originalNames),
+  features: featuresFromProgression('fighter', progression, descriptions, originalNames, {
+    'Бойовий стиль': fightingStyleOptions,
+  }),
   startingEquipment: [
     { title: 'Варіант A', items: ['Кольчуга, дворучний меч, ціп, 8 дротиків, набір дослідника підземель та 4 зм'] },
     { title: 'Варіант B', items: ['Клепана шкіряна броня, скімітар, короткий меч, довгий лук, 20 стріл, сагайдак, набір дослідника підземель та 11 зм'] },

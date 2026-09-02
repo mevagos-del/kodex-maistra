@@ -26,6 +26,15 @@ function featureRecord(feature: OfficialFeature) {
     level: feature.level,
     description: feature.sourceText,
     anchor_id: feature.anchorId,
+    ...(feature.options?.length ? {
+      options: feature.options.map((option) => ({
+        id: option.id,
+        name: option.nameUk,
+        original_name: option.nameOriginal,
+        description: option.sourceText,
+        ...(option.scanLine ?? {}),
+      })),
+    } : {}),
     ...(feature.scanLine ?? {}),
   };
 }

@@ -411,7 +411,6 @@ function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: Clas
     { href: '#class-proficiencies', label: 'Володіння', number: 4 },
     { href: '#class-equipment', label: 'Спорядження', number: 5 },
     ...(hasSubclasses ? [{ href: '#class-subclasses', label: 'Підкласи', number: 6 }] : []),
-    ...(entry.source?.title ? [{ href: '#class-source', label: 'Джерело', number: 7 }] : []),
   ];
 
   return (
@@ -442,11 +441,10 @@ function ItemDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ItemE
     ...(usageGroups.length ? [{ href: '#item-usage', label: 'Правила використання', number: 3 }] : []),
     ...(variants.length ? [{ href: '#item-variants', label: 'Варіанти / покращення', number: 4 }] : []),
     ...(description ? [{ href: '#item-description', label: 'Опис', number: 5 }] : []),
-    ...(entry.source?.title ? [{ href: '#item-source', label: 'Джерело', number: 6 }] : []),
   ];
 
   return (
-    <DetailLayout variant="item" sidebar={<DetailSidebar variant="item" imageUrl={imageUrl} imageAlt={entry.title_ua} fallbackImageUrl={fallbackImageUrl} label="Предмет" title={entry.title_ua} originalTitle={entry.title_original} description={null} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} />}>
+    <DetailLayout variant="item" sidebar={<DetailSidebar variant="item" imageUrl={imageUrl} imageAlt={entry.title_ua} fallbackImageUrl={fallbackImageUrl} hideImage label="Предмет" title={entry.title_ua} originalTitle={entry.title_original} description={null} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} />}>
       <section id="item-passport" className="detail-v2-panel codex-detail-section">
         <h2 className="codex-detail-title"><span>1.</span> Паспорт предмета</h2>
         <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="item" itemType={entry.item_type} itemCategory={entry.category} />
