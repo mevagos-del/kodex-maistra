@@ -1,5 +1,10 @@
 import type { OfficialRuleSource } from './types';
 
+// Official rules prefer licensed Ukrainian text. When it is unavailable, the
+// static dataset may contain a complete, mechanically exact Ukrainian
+// translation from D&D Basic Rules/SRD or the project-approved TTG.club source.
+// Supabase content is never used as the source for official rules.
+
 export const SRD_52_SOURCE: OfficialRuleSource = {
   id: 'srd-5-2-1',
   title: 'SRD 5.2.1 / CC-BY-4.0',
