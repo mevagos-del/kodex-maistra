@@ -1,12 +1,14 @@
-import { officialClasses, officialItems } from '@/data/rules';
+import { officialClasses, officialItems, officialRaces } from '@/data/rules';
 import type {
   OfficialClassEntry,
   OfficialFeature,
   OfficialItemEntry,
+  OfficialRaceEntry,
+  OfficialRaceTrait,
   OfficialRuleSource,
 } from '@/data/rules/types';
 import type { EntityType } from '@/types/content';
-import type { CatalogEntry, ClassEntry, ItemEntry } from '../types';
+import type { CatalogEntry, ClassEntry, ItemEntry, RaceEntry } from '../types';
 
 const PUBLISHED_AT = '2025-04-22T00:00:00.000Z';
 
@@ -36,6 +38,65 @@ function featureRecord(feature: OfficialFeature) {
       })),
     } : {}),
     ...(feature.scanLine ?? {}),
+  };
+}
+
+function raceTraitRecord(trait: OfficialRaceTrait) {
+  return {
+    id: trait.id,
+    name: trait.nameUk,
+    original_name: trait.nameOriginal,
+    description: trait.sourceText,
+    anchor_id: trait.anchorId,
+    ...(trait.options?.length ? {
+      options: trait.options.map((option) => ({
+        id: option.id,
+        name: option.nameUk,
+        original_name: option.nameOriginal,
+        description: option.sourceText,
+        ...(option.scanLine ?? {}),
+      })),
+    } : {}),
+    ...(trait.scanLine ?? {}),
+  };
+}
+
+function raceToCatalogEntry(entry: OfficialRaceEntry): RaceEntry {
+  return {
+    id: `official-race-${entry.slug}`,
+    entityType: 'race',
+    title_ua: entry.nameUk,
+    title_original: entry.nameOriginal,
+    slug: entry.slug,
+    short_description: entry.shortDescription ?? null,
+    full_description_markdown: entry.fullDescription ?? null,
+    image_url: entry.imageUrl ?? null,
+    source_id: entry.source.id,
+    source: sourceSummary(entry.source),
+    tags: entry.tags ?? ['раса', 'офіційний'],
+    publication_status: 'published',
+    rules_version: '2024',
+    content_type: 'official',
+    created_at: PUBLISHED_AT,
+    updated_at: PUBLISHED_AT,
+    creature_type: entry.creatureType,
+    size: entry.size,
+    speed: entry.speed,
+    languages: entry.languages,
+    lifespan: entry.lifespan ?? null,
+    alignment_or_behavior: null,
+    race_traits: entry.traits.map(raceTraitRecord),
+    ability_bonuses: {},
+    proficiencies: {},
+    additional_skills: [],
+    subraces: entry.variants.map((variant) => ({
+      id: variant.id,
+      slug: variant.slug,
+      name: variant.nameUk,
+      original_name: variant.nameOriginal,
+      description: variant.sourceText,
+      traits: variant.traits.map(raceTraitRecord),
+    })),
   };
 }
 
@@ -129,6 +190,7 @@ function itemToCatalogEntry(entry: OfficialItemEntry): ItemEntry {
 }
 
 const officialEntries: CatalogEntry[] = [
+  ...officialRaces.map(raceToCatalogEntry),
   ...officialClasses.map(classToCatalogEntry),
   ...officialItems.map(itemToCatalogEntry),
 ];
@@ -150,5 +212,5 @@ export async function fetchOfficialCatalogEntryBySlug(entity: EntityType, slug: 
 }
 
 export function hasStaticOfficialDataset(entity: EntityType) {
-  return entity === 'class' || entity === 'item';
+  return entity === 'race' || entity === 'class' || entity === 'item';
 }

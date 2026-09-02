@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { subraceIconForTitle } from '../utils/codexIcons';
+import { RuleText } from './RuleText';
 
 const titleKeys = ['name', 'title', 'label'];
 const summaryKeys = ['summary', 'description', 'text', 'note'];
@@ -87,7 +88,14 @@ function formatObjectList(value: unknown): string[] {
     .map((item) => {
       if (isRecord(item)) {
         const name = titleKeys.map((key) => cleanText(item[key])).find(Boolean);
-        const effect = cleanText(item.mechanical_effect ?? item.effect_value ?? item.value ?? item.changes);
+        const effect = cleanText(
+          item.mechanical_effect
+          ?? item.effect_value
+          ?? item.value
+          ?? item.changes
+          ?? item.description
+          ?? item.text,
+        );
         return [name, effect].filter(Boolean).join(': ');
       }
       return cleanText(item);
@@ -104,7 +112,7 @@ function detailGroups(record: SubraceRecord): Array<{ title: string; values: str
     { title: 'Заклинання', values: formatObjectList(record.spells ?? record.spellcasting ?? record.cantrips) },
     { title: 'Додає', values: formatObjectList(record.adds ?? record.changes ?? record.bonus) },
     { title: 'Замінює', values: formatObjectList(record.replaces) },
-    { title: 'Особливості підраси', values: formatObjectList(record.traits ?? record.features) },
+    { title: 'Особливості варіанта', values: formatObjectList(record.traits ?? record.features) },
     { title: 'Обмеження', values: formatObjectList(record.restrictions ?? record.limitations ?? record.requirements) },
     { title: 'Примітки', values: formatObjectList(record.notes ?? record.note) },
   ];
@@ -134,11 +142,11 @@ export function SubraceSelector({ value, id, sectionNumber }: SubraceSelectorPro
   return (
     <section id={id} className={`detail-v2-panel subrace-section${sectionNumber ? ' race-detail-section' : ''}`} aria-labelledby="subrace-selector-title">
       <div className="subrace-section__header">
-        <h3 id="subrace-selector-title" className={sectionNumber ? 'race-section-title' : undefined}>{sectionNumber ? <span>{sectionNumber}.</span> : null} Підраси / варіанти</h3>
-        <p>Показано лише особливості вибраної підраси або варіанта.</p>
+        <h3 id="subrace-selector-title" className={sectionNumber ? 'race-section-title' : undefined}>{sectionNumber ? <span>{sectionNumber}.</span> : null} Варіанти / походження</h3>
+        <p>Показано лише особливості вибраного варіанта або походження.</p>
       </div>
 
-      <div className="subrace-selector" role="tablist" aria-label="Підраси або варіанти">
+      <div className="subrace-selector" role="tablist" aria-label="Варіанти або походження">
         {subraces.map((subrace, index) => {
           const isActive = index === selectedIndex;
           return (
@@ -180,7 +188,7 @@ export function SubraceSelector({ value, id, sectionNumber }: SubraceSelectorPro
                 <strong>{group.title}</strong>
                 <ul>
                   {group.values.map((item) => (
-                    <li key={`${group.title}-${item}`}>{item}</li>
+                    <li key={`${group.title}-${item}`}><RuleText>{item}</RuleText></li>
                   ))}
                 </ul>
               </div>

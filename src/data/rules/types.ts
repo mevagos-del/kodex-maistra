@@ -114,4 +114,42 @@ export type OfficialItemEntry = OfficialCatalogBase & {
   variants?: OfficialItemProperty[];
 };
 
-export type OfficialCatalogEntry = OfficialClassEntry | OfficialItemEntry;
+export type OfficialRaceTraitOption = {
+  id: string;
+  nameUk: string;
+  nameOriginal?: string;
+  sourceText: string;
+  scanLine?: Record<string, string | number>;
+};
+
+export type OfficialRaceTrait = {
+  id: string;
+  nameUk: string;
+  nameOriginal: string;
+  sourceText: string;
+  anchorId: string;
+  scanLine?: Record<string, string | number>;
+  options?: OfficialRaceTraitOption[];
+};
+
+export type OfficialRaceVariant = {
+  id: string;
+  slug: string;
+  nameUk: string;
+  nameOriginal: string;
+  sourceText?: string;
+  traits: OfficialRaceTrait[];
+};
+
+export type OfficialRaceEntry = OfficialCatalogBase & {
+  entity: 'race';
+  creatureType: string;
+  size: string;
+  speed: string;
+  languages: string[];
+  lifespan?: string;
+  traits: OfficialRaceTrait[];
+  variants: OfficialRaceVariant[];
+};
+
+export type OfficialCatalogEntry = OfficialRaceEntry | OfficialClassEntry | OfficialItemEntry;

@@ -81,6 +81,11 @@ export function abilityIconForLabel(label: string) {
 export function traitIconForTitle(title: string) {
   const normalized = title.toLowerCase();
   if (/темн.*зір|darkvision|нічн.*баченн/.test(normalized)) return CODEX_ICONS.darkvision;
+  if (/небесн.*стійк|celestial resistance|стійк.*шкод|damage resistance/.test(normalized)) return CODEX_ICONS.resistance;
+  if (/цілющ|healing/.test(normalized)) return CODEX_ICONS.dwarvenToughness;
+  if (/носій світла|light bearer|потойбічн.*присут|otherworldly presence/.test(normalized)) return CODEX_ICONS.spells;
+  if (/збро.*подих|breath weapon/.test(normalized)) return CODEX_ICONS.damageType;
+  if (/політ|flight/.test(normalized)) return CODEX_ICONS.speed;
   if (/отрут|poison/.test(normalized)) return CODEX_ICONS.poisonResistance;
   if (/дворф.*витрив|витриваліст|toughness/.test(normalized)) return CODEX_ICONS.dwarvenToughness;
   if (/кам['’ʼ]?ян|камен|stone|підзем|ремес/.test(normalized)) return CODEX_ICONS.stoneMemory;
@@ -90,6 +95,13 @@ export function traitIconForTitle(title: string) {
   if (/хоробр|brave/.test(normalized)) return CODEX_ICONS.brave;
   if (/удач|lucky/.test(normalized)) return CODEX_ICONS.lucky;
   if (/дракон.*поход|draconic ancestry/.test(normalized)) return CODEX_ICONS.draconicAncestry;
+  if (/хитр|cunning|переваг/.test(normalized)) return CODEX_ICONS.advantage;
+  if (/велет|giant|могутн|powerful|велика форма/.test(normalized)) return CODEX_ICONS.strength;
+  if (/спритн|nimbleness/.test(normalized)) return CODEX_ICONS.dexterity;
+  if (/уміл|skillful/.test(normalized)) return CODEX_ICONS.skillProficiency;
+  if (/адренал|adrenaline|ривок/.test(normalized)) return CODEX_ICONS.speed;
+  if (/невблаган|relentless/.test(normalized)) return CODEX_ICONS.dwarvenToughness;
+  if (/спадщин|походжен|lineage|legacy|revelation|одкровенн/.test(normalized)) return CODEX_ICONS.choice;
   if (/вибір|обрати|optional|choice|варіант/.test(normalized)) return CODEX_ICONS.choice;
   return CODEX_ICONS.races;
 }

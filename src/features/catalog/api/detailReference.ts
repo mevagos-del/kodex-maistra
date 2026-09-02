@@ -58,6 +58,8 @@ const keyLabels: Record<string, string> = {
   reach: 'Дальність',
   stat: 'Характеристика',
   recovery: 'Відновлення',
+  duration: 'Тривалість',
+  recharge: 'Відновлення',
   saving_throw: 'Ряткидок',
   save: 'Ряткидок',
   save_ability: 'Ряткидок',

@@ -1,5 +1,6 @@
 import type { ReferenceCard } from '../api/detailReference';
 import { traitIconForTitle } from '../utils/codexIcons';
+import { RuleText } from './RuleText';
 
 type RaceTraitSectionProps = {
   cards: ReferenceCard[];
@@ -13,8 +14,7 @@ type TraitFact = {
 };
 
 const scanLabelMap: Record<string, string> = {
-  'Використання': 'Тип',
-  'Тип дії': 'Тип',
+  'Тип дії': 'Дія',
   'Вимога': 'Умова',
   'Обмеження': 'Умова',
   'Переваги': 'Перевага',
@@ -25,7 +25,15 @@ const scanLabelMap: Record<string, string> = {
 
 const visibleScanLabels = new Set([
   'Тип',
+  'Дія',
+  'Використання',
+  'Відновлення',
+  'Тривалість',
   'Дальність',
+  'Рівень',
+  'Ефект',
+  'Шкода',
+  'Тип шкоди',
   'Умова',
   'Ряткидок',
   'Характеристика',
@@ -36,13 +44,21 @@ const visibleScanLabels = new Set([
 
 const scanPriority: Record<string, number> = {
   'Тип': 1,
-  'Дальність': 2,
-  'Ряткидок': 3,
-  'Характеристика': 4,
-  'Перевага': 5,
-  'Стійкість': 6,
-  'Стан': 7,
-  'Умова': 8,
+  'Рівень': 2,
+  'Дія': 3,
+  'Дальність': 4,
+  'Тривалість': 5,
+  'Використання': 6,
+  'Відновлення': 7,
+  'Ряткидок': 8,
+  'Характеристика': 9,
+  'Перевага': 10,
+  'Стійкість': 11,
+  'Шкода': 12,
+  'Тип шкоди': 13,
+  'Ефект': 14,
+  'Стан': 15,
+  'Умова': 16,
 };
 
 function normalizeText(value: string) {
@@ -71,12 +87,9 @@ function traitScanLine(card: ReferenceCard, ruleText: string) {
   for (const row of card.rows) {
     if (row.label === 'Механічний ефект' || row.label === 'Опис') continue;
 
-    let value = normalizeText(row.value);
-    if (row.label === 'Використання' && !/^(постійно|пасив)/i.test(value)) continue;
-
+    const value = normalizeText(row.value);
     const label = scanLabelMap[row.label] ?? row.label;
     if (!visibleScanLabels.has(label)) continue;
-    if (label === 'Тип' && /^(постійно|пасив)/i.test(value)) value = 'Постійна риса';
     if (comparableText(value) === comparableText(ruleText)) continue;
 
     addFact(facts, seen, label, value);
@@ -103,23 +116,36 @@ export function RaceTraitSection({ cards, id, sectionNumber }: RaceTraitSectionP
           const scanLine = traitScanLine(card, ruleText);
 
           return (
-            <article key={`${card.title}-${index}`} className="race-trait-card">
+            <article id={card.anchorId} key={`${card.title}-${index}`} className="race-trait-card">
               <header className="race-trait-card__header">
                 <div className="race-trait-card__mark race-trait-icon trait-icon-medallion" aria-hidden="true">
                   <img className="codex-icon codex-icon--trait" src={traitIconForTitle(card.title)} alt="" />
                 </div>
                 <h3>{card.title}</h3>
               </header>
-              {ruleText ? <p className="race-trait-card__description">{ruleText}</p> : null}
+              {ruleText ? <p className="race-trait-card__description"><RuleText>{ruleText}</RuleText></p> : null}
               {scanLine.length > 0 ? (
                 <dl className="race-trait-card__scan-line" aria-label="Короткі параметри риси">
                   {scanLine.map((fact) => (
                     <div key={`${fact.label}-${fact.value}`} className="race-trait-scan-fact">
                       <dt>{fact.label}:</dt>
-                      <dd>{fact.value}</dd>
+                      <dd><RuleText>{fact.value}</RuleText></dd>
                     </div>
                   ))}
                 </dl>
+              ) : null}
+              {card.options && card.options.length > 0 ? (
+                <details className="codex-rule-options">
+                  <summary>Доступні варіанти <span>{card.options.length}</span></summary>
+                  <div className="codex-rule-option-list">
+                    {card.options.map((option) => (
+                      <article className="codex-rule-option" key={option.anchorId ?? option.title}>
+                        <h4>{option.title}</h4>
+                        {option.description ? <p><RuleText>{option.description}</RuleText></p> : null}
+                      </article>
+                    ))}
+                  </div>
+                </details>
               ) : null}
             </article>
           );

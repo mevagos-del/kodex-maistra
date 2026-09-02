@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Link, useParams } from 'react-router-dom';
-import {
-  abilityScoreCells,
-  groupedProficiencies,
-  referenceCards,
-  resistanceRows,
-} from '@/features/catalog/api/detailReference';
+import { referenceCards } from '@/features/catalog/api/detailReference';
 import { DetailLayout } from '@/features/catalog/components/DetailLayout';
 import { DetailSidebar } from '@/features/catalog/components/DetailSidebar';
 import { EmptyState } from '@/features/catalog/components/EmptyState';
@@ -23,7 +18,6 @@ import { useCatalogEntry } from '@/features/catalog/hooks/useCatalogData';
 import type { CatalogEntry, ClassEntry, ItemEntry } from '@/features/catalog/types';
 import { getDefaultImageUrl } from '@/lib/storage';
 import {
-  abilityIconForLabel,
   classFeatureIconForTitle,
   CODEX_ICONS,
   itemIconForType,
@@ -178,85 +172,6 @@ function DetailGroupPanel({ title, groups, presentation = 'chips', id, sectionNu
       </div>
     </section>
   );
-}
-
-function infoRowsToGroups(rows: Array<{ label: string; value: string }>) {
-  const grouped = new Map<string, string[]>();
-
-  for (const row of rows) {
-    const current = grouped.get(row.label) ?? [];
-    current.push(...row.value.split(',').map((value) => value.trim()).filter(Boolean));
-    grouped.set(row.label, Array.from(new Set(current)));
-  }
-
-  return Array.from(grouped.entries()).map(([title, values]) => ({ title, values }));
-}
-
-function mechanicalIndexGroups(rows: Array<{ label: string; value: string }>) {
-  return infoRowsToGroups(rows.map((row) => {
-    if (row.label.startsWith('Стійкість')) return { ...row, label: 'Стійкості' };
-    if (row.label.includes('Переваг')) return { ...row, label: 'Переваги' };
-    return row;
-  }));
-}
-
-function AbilityScoreGrid({ entry, id, sectionNumber }: {
-  entry: Extract<CatalogEntry, { entityType: 'race' }>;
-  id: string;
-  sectionNumber: number;
-}) {
-  const { cells, note } = abilityScoreCells(entry.ability_bonuses);
-  const activeCells = cells.filter((cell) => cell.isActive);
-  const abilityAbbreviations: Record<string, string> = {
-    'Сила': 'СИЛ',
-    'Спритність': 'СПР',
-    'Статура': 'СТАТ',
-    'Інтелект': 'ІНТ',
-    'Мудрість': 'МУД',
-    'Харизма': 'ХАР',
-  };
-
-  return (
-    <section id={id} className="detail-v2-panel race-detail-section">
-      <h2 className="race-section-title"><span>{sectionNumber}.</span> Збільшення характеристик</h2>
-      <p className={activeCells.length > 0 ? 'race-ability-summary race-ability-summary--active' : 'race-ability-summary'}>
-        {activeCells.length > 0
-          ? <>Ключове підсилення: <strong>{activeCells.map((cell) => `${cell.label} ${cell.value}`).join(' · ')}</strong></>
-          : note ?? 'Фіксоване збільшення не задано'}
-      </p>
-      <div className="detail-v2-score-grid">
-        {cells.map((cell) => (
-          <div key={cell.label} className={cell.isActive ? 'detail-v2-score-cell detail-v2-score-cell-active' : 'detail-v2-score-cell detail-v2-score-cell-muted'}>
-            <span className="race-ability-glyph" aria-hidden="true">
-              <img className="codex-icon codex-icon--ability" src={abilityIconForLabel(cell.label)} alt="" />
-            </span>
-            <span className="race-ability-label" title={cell.label}>{abilityAbbreviations[cell.label] ?? cell.label}</span>
-            <strong>{cell.value}</strong>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function RichReferenceBlocks({ entry }: { entry: CatalogEntry }) {
-  if (entry.entityType === 'race') {
-    const resistanceInfo = resistanceRows(entry.race_traits, entry.proficiencies, entry.additional_skills);
-    const proficiencyGroups = groupedProficiencies(entry).filter((group) => group.title !== 'Мови');
-
-    return (
-      <>
-        <RaceTraitSection id="race-traits" sectionNumber={3} cards={referenceCards(entry.race_traits, 'Риса')} />
-        <div className="detail-v2-lower-grid race-detail-compact-grid">
-          <DetailGroupPanel id="race-proficiencies" sectionNumber={4} title="Володіння та навички" groups={proficiencyGroups} presentation="rows" showCodexIcons />
-          <DetailGroupPanel id="race-resistances" sectionNumber={5} title="Стійкості та переваги" groups={mechanicalIndexGroups(resistanceInfo)} presentation="rows" showCodexIcons />
-        </div>
-        <SubraceSelector id="race-subraces" sectionNumber={6} value={entry.subraces} />
-      </>
-    );
-  }
-
-  return null;
 }
 
 function safeText(value: unknown): string | null {
@@ -508,18 +423,13 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
 
   const infoBlocks = mainInfoBlocks(entry);
   const raceDescription = splitRaceDescription(entry.full_description_markdown, entry.title_ua);
-  const raceProficiencyGroups = groupedProficiencies(entry).filter((group) => group.title !== 'Мови');
+  const raceTraits = referenceCards(entry.race_traits, 'Риса');
+  const hasRaceVariants = isUsefulValue(entry.subraces);
   const raceNavigation = [
-    { href: '#race-main', label: 'Основні характеристики', number: 1 },
-    { href: '#race-abilities', label: 'Збільшення характеристик', number: 2 },
-    ...(referenceCards(entry.race_traits, 'Риса').length > 0 ? [{ href: '#race-traits', label: 'Риси раси', number: 3 }] : []),
-    ...(raceProficiencyGroups.length > 0 ? [{ href: '#race-proficiencies', label: 'Володіння та навички', number: 4 }] : []),
-    ...(resistanceRows(entry.race_traits, entry.proficiencies, entry.additional_skills).length > 0
-      ? [{ href: '#race-resistances', label: 'Стійкості та переваги', number: 5 }]
-      : []),
-    ...(isUsefulValue(entry.subraces) ? [{ href: '#race-subraces', label: 'Підраси / варіанти', number: 6 }] : []),
-    ...(raceDescription?.description ? [{ href: '#race-description', label: 'Опис', number: 7 }] : []),
-    ...(entry.source?.title ? [{ href: '#race-source', label: 'Джерело', number: 8 }] : []),
+    { href: '#race-main', label: 'Паспорт раси', number: 1 },
+    ...(raceTraits.length > 0 ? [{ href: '#race-traits', label: 'Риси раси', number: 2 }] : []),
+    ...(hasRaceVariants ? [{ href: '#race-subraces', label: 'Варіанти / походження', number: 3 }] : []),
+    ...(raceDescription?.description ? [{ href: '#race-description', label: 'Опис', number: 4 }] : []),
   ];
 
   return (
@@ -544,17 +454,16 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
       }
     >
       <section id="race-main" className="detail-v2-panel race-detail-section">
-        <h2 className="race-section-title"><span>1.</span> Основні характеристики</h2>
+        <h2 className="race-section-title"><span>1.</span> Паспорт раси</h2>
         <MechanicInfoGrid items={infoBlocks} variant="race" />
       </section>
 
-      <AbilityScoreGrid id="race-abilities" sectionNumber={2} entry={entry} />
-
-      <RichReferenceBlocks entry={entry} />
+      <RaceTraitSection id="race-traits" sectionNumber={2} cards={raceTraits} />
+      <SubraceSelector id="race-subraces" sectionNumber={3} value={entry.subraces} />
 
       {raceDescription.description ? (
         <section id="race-description" className="detail-v2-description-panel race-detail-section">
-          <h2 className="race-section-title"><span>7.</span> Опис</h2>
+          <h2 className="race-section-title"><span>4.</span> Опис</h2>
           <div className="markdown-content">
             <ReactMarkdown>{raceDescription.description}</ReactMarkdown>
           </div>
