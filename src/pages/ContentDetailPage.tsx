@@ -411,7 +411,7 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
 
   const defaultImageUrl = getDefaultImageUrl(sectionSlug);
   const imageUrl = entry.entityType === 'race'
-    ? localRaceImageOverrides[entry.slug] || entry.image_url?.trim() || defaultImageUrl
+    ? localRaceImageOverrides[entry.slug] || entry.image_url?.trim() || ''
     : entry.image_url?.trim() || defaultImageUrl;
   if (entry.entityType === 'class') {
     return <ClassDetailContent entry={entry} imageUrl={imageUrl} fallbackImageUrl={defaultImageUrl} />;
@@ -448,7 +448,8 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
           quickItems={[]}
           badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]}
           navigation={raceNavigation}
-          fallbackImageUrl={defaultImageUrl}
+          hideImage={!imageUrl}
+          hideImageOnError
           variant="race"
         />
       }

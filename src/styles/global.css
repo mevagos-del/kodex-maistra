@@ -5920,8 +5920,9 @@ body::before {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  max-height: calc(100vh - 106px);
-  overflow-y: auto;
+  min-width: 0;
+  max-height: none;
+  overflow: visible;
   padding: 18px;
   border: 1px solid rgb(208 151 70 / 48%);
   border-radius: 14px;
@@ -5932,8 +5933,6 @@ body::before {
     inset 0 1px 0 rgb(255 231 181 / 10%),
     inset 0 -28px 54px rgb(0 0 0 / 22%),
     0 24px 54px rgb(0 0 0 / 42%);
-  scrollbar-width: thin;
-  scrollbar-color: rgb(208 151 70 / 38%) transparent;
 }
 
 .detail-v2-shell--race .race-identity-sidebar::before,
@@ -5983,12 +5982,14 @@ body::before {
 }
 
 .detail-v2-shell--race .race-identity-card h1 {
+  max-width: 100%;
   margin: 2px 0 0;
   color: #f1d28c;
   font-family: var(--heading-font);
-  font-size: clamp(2.65rem, 4vw, 3.7rem);
+  font-size: clamp(2.25rem, 3.4vw, 3.25rem);
   line-height: 0.96;
   letter-spacing: 0;
+  overflow-wrap: anywhere;
   text-shadow: 0 2px 0 #120904, 0 8px 24px rgb(0 0 0 / 38%);
 }
 
@@ -6052,6 +6053,8 @@ body::before {
 }
 
 .detail-v2-shell--race .detail-v2-section-nav {
+  min-width: 0;
+  max-width: 100%;
   padding: 14px;
   border: 1px solid rgb(196 139 61 / 30%);
   border-radius: 10px;
@@ -6070,6 +6073,7 @@ body::before {
 }
 
 .detail-v2-shell--race .detail-v2-section-nav a {
+  min-width: 0;
   grid-template-columns: 26px minmax(0, 1fr);
   gap: 8px;
   border: 1px solid transparent;
@@ -6078,6 +6082,7 @@ body::before {
   color: rgb(225 216 197 / 74%);
   font-size: 0.8rem;
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .detail-v2-shell--race .detail-v2-section-nav a > span {
@@ -6427,7 +6432,7 @@ body::before {
   }
 
   .detail-v2-shell--race .race-identity-card h1 {
-    font-size: 2.65rem;
+    font-size: clamp(2.1rem, 11vw, 2.65rem);
   }
 
   .detail-v2-shell--race .race-portrait-frame {

@@ -22,6 +22,7 @@ type DetailSidebarProps = {
   fallbackImageUrl?: string;
   variant?: 'race' | 'class' | 'item';
   hideImage?: boolean;
+  hideImageOnError?: boolean;
   subclasses?: Array<{ name: string; originalName?: string }>;
   selectedSubclassIndex?: number;
   onSelectSubclass?: (index: number) => void;
@@ -42,6 +43,7 @@ export function DetailSidebar({
   fallbackImageUrl,
   variant,
   hideImage = false,
+  hideImageOnError = false,
   subclasses = [],
   selectedSubclassIndex = 0,
   onSelectSubclass,
@@ -66,11 +68,15 @@ export function DetailSidebar({
             className={isCodexSidebar ? `codex-portrait${variant === 'race' ? ' race-portrait' : ''}` : undefined}
             src={imageUrl}
             alt={imageAlt}
-            onError={fallbackImageUrl ? (event) => {
+            onError={(fallbackImageUrl || hideImageOnError) ? (event) => {
               const image = event.currentTarget;
+              if (hideImageOnError) {
+                image.closest('.detail-v2-image-wrap')?.setAttribute('hidden', '');
+                return;
+              }
               if (image.dataset.fallbackApplied === 'true') return;
               image.dataset.fallbackApplied = 'true';
-              image.src = fallbackImageUrl;
+              image.src = fallbackImageUrl ?? '';
               image.classList.add('race-portrait--fallback');
             } : undefined}
           />
