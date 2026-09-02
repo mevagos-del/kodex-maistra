@@ -1,0 +1,171 @@
+import { PHB_2024_SOURCE, SRD_52_SOURCE } from '../source';
+import type { OfficialClassEntry, OfficialProgressionRow, OfficialSubclass } from '../types';
+import { createSubclass, featuresFromProgression } from './shared';
+
+type RowData = {
+  features: string[];
+  resources?: Record<string, string | number>;
+  spellcasting?: Record<string, string | number>;
+};
+
+type ClassData = Pick<OfficialClassEntry,
+  'slug' | 'nameUk' | 'nameOriginal' | 'hitDie' | 'primaryAbility' | 'savingThrows'
+  | 'armorProficiencies' | 'weaponProficiencies' | 'toolProficiencies' | 'skillChoices'
+  | 'hasSpellcasting' | 'startingEquipment'> & {
+  rows: RowData[];
+  subclasses: OfficialSubclass[];
+};
+
+const fullSlots = [
+  [2],[3],[4,2],[4,3],[4,3,2],[4,3,3],[4,3,3,1],[4,3,3,2],[4,3,3,3,1],[4,3,3,3,2],
+  [4,3,3,3,2,1],[4,3,3,3,2,1],[4,3,3,3,2,1,1],[4,3,3,3,2,1,1],[4,3,3,3,2,1,1,1],
+  [4,3,3,3,2,1,1,1],[4,3,3,3,2,1,1,1,1],[4,3,3,3,3,1,1,1,1],
+  [4,3,3,3,3,2,1,1,1],[4,3,3,3,3,2,2,1,1],
+] as const;
+
+const halfSlots = [
+  [2],[2],[3],[3],[4,2],[4,2],[4,3],[4,3],[4,3,2],[4,3,2],[4,3,3],[4,3,3],
+  [4,3,3,1],[4,3,3,1],[4,3,3,2],[4,3,3,2],[4,3,3,3,1],[4,3,3,3,1],
+  [4,3,3,3,2],[4,3,3,3,2],
+] as const;
+
+const bonus = (level: number) => `+${Math.ceil(level / 4) + 1}`;
+const slotRecord = (values: readonly number[], count: number) =>
+  Object.fromEntries(Array.from({ length: count }, (_, index) => [`slot_${index + 1}`, values[index] ?? '—']));
+
+function caster(prepared: number[], cantrips: number[], half = false) {
+  const table = half ? halfSlots : fullSlots;
+  const count = half ? 5 : 9;
+  return prepared.map((preparedSpells, index) => ({
+    prepared_spells: preparedSpells,
+    ...(cantrips[index] === undefined ? {} : { cantrips: cantrips[index] }),
+    ...slotRecord(table[index], count),
+  }));
+}
+
+function row(features: string[], resources?: Record<string, string | number>, spellcasting?: Record<string, string | number>): RowData {
+  return { features, resources, spellcasting };
+}
+
+function defineClass(data: ClassData): OfficialClassEntry {
+  const progression: OfficialProgressionRow[] = data.rows.map((entry, index) => ({
+    level: index + 1,
+    proficiencyBonus: bonus(index + 1),
+    ...entry,
+  }));
+  return {
+    entity: 'class',
+    slug: data.slug,
+    nameUk: data.nameUk,
+    nameOriginal: data.nameOriginal,
+    status: 'official',
+    source: SRD_52_SOURCE,
+    hitDie: data.hitDie,
+    primaryAbility: data.primaryAbility,
+    savingThrows: data.savingThrows,
+    armorProficiencies: data.armorProficiencies,
+    weaponProficiencies: data.weaponProficiencies,
+    toolProficiencies: data.toolProficiencies,
+    skillChoices: data.skillChoices,
+    hasSpellcasting: data.hasSpellcasting,
+    progression,
+    features: featuresFromProgression(data.slug, progression),
+    startingEquipment: data.startingEquipment,
+    subclasses: data.subclasses,
+  };
+}
+
+const openSubclass = (classSlug: string, slug: string, nameUk: string, nameOriginal: string, features: Array<[number, string, string]>) =>
+  createSubclass(classSlug, slug, nameUk, nameOriginal, features, SRD_52_SOURCE);
+const namedSubclass = (classSlug: string, slug: string, nameUk: string, nameOriginal: string) =>
+  createSubclass(classSlug, slug, nameUk, nameOriginal, [], PHB_2024_SOURCE);
+
+const fullPrepared = [4,5,6,7,9,10,11,12,14,15,16,16,17,17,18,18,19,20,21,22];
+const halfPrepared = [2,3,4,5,6,6,7,7,9,9,10,10,11,11,12,12,14,14,15,15];
+
+export const bard = defineClass({
+  slug:'bard', nameUk:'Бард', nameOriginal:'Bard', hitDie:'d8', primaryAbility:'Харизма',
+  savingThrows:['Спритність','Харизма'], armorProficiencies:['легкі обладунки'], weaponProficiencies:['проста зброя'],
+  toolProficiencies:['три музичні інструменти на вибір'], skillChoices:{choose:3,from:['будь-які навички']}, hasSpellcasting:true,
+  rows:[
+    ['Бардове натхнення','Накладання заклять'],['Експертиза','Майстер на всі руки'],['Підклас барда'],['Збільшення характеристик'],
+    ['Джерело натхнення'],['Особливість підкласу (6 рівень)'],['Контрчари'],['Збільшення характеристик'],['Експертиза'],
+    ['Магічні таємниці'],[],['Збільшення характеристик'],[],['Особливість підкласу (14 рівень)'],[],['Збільшення характеристик'],
+    [],['Неперевершене натхнення'],['Епічний дар'],['Слова творення'],
+  ].map((features,index)=>row(features,{bardic_die:index<4?'к6':index<9?'к8':index<14?'к10':'к12'},caster([4,5,6,7,9,10,11,12,14,15,16,16,17,17,18,18,19,20,21,22],[2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4])[index])),
+  startingEquipment:[{title:'Варіант A',items:['Шкіряний обладунок, 2 кинджали, музичний інструмент на вибір, набір артиста та 19 зм']},{title:'Варіант B',items:['90 зм']}],
+  subclasses:[
+    openSubclass('bard','lore','Колегія знань','College of Lore',[[3,'Додаткові володіння','Bonus Proficiencies'],[3,'Влучне слово','Cutting Words'],[6,'Магічні відкриття','Magical Discoveries'],[14,'Незрівнянна майстерність','Peerless Skill']]),
+    namedSubclass('bard','dance','Колегія танцю','College of Dance'), namedSubclass('bard','glamour','Колегія чарівності','College of Glamour'), namedSubclass('bard','valor','Колегія доблесті','College of Valor'),
+  ],
+});
+
+export const cleric = defineClass({
+  slug:'cleric',nameUk:'Жрець',nameOriginal:'Cleric',hitDie:'d8',primaryAbility:'Мудрість',savingThrows:['Мудрість','Харизма'],
+  armorProficiencies:['легкі обладунки','середні обладунки','щити'],weaponProficiencies:['проста зброя'],toolProficiencies:[],
+  skillChoices:{choose:2,from:['Історія','Проникливість','Медицина','Переконання','Релігія']},hasSpellcasting:true,
+  rows:[['Накладання заклять','Божественний орден'],['Божественний канал'],['Підклас жерця'],['Збільшення характеристик'],['Спопелення нежиті'],['Особливість підкласу (6 рівень)'],['Благословенні удари'],['Збільшення характеристик'],[],['Божественне втручання'],[],['Збільшення характеристик'],[],['Покращені благословенні удари'],[],['Збільшення характеристик'],['Особливість підкласу (17 рівень)'],[],['Епічний дар'],['Велике божественне втручання']].map((features,index)=>row(features,{channel_divinity:index<1?'—':index<5?2:index<17?3:4},caster(fullPrepared,[3,3,3,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5])[index])),
+  startingEquipment:[{title:'Варіант A',items:['Кольчужна сорочка, щит, булава, святий символ, набір священника та 7 зм']},{title:'Варіант B',items:['110 зм']}],
+  subclasses:[openSubclass('cleric','life','Домен життя','Life Domain',[[3,'Учень життя','Disciple of Life'],[3,'Закляття домену життя','Life Domain Spells'],[3,'Збереження життя','Preserve Life'],[6,'Благословенний цілитель','Blessed Healer'],[17,'Найвище зцілення','Supreme Healing']]),namedSubclass('cleric','light','Домен світла','Light Domain'),namedSubclass('cleric','trickery','Домен обману','Trickery Domain'),namedSubclass('cleric','war','Домен війни','War Domain')],
+});
+
+export const druid = defineClass({
+  slug:'druid',nameUk:'Друїд',nameOriginal:'Druid',hitDie:'d8',primaryAbility:'Мудрість',savingThrows:['Інтелект','Мудрість'],
+  armorProficiencies:['легкі обладунки','щити'],weaponProficiencies:['проста зброя'],toolProficiencies:['набір травника'],
+  skillChoices:{choose:2,from:['Арканознавство','Догляд за тваринами','Проникливість','Медицина','Природа','Сприйняття','Релігія','Виживання']},hasSpellcasting:true,
+  rows:[['Накладання заклять','Друїдична мова','Первісний орден'],['Дика подоба','Дикий супутник'],['Підклас друїда'],['Збільшення характеристик'],['Дике відродження'],['Особливість підкласу (6 рівень)'],['Лють стихій'],['Збільшення характеристик'],[],['Особливість підкласу (10 рівень)'],[],['Збільшення характеристик'],[],['Особливість підкласу (14 рівень)'],['Покращена лють стихій'],['Збільшення характеристик'],[],['Звірині закляття'],['Епічний дар'],['Архідруїд']].map((features,index)=>row(features,{wild_shape:index<1?'—':index<5?2:index<16?3:4},caster(fullPrepared,[2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4])[index])),
+  startingEquipment:[{title:'Варіант A',items:['Шкіряний обладунок, щит, серп, друїдичний фокус, набір мандрівника, набір травника та 9 зм']},{title:'Варіант B',items:['50 зм']}],
+  subclasses:[openSubclass('druid','land','Коло землі','Circle of the Land',[[3,'Закляття кола','Circle Spells'],[3,'Допомога землі','Land’s Aid'],[6,'Природне відновлення','Natural Recovery'],[10,'Оберіг природи','Nature’s Ward'],[14,'Святилище природи','Nature’s Sanctuary']]),namedSubclass('druid','moon','Коло місяця','Circle of the Moon'),namedSubclass('druid','sea','Коло моря','Circle of the Sea'),namedSubclass('druid','stars','Коло зірок','Circle of the Stars')],
+});
+
+export const monk = defineClass({
+  slug:'monk',nameUk:'Монах',nameOriginal:'Monk',hitDie:'d8',primaryAbility:'Спритність і Мудрість',savingThrows:['Сила','Спритність'],
+  armorProficiencies:[],weaponProficiencies:['проста зброя','військова зброя з властивістю «Легка»'],toolProficiencies:['ремісничий або музичний інструмент на вибір'],
+  skillChoices:{choose:2,from:['Акробатика','Атлетика','Історія','Проникливість','Релігія','Скритність']},hasSpellcasting:false,
+  rows:[['Бойові мистецтва','Захист без обладунків'],['Фокус монаха','Рух без обладунків','Надзвичайний метаболізм'],['Відбиття атак','Підклас монаха'],['Збільшення характеристик','Повільне падіння'],['Додаткова атака','Приголомшливий удар'],['Посилені удари','Особливість підкласу (6 рівень)'],['Ухилення'],['Збільшення характеристик'],['Акробатичний рух'],['Посилений фокус','Самовідновлення'],['Особливість підкласу (11 рівень)'],['Збільшення характеристик'],['Відбиття енергії'],['Дисциплінований уцілілий'],['Досконалий фокус'],['Збільшення характеристик'],['Особливість підкласу (17 рівень)'],['Вищий захист'],['Епічний дар'],['Тіло й розум']].map((features,index)=>row(features,{martial_arts_die:index<4?'к6':index<10?'к8':index<16?'к10':'к12',focus_points:index===0?'—':index+1,unarmored_movement:index===0?'—':`+${index<5?10:index<9?15:index<13?20:index<17?25:30} фт`})),
+  startingEquipment:[{title:'Варіант A',items:['Спис, 5 кинджалів, обраний інструмент, набір мандрівника та 11 зм']},{title:'Варіант B',items:['50 зм']}],
+  subclasses:[openSubclass('monk','open-hand','Воїн відкритої долоні','Warrior of the Open Hand',[[3,'Техніка відкритої долоні','Open Hand Technique'],[6,'Цілісність тіла','Wholeness of Body'],[11,'Швидкий крок','Fleet Step'],[17,'Тремтяча долоня','Quivering Palm']]),namedSubclass('monk','mercy','Воїн милосердя','Warrior of Mercy'),namedSubclass('monk','shadow','Воїн тіні','Warrior of Shadow'),namedSubclass('monk','elements','Воїн стихій','Warrior of the Elements')],
+});
+
+export const paladin = defineClass({
+  slug:'paladin',nameUk:'Паладин',nameOriginal:'Paladin',hitDie:'d10',primaryAbility:'Сила і Харизма',savingThrows:['Мудрість','Харизма'],
+  armorProficiencies:['легкі обладунки','середні обладунки','важкі обладунки','щити'],weaponProficiencies:['проста зброя','військова зброя'],toolProficiencies:[],
+  skillChoices:{choose:2,from:['Атлетика','Проникливість','Залякування','Медицина','Переконання','Релігія']},hasSpellcasting:true,
+  rows:[['Накладання рук','Накладання заклять','Майстерність зброї'],['Бойовий стиль','Кара паладина'],['Божественний канал','Підклас паладина'],['Збільшення характеристик'],['Додаткова атака','Вірний скакун'],['Аура захисту'],['Особливість підкласу (7 рівень)'],['Збільшення характеристик'],['Вигнання ворогів'],['Аура відваги'],['Сяйливі удари'],['Збільшення характеристик'],[],['Відновлювальний дотик'],['Особливість підкласу (15 рівень)'],['Збільшення характеристик'],[],['Розширення аури'],['Епічний дар'],['Особливість підкласу (20 рівень)']].map((features,index)=>row(features,{channel_divinity:index<2?'—':index<10?2:3},caster(halfPrepared,[],true)[index])),
+  startingEquipment:[{title:'Варіант A',items:['Кольчуга, щит, довгий меч, 6 дротиків, святий символ, набір священника та 9 зм']},{title:'Варіант B',items:['150 зм']}],
+  subclasses:[openSubclass('paladin','devotion','Клятва відданості','Oath of Devotion',[[3,'Закляття клятви','Oath Spells'],[3,'Священна зброя','Sacred Weapon'],[7,'Аура відданості','Aura of Devotion'],[15,'Кара захисту','Smite of Protection'],[20,'Святий німб','Holy Nimbus']]),namedSubclass('paladin','ancients','Клятва предків','Oath of the Ancients'),namedSubclass('paladin','glory','Клятва слави','Oath of Glory'),namedSubclass('paladin','vengeance','Клятва помсти','Oath of Vengeance')],
+});
+
+export const ranger = defineClass({
+  slug:'ranger',nameUk:'Слідопит',nameOriginal:'Ranger',hitDie:'d10',primaryAbility:'Спритність і Мудрість',savingThrows:['Сила','Спритність'],
+  armorProficiencies:['легкі обладунки','середні обладунки','щити'],weaponProficiencies:['проста зброя','військова зброя'],toolProficiencies:[],
+  skillChoices:{choose:3,from:['Догляд за тваринами','Атлетика','Проникливість','Розслідування','Природа','Сприйняття','Скритність','Виживання']},hasSpellcasting:true,
+  rows:[['Накладання заклять','Обраний ворог','Майстерність зброї'],['Умілий дослідник','Бойовий стиль'],['Підклас слідопита'],['Збільшення характеристик'],['Додаткова атака'],['Мандрівник'],['Особливість підкласу (7 рівень)'],['Збільшення характеристик'],['Експертиза'],['Невтомний'],['Особливість підкласу (11 рівень)'],['Збільшення характеристик'],['Невпинний мисливець'],['Покров природи'],['Особливість підкласу (15 рівень)'],['Збільшення характеристик'],['Точний мисливець'],['Дикі чуття'],['Епічний дар'],['Вбивця ворогів']].map((features,index)=>row(features,{favored_enemy:[2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6][index]},caster(halfPrepared,[],true)[index])),
+  startingEquipment:[{title:'Варіант A',items:['Клепаний шкіряний обладунок, скімітар, короткий меч, довгий лук, 20 стріл, сагайдак, друїдичний фокус, набір мандрівника та 7 зм']},{title:'Варіант B',items:['150 зм']}],
+  subclasses:[openSubclass('ranger','hunter','Мисливець','Hunter',[[3,'Знання мисливця','Hunter’s Lore'],[3,'Здобич мисливця','Hunter’s Prey'],[7,'Захисна тактика','Defensive Tactics'],[11,'Вища здобич мисливця','Superior Hunter’s Prey'],[15,'Вищий захист мисливця','Superior Hunter’s Defense']]),namedSubclass('ranger','beast-master','Повелитель звірів','Beast Master'),namedSubclass('ranger','fey-wanderer','Мандрівник Фейвайлду','Fey Wanderer'),namedSubclass('ranger','gloom-stalker','Мисливець сутінків','Gloom Stalker')],
+});
+
+export const rogue = defineClass({
+  slug:'rogue',nameUk:'Пройдисвіт',nameOriginal:'Rogue',hitDie:'d8',primaryAbility:'Спритність',savingThrows:['Спритність','Інтелект'],
+  armorProficiencies:['легкі обладунки'],weaponProficiencies:['проста зброя','військова зброя з властивістю «Фехтувальна» або «Легка»'],toolProficiencies:['злодійські інструменти'],
+  skillChoices:{choose:4,from:['Акробатика','Атлетика','Обман','Проникливість','Залякування','Розслідування','Сприйняття','Переконання','Спритність рук','Скритність']},hasSpellcasting:false,
+  rows:[['Експертиза','Прихована атака','Злодійський жаргон','Майстерність зброї'],['Хитра дія'],['Підклас пройдисвіта','Стабільний приціл'],['Збільшення характеристик'],['Хитрий удар','Неймовірне ухилення'],['Експертиза'],['Ухилення','Надійний талант'],['Збільшення характеристик'],['Особливість підкласу (9 рівень)'],['Збільшення характеристик'],['Покращений хитрий удар'],['Збільшення характеристик'],['Особливість підкласу (13 рівень)'],['Підступні удари'],['Слизький розум'],['Збільшення характеристик'],['Особливість підкласу (17 рівень)'],['Невловимий'],['Епічний дар'],['Удар удачі']].map((features,index)=>row(features,{sneak_attack:`${Math.ceil((index+1)/2)}к6`})),
+  startingEquipment:[{title:'Варіант A',items:['Шкіряний обладунок, 2 кинджали, короткий меч, короткий лук, 20 стріл, сагайдак, злодійські інструменти, набір зломщика та 8 зм']},{title:'Варіант B',items:['100 зм']}],
+  subclasses:[openSubclass('rogue','thief','Злодій','Thief',[[3,'Швидкі руки','Fast Hands'],[3,'Робота на висоті','Second-Story Work'],[9,'Найвище підкрадання','Supreme Sneak'],[13,'Використання магічних предметів','Use Magic Device'],[17,'Рефлекси злодія','Thief’s Reflexes']]),namedSubclass('rogue','arcane-trickster','Містичний хитрун','Arcane Trickster'),namedSubclass('rogue','assassin','Убивця','Assassin'),namedSubclass('rogue','soulknife','Клинок душі','Soulknife')],
+});
+
+export const sorcerer = defineClass({
+  slug:'sorcerer',nameUk:'Чаклун',nameOriginal:'Sorcerer',hitDie:'d6',primaryAbility:'Харизма',savingThrows:['Статура','Харизма'],
+  armorProficiencies:[],weaponProficiencies:['проста зброя'],toolProficiencies:[],skillChoices:{choose:2,from:['Арканознавство','Обман','Проникливість','Залякування','Переконання','Релігія']},hasSpellcasting:true,
+  rows:[['Накладання заклять','Вроджене чаклунство'],['Джерело магії','Метамагія'],['Підклас чаклуна'],['Збільшення характеристик'],['Чаклунське відновлення'],['Особливість підкласу (6 рівень)'],['Втілене чаклунство'],['Збільшення характеристик'],[],['Метамагія'],[],['Збільшення характеристик'],[],['Особливість підкласу (14 рівень)'],[],['Збільшення характеристик'],['Метамагія'],['Особливість підкласу (18 рівень)'],['Епічний дар'],['Магічний апофеоз']].map((features,index)=>row(features,{sorcery_points:index===0?'—':index+1},caster([2,4,6,7,9,10,11,12,14,15,16,16,17,17,18,18,19,20,21,22],[4,4,4,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6,6,6])[index])),
+  startingEquipment:[{title:'Варіант A',items:['Спис, 2 кинджали, магічний фокус, набір дослідника підземель та 28 зм']},{title:'Варіант B',items:['50 зм']}],
+  subclasses:[openSubclass('sorcerer','draconic','Драконяче чаклунство','Draconic Sorcery',[[3,'Драконяча стійкість','Draconic Resilience'],[3,'Драконячі закляття','Draconic Spells'],[6,'Стихійна спорідненість','Elemental Affinity'],[14,'Драконячі крила','Dragon Wings'],[18,'Драконячий супутник','Dragon Companion']]),namedSubclass('sorcerer','aberrant','Аберантне чаклунство','Aberrant Sorcery'),namedSubclass('sorcerer','clockwork','Механічне чаклунство','Clockwork Sorcery'),namedSubclass('sorcerer','wild-magic','Чаклунство дикої магії','Wild Magic Sorcery')],
+});
+
+export const warlock = defineClass({
+  slug:'warlock',nameUk:'Чорнокнижник',nameOriginal:'Warlock',hitDie:'d8',primaryAbility:'Харизма',savingThrows:['Мудрість','Харизма'],
+  armorProficiencies:['легкі обладунки'],weaponProficiencies:['проста зброя'],toolProficiencies:[],skillChoices:{choose:2,from:['Арканознавство','Обман','Історія','Залякування','Розслідування','Природа','Релігія']},hasSpellcasting:true,
+  rows:[['Потойбічні інвокації','Магія пакту'],['Магічна хитрість'],['Підклас чорнокнижника'],['Збільшення характеристик'],[],['Особливість підкласу (6 рівень)'],[],['Збільшення характеристик'],['Зв’язок із покровителем'],['Особливість підкласу (10 рівень)'],['Містичний аркан (6 рівень)'],['Збільшення характеристик'],['Містичний аркан (7 рівень)'],['Особливість підкласу (14 рівень)'],['Містичний аркан (8 рівень)'],['Збільшення характеристик'],['Містичний аркан (9 рівень)'],[],['Епічний дар'],['Майстер потойбіччя']].map((features,index)=>row(features,{eldritch_invocations:[1,3,3,3,5,5,6,6,7,7,7,8,8,8,9,9,9,10,10,10][index],pact_slots:index===0?1:index<10?2:index<16?3:4,pact_slot_level:Math.min(5,Math.ceil((index+1)/2))},{cantrips:index<3?2:index<9?3:4,prepared_spells:[2,3,4,5,6,7,8,9,10,10,11,11,12,12,13,13,14,14,15,15][index]})),
+  startingEquipment:[{title:'Варіант A',items:['Шкіряний обладунок, серп, 2 кинджали, магічний фокус, книга окультних знань, набір науковця та 15 зм']},{title:'Варіант B',items:['100 зм']}],
+  subclasses:[openSubclass('warlock','fiend','Покровитель: Демон','Fiend Patron',[[3,'Закляття демона','Fiend Spells'],[3,'Благословення Темного','Dark One’s Blessing'],[6,'Власна удача Темного','Dark One’s Own Luck'],[10,'Демонічна стійкість','Fiendish Resilience'],[14,'Кидок крізь пекло','Hurl Through Hell']]),namedSubclass('warlock','archfey','Покровитель: Архіфея','Archfey Patron'),namedSubclass('warlock','celestial','Покровитель: Небожитель','Celestial Patron'),namedSubclass('warlock','great-old-one','Покровитель: Великий Древній','Great Old One Patron')],
+});
