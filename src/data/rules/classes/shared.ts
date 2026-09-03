@@ -39,6 +39,7 @@ export function createSubclass(
   levels: Array<[number, string, string]>,
   source: OfficialRuleSource,
   descriptions: Record<string, string> = {},
+  options: Record<string, OfficialFeatureOption[]> = {},
 ): OfficialSubclass {
   return {
     id: `${classSlug}-${slugValue}`,
@@ -56,6 +57,7 @@ export function createSubclass(
       sourceText: descriptions[featureNameUk] ?? MISSING_SOURCE_TEXT,
       anchorId: `subclass-${classSlug}-${slugValue}-${slug(featureNameOriginal)}`,
       scanLine: { level },
+      options: options[featureNameUk],
     })),
   };
 }
