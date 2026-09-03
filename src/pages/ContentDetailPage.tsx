@@ -24,6 +24,7 @@ import {
 } from '@/features/catalog/utils/codexIcons';
 import { formatValueSafely, isRecord, isUsefulValue, referenceLevel, sourceRuleText } from '@/features/catalog/utils/detailContent';
 import { parseSubclasses } from '@/features/catalog/utils/subclassData';
+import { resolveRaceImageUrl } from '@/features/catalog/utils/raceImages';
 import type { EntityType } from '@/types/content';
 
 type ContentDetailPageProps = {
@@ -34,12 +35,6 @@ const entityLabels: Record<EntityType, string> = {
   race: 'Раса',
   class: 'Клас',
   item: 'Предмет',
-};
-
-const localRaceImageOverrides: Record<string, string> = {
-  dwarf: '/images/catalog/races/dwarf.webp',
-  elf: '/images/catalog/races/elf.webp',
-  human: '/images/catalog/races/human.webp',
 };
 
 function booleanLabel(value: boolean) {
@@ -429,7 +424,7 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
 
   const defaultImageUrl = getDefaultImageUrl(sectionSlug);
   const imageUrl = entry.entityType === 'race'
-    ? localRaceImageOverrides[entry.slug] || entry.image_url?.trim() || ''
+    ? resolveRaceImageUrl(entry.slug, entry.content_type, entry.image_url)
     : entry.image_url?.trim() || defaultImageUrl;
   if (entry.entityType === 'class') {
     return <ClassDetailContent entry={entry} imageUrl={imageUrl} fallbackImageUrl={defaultImageUrl} />;
