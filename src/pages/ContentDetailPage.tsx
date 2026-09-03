@@ -11,7 +11,6 @@ import { ProgressionTable } from '@/features/catalog/components/ProgressionTable
 import { QuickScanSection } from '@/features/catalog/components/QuickScanSection';
 import { RaceTraitSection } from '@/features/catalog/components/RaceTraitSection';
 import { SubraceSelector } from '@/features/catalog/components/SubraceSelector';
-import { SubclassSelector } from '@/features/catalog/components/SubclassSelector';
 import { SourceFooter } from '@/features/catalog/components/SourceFooter';
 import { sectionSlugForEntity } from '@/features/catalog/api/catalogApi';
 import { useCatalogEntry } from '@/features/catalog/hooks/useCatalogData';
@@ -187,9 +186,31 @@ function choiceText(value: unknown) {
 }
 
 function normalizeClassFeatures(entry: ClassEntry) {
-  const cards = referenceCards(entry.class_features, 'Уміння');
-  const spellcastingCards = entry.has_spellcasting ? referenceCards(entry.spellcasting, 'Заклинання') : [];
-  return [...cards, ...spellcastingCards].map((card) => {
+  const metadataTitles = new Set([
+    'заклинальна характеристика',
+    'spellcasting ability',
+    'основна характеристика',
+    'primary ability',
+    'кістка здоров’я',
+    'кістка хітів',
+    'hit die',
+    'володіння обладунками',
+    'armor training',
+    'володіння зброєю',
+    'weapon proficiencies',
+    'володіння інструментами',
+    'tool proficiencies',
+    'рятівні кидки',
+    'ряткидки',
+    'saving throws',
+    'навички',
+    'skill proficiencies',
+    'стартове спорядження',
+    'starting equipment',
+  ]);
+  const cards = referenceCards(entry.class_features, 'Уміння')
+    .filter((card) => !metadataTitles.has(card.title.trim().toLowerCase()));
+  return cards.map((card) => {
     const mechanicalEffect = card.rows.find((row) => row.label === 'Механічний ефект')?.value;
     return {
       ...card,
@@ -290,7 +311,6 @@ function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: Clas
   const existingFeatureKeys = new Set(explicitFeatures.map((feature) => `${feature.title.toLowerCase()}|${referenceLevel(feature)}`));
   const baseFeatures = [...explicitFeatures, ...progressionFeatureCards(entry.class_progression)
     .filter((feature) => !existingFeatureKeys.has(`${feature.title.toLowerCase()}|${referenceLevel(feature)}`))];
-  const hasSubclasses = isUsefulValue(entry.subclasses);
   const subclasses = parseSubclasses(entry.subclasses);
   const [selectedSubclassIndex, setSelectedSubclassIndex] = useState(0);
   const [highlightedFeatureAnchor, setHighlightedFeatureAnchor] = useState<string | null>(null);
@@ -325,7 +345,6 @@ function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: Clas
     { href: '#class-features', label: 'Уміння класу', number: 3 },
     { href: '#class-proficiencies', label: 'Володіння', number: 4 },
     { href: '#class-equipment', label: 'Спорядження', number: 5 },
-    ...(hasSubclasses ? [{ href: '#class-subclasses', label: 'Підкласи', number: 6 }] : []),
   ];
 
   return (
@@ -338,7 +357,6 @@ function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: Clas
       <QuickScanSection id="class-features" number={3} title="Уміння класу" cards={features} iconForCard={classFeatureIconForTitle} emptyMessage="Уміння класу не вказано у доступному джерелі." groupByLevel highlightedAnchor={highlightedFeatureAnchor} />
       <DetailGroupPanel id="class-proficiencies" sectionNumber={4} title="Володіння" groups={classProficiencyGroups(entry)} presentation="rows" showCodexIcons />
       <EquipmentSection id="class-equipment" number={5} value={entry.starting_equipment} />
-      <SubclassSelector id="class-subclasses" number={6} value={entry.subclasses} selectedIndex={selectedSubclassIndex} onSelectedIndexChange={setSelectedSubclassIndex} showTabs={false} showFeatures={false} />
       <SourceFooter id="class-source" title={entry.source?.title} />
     </DetailLayout>
   );

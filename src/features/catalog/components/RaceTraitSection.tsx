@@ -136,12 +136,22 @@ export function RaceTraitSection({ cards, id, sectionNumber }: RaceTraitSectionP
               ) : null}
               {card.options && card.options.length > 0 ? (
                 <details className="codex-rule-options">
-                  <summary>Доступні варіанти <span>{card.options.length}</span></summary>
+                  <summary>Доступні варіанти</summary>
                   <div className="codex-rule-option-list">
                     {card.options.map((option) => (
                       <article className="codex-rule-option" key={option.anchorId ?? option.title}>
                         <h4>{option.title}</h4>
-                        {option.description ? <p><RuleText>{option.description}</RuleText></p> : null}
+                        <p><RuleText>{option.description ?? 'Опис не вказано у доступному джерелі.'}</RuleText></p>
+                        {option.rows.length > 0 ? (
+                          <dl className="codex-rule-scan codex-rule-option-scan">
+                            {option.rows.slice(0, 3).map((fact) => (
+                              <div key={`${fact.label}-${fact.value}`}>
+                                <dt>{fact.label}:</dt>
+                                <dd><RuleText>{fact.value}</RuleText></dd>
+                              </div>
+                            ))}
+                          </dl>
+                        ) : null}
                       </article>
                     ))}
                   </div>

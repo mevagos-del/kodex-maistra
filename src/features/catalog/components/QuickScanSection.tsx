@@ -1,5 +1,5 @@
 import type { ReferenceCard } from '../api/detailReference';
-import { createReferenceAnchors } from '../utils/detailContent';
+import { createReferenceAnchors, referenceLevel } from '../utils/detailContent';
 import { RuleText } from './RuleText';
 
 type QuickScanSectionProps = {
@@ -16,10 +16,13 @@ type QuickScanSectionProps = {
 export function QuickScanSection({ id, number, title, cards, iconForCard, emptyMessage, groupByLevel = false, highlightedAnchor }: QuickScanSectionProps) {
   if (cards.length === 0 && !emptyMessage) return null;
 
-  const anchoredCards = createReferenceAnchors(cards);
+  const visibleCards = groupByLevel
+    ? cards.filter((card) => Number.isFinite(Number.parseInt(referenceLevel(card), 10)))
+    : cards;
+  const anchoredCards = createReferenceAnchors(visibleCards);
   const groups = groupByLevel
     ? Array.from(anchoredCards.reduce((result, entry) => {
-        const level = entry.card.rows.find((row) => row.label === 'Рівень')?.value ?? 'Не вказано';
+        const level = referenceLevel(entry.card);
         result.set(level, [...(result.get(level) ?? []), entry]);
         return result;
       }, new Map<string, typeof anchoredCards>()).entries()).sort(([left], [right]) => Number.parseInt(left, 10) - Number.parseInt(right, 10))
@@ -28,7 +31,7 @@ export function QuickScanSection({ id, number, title, cards, iconForCard, emptyM
   return (
     <section id={id} className="detail-v2-panel codex-detail-section">
       <h2 className="codex-detail-title"><span>{number}.</span> {title}</h2>
-      {cards.length > 0 ? (
+      {visibleCards.length > 0 ? (
         <div className="codex-level-groups">
           {groups.map(([level, entries]) => <section className="codex-level-group" key={level || 'all'}>
             {groupByLevel ? <h3 className="codex-level-heading">{level} рівень</h3> : null}
@@ -56,12 +59,22 @@ export function QuickScanSection({ id, number, title, cards, iconForCard, emptyM
                   ) : null}
                   {card.options && card.options.length > 0 ? (
                     <details className="codex-rule-options">
-                      <summary>Доступні варіанти <span>{card.options.length}</span></summary>
+                      <summary>Доступні варіанти</summary>
                       <div className="codex-rule-option-list">
                         {card.options.map((option) => (
                           <article className="codex-rule-option" key={option.anchorId ?? option.title}>
                             <h4>{option.title}</h4>
-                            {option.description ? <p><RuleText>{option.description}</RuleText></p> : null}
+                            <p><RuleText>{option.description ?? 'Опис не вказано у доступному джерелі.'}</RuleText></p>
+                            {option.rows.length > 0 ? (
+                              <dl className="codex-rule-scan codex-rule-option-scan">
+                                {option.rows.slice(0, 3).map((fact) => (
+                                  <div key={`${fact.label}-${fact.value}`}>
+                                    <dt>{fact.label}:</dt>
+                                    <dd><RuleText>{fact.value}</RuleText></dd>
+                                  </div>
+                                ))}
+                              </dl>
+                            ) : null}
                           </article>
                         ))}
                       </div>

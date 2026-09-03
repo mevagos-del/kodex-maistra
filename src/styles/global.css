@@ -514,19 +514,16 @@
   cursor: pointer;
 }
 
-.codex-rule-options summary span {
-  color: rgb(222 207 178 / 58%);
-  font-size: 0.78em;
-}
-
 .codex-rule-option-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
   gap: 9px;
   margin-top: 10px;
 }
 
 .codex-rule-option {
+  width: 100%;
   min-width: 0;
   padding: 11px 12px;
   border: 1px solid rgb(198 139 58 / 24%);
@@ -545,6 +542,10 @@
   margin: 5px 0 0;
   color: rgb(236 228 212 / 82%);
   line-height: 1.5;
+}
+
+.codex-rule-option-scan {
+  font-size: 0.78rem;
 }
 
 .codex-progression-wrap {
@@ -6288,6 +6289,16 @@ body::before {
   margin: 10px 0 0;
   padding-top: 9px;
   border-top: 1px solid rgb(194 138 61 / 20%);
+}
+
+.detail-v2-shell--race .race-trait-card > .codex-rule-options {
+  grid-column: 2;
+  width: 100%;
+  min-width: 0;
+}
+
+.detail-v2-shell--race .race-trait-card .codex-rule-option-list {
+  grid-template-columns: 1fr;
 }
 
 .detail-v2-shell--race .race-trait-scan-fact {
