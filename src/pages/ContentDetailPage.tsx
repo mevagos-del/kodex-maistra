@@ -24,7 +24,7 @@ import {
 } from '@/features/catalog/utils/codexIcons';
 import { formatValueSafely, isRecord, isUsefulValue, referenceLevel, sourceRuleText } from '@/features/catalog/utils/detailContent';
 import { parseSubclasses } from '@/features/catalog/utils/subclassData';
-import { resolveRaceImageUrl } from '@/features/catalog/utils/raceImages';
+import { resolveCatalogImageUrl } from '@/features/catalog/utils/catalogImages';
 import type { EntityType } from '@/types/content';
 
 type ContentDetailPageProps = {
@@ -301,7 +301,7 @@ function descriptionWithoutHeading(markdown: string | null, title: string, lead?
   }).join('\n').trim() || null;
 }
 
-function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ClassEntry; imageUrl: string; fallbackImageUrl: string }) {
+function ClassDetailContent({ entry, imageUrl }: { entry: ClassEntry; imageUrl: string }) {
   const explicitFeatures = normalizeClassFeatures(entry);
   const existingFeatureKeys = new Set(explicitFeatures.map((feature) => `${feature.title.toLowerCase()}|${referenceLevel(feature)}`));
   const baseFeatures = [...explicitFeatures, ...progressionFeatureCards(entry.class_progression)
@@ -343,7 +343,7 @@ function ClassDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: Clas
   ];
 
   return (
-    <DetailLayout variant="class" sidebar={<DetailSidebar variant="class" imageUrl={imageUrl} imageAlt={entry.title_ua} fallbackImageUrl={fallbackImageUrl} hideImage label="Клас" title={entry.title_ua} originalTitle={entry.title_original} description={null} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} subclasses={subclasses} selectedSubclassIndex={selectedSubclassIndex} onSelectSubclass={setSelectedSubclassIndex} />}>
+    <DetailLayout variant="class" sidebar={<DetailSidebar variant="class" imageUrl={imageUrl} imageAlt={entry.title_ua} hideImage={!imageUrl} hideImageOnError label="Клас" title={entry.title_ua} originalTitle={entry.title_original} description={null} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} subclasses={subclasses} selectedSubclassIndex={selectedSubclassIndex} onSelectSubclass={setSelectedSubclassIndex} />}>
       <section id="class-passport" className="detail-v2-panel codex-detail-section">
         <h2 className="codex-detail-title"><span>1.</span> Паспорт класу</h2>
         <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="class" />
@@ -423,11 +423,17 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
   }
 
   const defaultImageUrl = getDefaultImageUrl(sectionSlug);
-  const imageUrl = entry.entityType === 'race'
-    ? resolveRaceImageUrl(entry.slug, entry.content_type, entry.image_url)
-    : entry.image_url?.trim() || defaultImageUrl;
+  const resolvedImageUrl = resolveCatalogImageUrl(
+    entry.entityType,
+    entry.slug,
+    entry.content_type,
+    entry.image_url,
+  );
+  const imageUrl = entry.entityType === 'item'
+    ? resolvedImageUrl || defaultImageUrl
+    : resolvedImageUrl;
   if (entry.entityType === 'class') {
-    return <ClassDetailContent entry={entry} imageUrl={imageUrl} fallbackImageUrl={defaultImageUrl} />;
+    return <ClassDetailContent entry={entry} imageUrl={imageUrl} />;
   }
 
   if (entry.entityType === 'item') {

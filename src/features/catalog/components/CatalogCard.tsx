@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { getDefaultImageUrl } from '@/lib/storage';
 import type { CatalogEntry } from '../types';
 import { sectionSlugForEntity } from '../api/catalogApi';
-import { resolveRaceImageUrl } from '../utils/raceImages';
+import { resolveCatalogImageUrl } from '../utils/catalogImages';
 
 type CatalogCardProps = {
   entry: CatalogEntry;
@@ -10,9 +10,12 @@ type CatalogCardProps = {
 };
 
 function catalogCardImage(entry: CatalogEntry, sectionSlug: ReturnType<typeof sectionSlugForEntity>) {
-  const configuredImage = entry.entityType === 'race'
-    ? resolveRaceImageUrl(entry.slug, entry.content_type, entry.image_url)
-    : entry.image_url?.trim();
+  const configuredImage = resolveCatalogImageUrl(
+    entry.entityType,
+    entry.slug,
+    entry.content_type,
+    entry.image_url,
+  );
   return configuredImage || getDefaultImageUrl(sectionSlug);
 }
 

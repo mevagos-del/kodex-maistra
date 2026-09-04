@@ -9,7 +9,7 @@ import type {
 } from '@/data/rules/types';
 import type { EntityType } from '@/types/content';
 import type { CatalogEntry, ClassEntry, ItemEntry, RaceEntry } from '../types';
-import { localOfficialRaceImage } from '../utils/raceImages';
+import { localOfficialClassImage, localOfficialRaceImage } from '../utils/catalogImages';
 
 const PUBLISHED_AT = '2025-04-22T00:00:00.000Z';
 
@@ -110,7 +110,7 @@ function classToCatalogEntry(entry: OfficialClassEntry): ClassEntry {
     slug: entry.slug,
     short_description: null,
     full_description_markdown: null,
-    image_url: null,
+    image_url: localOfficialClassImage(entry.slug) ?? entry.imageUrl ?? null,
     source_id: entry.source.id,
     source: sourceSummary(entry.source),
     tags: ['клас', 'офіційний'],
