@@ -1,0 +1,19 @@
+:root {
+  --archive-bg: #080a0d;
+  --archive-bg-deep: #040609;
+  --archive-surface: #11161c;
+  --archive-surface-raised: #171d24;
+  --archive-surface-inset: #0b0f14;
+  --archive-border: rgb(184 132 61 / 34%);
+  --archive-border-strong: rgb(211 158 78 / 58%);
+  --archive-gold: #d5a85e;
+  --archive-gold-bright: #efd18d;
+  --archive-text: #f1e6cf;
+  --archive-muted: #a89d89;
+  --archive-sidebar-width: 272px;
+  --archive-sidebar-collapsed-width: 78px;
+  --archive-topbar-height: 62px;
+  --archive-radius: 8px;
+  --archive-fast: 160ms ease;
+  --archive-normal: 220ms ease;
+}

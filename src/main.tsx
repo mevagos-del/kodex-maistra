@@ -5,6 +5,9 @@ import { App } from './app/App';
 import { AuthProvider } from './features/auth/AuthProvider';
 import { registerServiceWorker } from './lib/registerServiceWorker';
 import './styles/global.css';
+import './design-system/tokens.css';
+import './design-system/archive-shell.css';
+import './design-system/motion.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

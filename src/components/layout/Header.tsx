@@ -1,40 +1,25 @@
-import { NavLink } from 'react-router-dom';
-import { toolNavigation } from '@/data/navigation';
-import { appRoutes } from '@/routes/appRoutes';
+import { useLocation } from 'react-router-dom';
 
-export function Header() {
+type HeaderProps = { onToggleSidebar: () => void; sidebarExpanded: boolean };
+
+function pageContext(pathname: string) {
+  if (pathname.startsWith('/races')) return 'Довідник / Раси';
+  if (pathname.startsWith('/classes')) return 'Довідник / Класи';
+  if (pathname.startsWith('/items')) return 'Довідник / Предмети';
+  if (pathname.startsWith('/admin')) return 'Система / Адміністрування';
+  if (pathname.startsWith('/login')) return 'Система / Обліковий запис';
+  return 'Кодекс Майстра';
+}
+
+export function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps) {
+  const { pathname } = useLocation();
   return (
-    <header className="site-header">
-      <div className="site-header-inner site-header__inner">
-        <NavLink to={appRoutes.home} className="brand" aria-label="Кодекс Майстра">
-          <span className="brand-mark">КМ</span>
-          <span>
-            <strong>Кодекс Майстра</strong>
-            <small>Довідник D&amp;D 5E</small>
-          </span>
-        </NavLink>
-
-        <nav className="main-nav tool-nav" aria-label="Модулі інструментів">
-          {toolNavigation.map((item) => (
-            <button key={item.title} type="button" className="tool-nav__item" disabled aria-label={item.title + '. ' + item.status}>
-              <span>{item.title}</span>
-              <small>{item.status}</small>
-            </button>
-          ))}
-        </nav>
-
-        <div className="mobile-tool-indicator" aria-label="Модулі інструментів">
-          Інструменти <span>Скоро</span>
-        </div>
-
-        <div className="header-actions">
-          <NavLink to={appRoutes.login} className="ghost-link">
-            Увійти
-          </NavLink>
-          <NavLink to={appRoutes.admin} className="accent-link">
-            Адмін
-          </NavLink>
-        </div>
+    <header className="archive-topbar">
+      <button type="button" className="archive-topbar__toggle" onClick={onToggleSidebar} aria-controls="archive-sidebar" aria-expanded={sidebarExpanded} aria-label="Перемкнути головне меню">
+        <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
+      </button>
+      <div className="archive-topbar__context">
+        <span>Codex Archive</span><strong>{pageContext(pathname)}</strong>
       </div>
     </header>
   );
