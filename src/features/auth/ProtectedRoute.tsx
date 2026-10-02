@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
+import { LoadingIndicator } from '@/components/ui/LoadingIndicator';
 import { useAuth } from './useAuth';
 import { appRoutes } from '@/routes/appRoutes';
 
@@ -13,7 +14,7 @@ export function ProtectedRoute({ children, allowedRoles = ['admin', 'editor'] }:
   const location = useLocation();
 
   if (isLoading) {
-    return <div className="placeholder-panel">Перевіряємо доступ...</div>;
+    return <div className="placeholder-panel"><LoadingIndicator label="Перевіряємо доступ…" /></div>;
   }
 
   if (!isConfigured || !user) {

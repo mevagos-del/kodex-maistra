@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Link, useParams } from 'react-router-dom';
+import { LoadingIndicator } from '@/components/ui/LoadingIndicator';
 import { referenceCards } from '@/features/catalog/api/detailReference';
 import { DetailLayout } from '@/features/catalog/components/DetailLayout';
 import { DetailSidebar } from '@/features/catalog/components/DetailSidebar';
@@ -404,7 +405,7 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
   const sectionSlug = sectionSlugForEntity(entity);
 
   if (isLoading) {
-    return <div className="placeholder-panel">Завантажуємо матеріал...</div>;
+    return <div className="placeholder-panel"><LoadingIndicator label="Завантажуємо матеріал…" /></div>;
   }
 
   if (errorMessage) {

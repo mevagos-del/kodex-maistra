@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
+import { LoadingIndicator } from '@/components/ui/LoadingIndicator';
 import { ProtectedRoute } from '@/features/auth/ProtectedRoute';
 import { appRoutes } from '@/routes/appRoutes';
 import { preloadAdminRoute, preloadCatalogRoute, preloadDetailRoute } from './routePreload';
@@ -13,7 +14,7 @@ const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((module) => 
 const SectionPage = lazy(() => preloadCatalogRoute().then((module) => ({ default: module.SectionPage })));
 
 function RouteFallback() {
-  return <div className="archive-route-fallback" role="status">Відкриваємо розділ…</div>;
+  return <div className="archive-route-fallback"><LoadingIndicator label="Відкриваємо розділ…" /></div>;
 }
 
 export function App() {

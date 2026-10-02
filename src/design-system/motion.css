@@ -1,12 +1,37 @@
+@keyframes archive-grid-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes archive-loading-pulse {
+  0%, 100% { opacity: 0.48; transform: scale(0.86); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+.catalog-archive-grid {
+  animation: archive-grid-in 220ms ease-out both;
+}
+
+.archive-loading-indicator__mark {
+  animation: archive-loading-pulse 1.1s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .archive-shell__frame,
   .archive-sidebar,
   .archive-sidebar__link,
+  .archive-sidebar__link::before,
   .archive-topbar__toggle,
   .catalog-archive-page .catalog-card,
   .catalog-archive-page .catalog-card__image,
   .catalog-archive-page .catalog-card__open-link,
-  .catalog-archive-search input {
+  .catalog-archive-search input,
+  .catalog-archive-search > span {
     transition: none !important;
+  }
+
+  .catalog-archive-grid,
+  .archive-loading-indicator__mark {
+    animation: none !important;
   }
 }
