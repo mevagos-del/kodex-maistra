@@ -62,7 +62,7 @@ export function SectionPage({ section }: SectionPageProps) {
           <div className="archive-status-panel">Не вдалося завантажити матеріали: {catalog.errorMessage}</div>
         ) : filteredEntries.length > 0 ? (
           <div className="catalog-archive-grid">
-            {filteredEntries.map((entry) => <CatalogCard key={entry.id} entry={entry} />)}
+            {filteredEntries.map((entry, index) => <CatalogCard key={entry.id} entry={entry} priority={index === 0} />)}
           </div>
         ) : (
           <EmptyState description="Спробуйте змінити пошуковий запит." />

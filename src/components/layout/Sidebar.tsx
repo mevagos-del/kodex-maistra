@@ -1,8 +1,9 @@
 import { NavLink } from 'react-router-dom';
+import type { RefObject } from 'react';
 import { useAuth } from '@/features/auth/useAuth';
 import { appRoutes } from '@/routes/appRoutes';
 
-type SidebarProps = { collapsed: boolean; mobileOpen: boolean; onClose: () => void };
+type SidebarProps = { open: boolean; onClose: () => void; closeButtonRef: RefObject<HTMLButtonElement | null> };
 type SidebarItem = { label: string; icon: string; path?: string; disabled?: boolean };
 
 const referenceItems: SidebarItem[] = [
@@ -44,17 +45,17 @@ function SidebarGroup({ title, items, onNavigate }: { title: string; items: Side
   );
 }
 
-export function Sidebar({ collapsed, mobileOpen, onClose }: SidebarProps) {
+export function Sidebar({ open, onClose, closeButtonRef }: SidebarProps) {
   const { user, profile, canAccessAdmin } = useAuth();
   const accountLabel = user ? profile?.display_name || 'Профіль' : 'Увійти';
   return (
-    <aside id="archive-sidebar" className={`archive-sidebar${collapsed ? ' is-collapsed' : ''}${mobileOpen ? ' is-mobile-open' : ''}`} aria-label="Головна навігація">
+    <aside id="archive-sidebar" className={`archive-sidebar${open ? ' is-open' : ''}`} aria-label="Головна навігація" aria-hidden={!open} inert={!open}>
       <div className="archive-sidebar__brand">
         <NavLink to={appRoutes.home} onClick={onClose} aria-label="Кодекс Майстра, головна">
           <span className="archive-sidebar__brand-mark">КМ</span>
           <span className="archive-sidebar__brand-copy"><strong>Кодекс Майстра</strong><small>Архів правил D&amp;D</small></span>
         </NavLink>
-        <button type="button" className="archive-sidebar__close" onClick={onClose} aria-label="Закрити меню">×</button>
+        <button ref={closeButtonRef} type="button" className="archive-sidebar__close" onClick={onClose} aria-label="Закрити меню">×</button>
       </div>
       <nav className="archive-sidebar__nav">
         <SidebarGroup title="Довідник" items={referenceItems} onNavigate={onClose} />

@@ -6,17 +6,20 @@ export type AsyncDataState<T> = {
   errorMessage: string | null;
 };
 
-export function useAsyncData<T>(loader: () => Promise<T>, initialData: T, dependencies: unknown[] = []) {
+type AsyncDataOptions = { blocking?: boolean };
+
+export function useAsyncData<T>(loader: () => Promise<T>, initialData: T, dependencies: unknown[] = [], options: AsyncDataOptions = {}) {
+  const blocking = options.blocking ?? true;
   const [state, setState] = useState<AsyncDataState<T>>({
     data: initialData,
-    isLoading: true,
+    isLoading: blocking,
     errorMessage: null,
   });
 
   useEffect(() => {
     let isMounted = true;
 
-    setState((current) => ({ ...current, isLoading: true, errorMessage: null }));
+    setState({ data: initialData, isLoading: blocking, errorMessage: null });
 
     loader()
       .then((data) => {

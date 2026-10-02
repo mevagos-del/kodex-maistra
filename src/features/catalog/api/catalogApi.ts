@@ -16,6 +16,11 @@ const contentSelect = `
 `;
 
 type CatalogRow = Record<string, unknown>;
+type CatalogCacheEntry = { data: CatalogEntry[]; expiresAt: number };
+
+const CATALOG_CACHE_TTL_MS = 60_000;
+const catalogCache = new Map<EntityType, CatalogCacheEntry>();
+const catalogRequests = new Map<EntityType, Promise<CatalogEntry[]>>();
 
 function ensureArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
@@ -82,7 +87,12 @@ export async function fetchPublishedSections(): Promise<PublishedSection[]> {
   return (data ?? []) as PublishedSection[];
 }
 
-export async function fetchCatalogList(entity: EntityType): Promise<CatalogEntry[]> {
+export function getImmediateCatalogList(entity: EntityType): CatalogEntry[] {
+  const cached = catalogCache.get(entity);
+  return cached && cached.expiresAt > Date.now() ? cached.data : listOfficialEntries(entity);
+}
+
+async function fetchCatalogListUncached(entity: EntityType): Promise<CatalogEntry[]> {
   const officialEntries = listOfficialEntries(entity);
   if (!supabase) return officialEntries;
 
@@ -104,6 +114,23 @@ export async function fetchCatalogList(entity: EntityType): Promise<CatalogEntry
   const officialSlugs = new Set(officialEntries.map((entry) => entry.slug));
   return [...officialEntries, ...dynamicEntries.filter((entry) => !officialSlugs.has(entry.slug))]
     .sort((a, b) => a.title_ua.localeCompare(b.title_ua, 'uk'));
+}
+
+export async function fetchCatalogList(entity: EntityType): Promise<CatalogEntry[]> {
+  const cached = catalogCache.get(entity);
+  if (cached && cached.expiresAt > Date.now()) return cached.data;
+
+  const pendingRequest = catalogRequests.get(entity);
+  if (pendingRequest) return pendingRequest;
+
+  const request = fetchCatalogListUncached(entity)
+    .then((data) => {
+      catalogCache.set(entity, { data, expiresAt: Date.now() + CATALOG_CACHE_TTL_MS });
+      return data;
+    })
+    .finally(() => catalogRequests.delete(entity));
+  catalogRequests.set(entity, request);
+  return request;
 }
 
 export async function fetchCatalogEntryBySlug(entity: EntityType, slug: string): Promise<CatalogEntry | null> {

@@ -1,6 +1,7 @@
 import { useLocation } from 'react-router-dom';
+import type { RefObject } from 'react';
 
-type HeaderProps = { onToggleSidebar: () => void; sidebarExpanded: boolean };
+type HeaderProps = { onToggleSidebar: () => void; sidebarExpanded: boolean; toggleButtonRef: RefObject<HTMLButtonElement | null> };
 
 function pageContext(pathname: string) {
   if (pathname.startsWith('/races')) return 'Довідник / Раси';
@@ -11,11 +12,11 @@ function pageContext(pathname: string) {
   return 'Кодекс Майстра';
 }
 
-export function Header({ onToggleSidebar, sidebarExpanded }: HeaderProps) {
+export function Header({ onToggleSidebar, sidebarExpanded, toggleButtonRef }: HeaderProps) {
   const { pathname } = useLocation();
   return (
     <header className="archive-topbar">
-      <button type="button" className="archive-topbar__toggle" onClick={onToggleSidebar} aria-controls="archive-sidebar" aria-expanded={sidebarExpanded} aria-label="Перемкнути головне меню">
+      <button ref={toggleButtonRef} type="button" className="archive-topbar__toggle" onClick={onToggleSidebar} aria-controls="archive-sidebar" aria-expanded={sidebarExpanded} aria-label="Перемкнути головне меню">
         <span aria-hidden="true" /><span aria-hidden="true" /><span aria-hidden="true" />
       </button>
       <div className="archive-topbar__context">

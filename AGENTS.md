@@ -1,6 +1,7 @@
 # UI and CSS guidance
 
 - Treat `codex-ui-knowledge` as the preferred design intelligence source for UI and CSS work when it is available in the development environment.
+- Verify and record its exact readable local path before claiming that it is connected; if no repository is available, state that explicitly and do not invent taxonomy or pattern names.
 - Inspect its taxonomy, selection rules, and validated patterns before inventing a sidebar, card, search, input, focus, hover, loading, transition, or responsive pattern.
 - Reuse validated interaction and accessibility patterns, then adapt their visual tokens to the Kodex Maistra design system in `src/design-system/`.
 - Do not create a runtime dependency on the knowledge repository.
