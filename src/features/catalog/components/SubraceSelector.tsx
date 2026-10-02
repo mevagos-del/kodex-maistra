@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { subraceIconForTitle } from '../utils/codexIcons';
+import { DetailOptionSelector, type DetailSelectorOption } from './DetailOptionSelector';
 import { RuleText } from './RuleText';
 
 const titleKeys = ['name', 'title', 'label'];
@@ -9,12 +11,17 @@ const summaryKeys = ['summary', 'description', 'text', 'note'];
 type SubraceRecord = Record<string, unknown>;
 
 type ParsedSubrace = {
+  slug: string;
   name: string;
   originalName?: string;
   tag?: string;
   summary?: string;
   record: SubraceRecord;
 };
+
+function slugify(value: string) {
+  return value.toLowerCase().replace(/[^a-zа-яіїєґ0-9]+/gi, '-').replace(/^-|-$/g, '') || 'variant';
+}
 
 function isRecord(value: unknown): value is SubraceRecord {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -49,13 +56,14 @@ function parseSubraces(value: unknown): ParsedSubrace[] {
     .map((item, index): ParsedSubrace | null => {
       if (!isRecord(item)) {
         const text = cleanText(item);
-        return text ? { name: text, record: { name: text } } : null;
+        return text ? { slug: slugify(text), name: text, record: { name: text } } : null;
       }
 
       const name = titleKeys.map((key) => cleanText(item[key])).find(Boolean) ?? `Підраса ${index + 1}`;
       const summary = summaryKeys.map((key) => cleanText(item[key])).find(Boolean) ?? undefined;
 
       return {
+        slug: cleanText(item.slug ?? item.id) ?? slugify(name),
         name,
         originalName: cleanText(item.original_name ?? item.originalTitle) ?? undefined,
         tag: cleanText(item.tag ?? item.type) ?? undefined,
@@ -128,16 +136,21 @@ type SubraceSelectorProps = {
 
 export function SubraceSelector({ value, id, sectionNumber }: SubraceSelectorProps) {
   const subraces = useMemo(() => parseSubraces(value), [value]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [value]);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   if (subraces.length === 0) return null;
 
-  const selected = subraces[Math.min(selectedIndex, subraces.length - 1)];
+  const requestedSlug = searchParams.get('variant');
+  const selected = subraces.find((subrace) => subrace.slug === requestedSlug) ?? subraces[0];
   const groups = detailGroups(selected.record);
+  const options: DetailSelectorOption[] = subraces.map((subrace) => ({
+    key: subrace.slug,
+    title: subrace.name,
+    originalTitle: subrace.originalName,
+    edition: 'D&D 2024',
+    imageUrl: subraceIconForTitle(subrace.name),
+    meta: subrace.tag,
+  }));
 
   return (
     <section id={id} className={`detail-v2-panel subrace-section${sectionNumber ? ' race-detail-section' : ''}`} aria-labelledby="subrace-selector-title">
@@ -146,32 +159,18 @@ export function SubraceSelector({ value, id, sectionNumber }: SubraceSelectorPro
         <p>Показано лише особливості вибраного варіанта або походження.</p>
       </div>
 
-      <div className="subrace-selector" role="tablist" aria-label="Варіанти або походження">
-        {subraces.map((subrace, index) => {
-          const isActive = index === selectedIndex;
-          return (
-            <button
-              key={`${subrace.name}-${index}`}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              className={isActive ? 'subrace-selector__item subrace-selector__item-active' : 'subrace-selector__item'}
-              onClick={() => setSelectedIndex(index)}
-            >
-              <span className="subrace-selector__icon subrace-selector__icon--codex" aria-hidden="true">
-                <img className="codex-icon codex-icon--subrace" src={subraceIconForTitle(subrace.name)} alt="" />
-              </span>
-              <span className="subrace-selector__text">
-                <strong>{subrace.name}</strong>
-                {subrace.originalName ? <small>{subrace.originalName}</small> : null}
-              </span>
-              {subrace.tag ? <span className="subrace-selector__tag">{subrace.tag}</span> : null}
-            </button>
-          );
-        })}
-      </div>
+      <DetailOptionSelector
+        label="Підраса"
+        options={options}
+        selectedKey={selected.slug}
+        onSelect={(key) => {
+          const next = new URLSearchParams(searchParams);
+          next.set('variant', key);
+          setSearchParams(next, { replace: true });
+        }}
+      />
 
-      <article className="subrace-detail-panel" role="tabpanel">
+      <article className="subrace-detail-panel detail-selection-content" key={selected.slug}>
         <div className="subrace-detail-panel__header">
           <div>
             <h4>{selected.name}</h4>

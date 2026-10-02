@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { LoadingIndicator } from '@/components/ui/LoadingIndicator';
 import { referenceCards } from '@/features/catalog/api/detailReference';
 import { DetailLayout } from '@/features/catalog/components/DetailLayout';
@@ -13,6 +13,7 @@ import { QuickScanSection } from '@/features/catalog/components/QuickScanSection
 import { RaceTraitSection } from '@/features/catalog/components/RaceTraitSection';
 import { SubraceSelector } from '@/features/catalog/components/SubraceSelector';
 import { SourceFooter } from '@/features/catalog/components/SourceFooter';
+import { SubclassSelector } from '@/features/catalog/components/SubclassSelector';
 import { sectionSlugForEntity } from '@/features/catalog/api/catalogApi';
 import { useCatalogEntry } from '@/features/catalog/hooks/useCatalogData';
 import type { CatalogEntry, ClassEntry, ItemEntry } from '@/features/catalog/types';
@@ -308,10 +309,20 @@ function ClassDetailContent({ entry, imageUrl }: { entry: ClassEntry; imageUrl: 
   const baseFeatures = [...explicitFeatures, ...progressionFeatureCards(entry.class_progression)
     .filter((feature) => !existingFeatureKeys.has(`${feature.title.toLowerCase()}|${referenceLevel(feature)}`))];
   const subclasses = parseSubclasses(entry.subclasses);
-  const [selectedSubclassIndex, setSelectedSubclassIndex] = useState(0);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [highlightedFeatureAnchor, setHighlightedFeatureAnchor] = useState<string | null>(null);
   const highlightTimer = useRef<number | null>(null);
-  const selectedSubclass = subclasses[Math.min(selectedSubclassIndex, Math.max(subclasses.length - 1, 0))];
+  const requestedSubclass = searchParams.get('subclass');
+  const requestedSubclassIndex = subclasses.findIndex((subclass) => subclass.slug === requestedSubclass);
+  const selectedSubclassIndex = requestedSubclassIndex >= 0 ? requestedSubclassIndex : 0;
+  const selectedSubclass = subclasses[selectedSubclassIndex];
+  const selectSubclass = (index: number) => {
+    const subclass = subclasses[index];
+    if (!subclass) return;
+    const next = new URLSearchParams(searchParams);
+    next.set('subclass', subclass.slug);
+    setSearchParams(next, { replace: true });
+  };
   const features = [...baseFeatures, ...(selectedSubclass?.features ?? [])].sort((left, right) => {
     const levelDifference = Number.parseInt(referenceLevel(left), 10) - Number.parseInt(referenceLevel(right), 10);
     if (Number.isFinite(levelDifference) && levelDifference !== 0) return levelDifference;
@@ -337,22 +348,27 @@ function ClassDetailContent({ entry, imageUrl }: { entry: ClassEntry; imageUrl: 
   };
   const navigation = [
     { href: '#class-passport', label: 'Паспорт класу', number: 1 },
-    { href: '#class-progression', label: 'Таблиця прогресії', number: 2 },
-    { href: '#class-features', label: 'Уміння класу', number: 3 },
-    { href: '#class-proficiencies', label: 'Володіння', number: 4 },
-    { href: '#class-equipment', label: 'Спорядження', number: 5 },
+    ...(subclasses.length ? [{ href: '#class-subclasses', label: 'Підклас', number: 2 }] : []),
+    { href: '#class-progression', label: 'Таблиця прогресії', number: subclasses.length ? 3 : 2 },
+    { href: '#class-features', label: 'Уміння класу', number: subclasses.length ? 4 : 3 },
+    { href: '#class-proficiencies', label: 'Володіння', number: subclasses.length ? 5 : 4 },
+    { href: '#class-equipment', label: 'Спорядження', number: subclasses.length ? 6 : 5 },
   ];
+  const offset = subclasses.length ? 1 : 0;
 
   return (
-    <DetailLayout variant="class" sidebar={<DetailSidebar variant="class" imageUrl={imageUrl} imageAlt={entry.title_ua} hideImage={!imageUrl} hideImageOnError label="Клас" title={entry.title_ua} originalTitle={entry.title_original} description={null} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} subclasses={subclasses} selectedSubclassIndex={selectedSubclassIndex} onSelectSubclass={setSelectedSubclassIndex} />}>
+    <DetailLayout variant="class" sidebar={<DetailSidebar variant="class" imageUrl={imageUrl} imageAlt={entry.title_ua} hideImage={!imageUrl} hideImageOnError label="Клас" title={entry.title_ua} originalTitle={entry.title_original} description={entry.short_description} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} />}>
       <section id="class-passport" className="detail-v2-panel codex-detail-section">
         <h2 className="codex-detail-title"><span>1.</span> Паспорт класу</h2>
         <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="class" />
       </section>
-      <ProgressionTable id="class-progression" number={2} value={entry.class_progression} features={features} onFeatureNavigate={navigateToFeature} />
-      <QuickScanSection id="class-features" number={3} title="Уміння класу" cards={features} iconForCard={classFeatureIconForTitle} emptyMessage="Уміння класу не вказано у доступному джерелі." groupByLevel highlightedAnchor={highlightedFeatureAnchor} />
-      <DetailGroupPanel id="class-proficiencies" sectionNumber={4} title="Володіння" groups={classProficiencyGroups(entry)} presentation="rows" showCodexIcons />
-      <EquipmentSection id="class-equipment" number={5} value={entry.starting_equipment} />
+      {subclasses.length ? <SubclassSelector value={entry.subclasses} id="class-subclasses" number={2} selectedIndex={selectedSubclassIndex} onSelectedIndexChange={selectSubclass} /> : null}
+      <ProgressionTable id="class-progression" number={2 + offset} value={entry.class_progression} features={features} onFeatureNavigate={navigateToFeature} />
+      <div className="detail-selection-content" key={selectedSubclass?.slug ?? 'base'}>
+        <QuickScanSection id="class-features" number={3 + offset} title="Уміння класу" cards={features} iconForCard={classFeatureIconForTitle} emptyMessage="Уміння класу не вказано у доступному джерелі." groupByLevel highlightedAnchor={highlightedFeatureAnchor} />
+      </div>
+      <DetailGroupPanel id="class-proficiencies" sectionNumber={4 + offset} title="Володіння" groups={classProficiencyGroups(entry)} presentation="rows" showCodexIcons />
+      <EquipmentSection id="class-equipment" number={5 + offset} value={entry.starting_equipment} />
       <SourceFooter id="class-source" title={entry.source?.title} />
     </DetailLayout>
   );
@@ -445,11 +461,13 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
   const raceDescription = splitRaceDescription(entry.full_description_markdown, entry.title_ua);
   const raceTraits = referenceCards(entry.race_traits, 'Риса');
   const hasRaceVariants = isUsefulValue(entry.subraces);
+  const traitSectionNumber = hasRaceVariants ? 3 : 2;
+  const descriptionSectionNumber = traitSectionNumber + (raceTraits.length > 0 ? 1 : 0);
   const raceNavigation = [
     { href: '#race-main', label: 'Паспорт раси', number: 1 },
-    ...(raceTraits.length > 0 ? [{ href: '#race-traits', label: 'Риси раси', number: 2 }] : []),
-    ...(hasRaceVariants ? [{ href: '#race-subraces', label: 'Варіанти / походження', number: 3 }] : []),
-    ...(raceDescription?.description ? [{ href: '#race-description', label: 'Опис', number: 4 }] : []),
+    ...(hasRaceVariants ? [{ href: '#race-subraces', label: 'Варіанти / походження', number: 2 }] : []),
+    ...(raceTraits.length > 0 ? [{ href: '#race-traits', label: 'Риси раси', number: traitSectionNumber }] : []),
+    ...(raceDescription?.description ? [{ href: '#race-description', label: 'Опис', number: descriptionSectionNumber }] : []),
   ];
 
   return (
@@ -462,7 +480,7 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
           label={entityLabels[entity]}
           title={entry.title_ua}
           originalTitle={entry.title_original}
-          description={null}
+          description={entry.short_description}
           tags={[]}
           quickTitle=""
           quickItems={[]}
@@ -479,12 +497,12 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
         <MechanicInfoGrid items={infoBlocks} variant="race" />
       </section>
 
-      <RaceTraitSection id="race-traits" sectionNumber={2} cards={raceTraits} />
-      <SubraceSelector id="race-subraces" sectionNumber={3} value={entry.subraces} />
+      <SubraceSelector id="race-subraces" sectionNumber={2} value={entry.subraces} />
+      <RaceTraitSection id="race-traits" sectionNumber={traitSectionNumber} cards={raceTraits} />
 
       {raceDescription.description ? (
         <section id="race-description" className="detail-v2-description-panel race-detail-section">
-          <h2 className="race-section-title"><span>4.</span> Опис</h2>
+          <h2 className="race-section-title"><span>{descriptionSectionNumber}.</span> Опис</h2>
           <div className="markdown-content">
             <ReactMarkdown>{raceDescription.description}</ReactMarkdown>
           </div>

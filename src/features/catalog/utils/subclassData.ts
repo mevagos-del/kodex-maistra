@@ -1,12 +1,17 @@
 import { referenceCards, type ReferenceCard } from '../api/detailReference';
 
 export type ParsedSubclass = {
+  slug: string;
   name: string;
   originalName?: string;
   description?: string;
   level?: string;
   features: ReferenceCard[];
 };
+
+function slugify(value: string) {
+  return value.toLowerCase().replace(/[^a-zа-яіїєґ0-9]+/gi, '-').replace(/^-|-$/g, '') || 'subclass';
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -31,7 +36,7 @@ export function parseSubclasses(value: unknown): ParsedSubclass[] {
   return values.flatMap((entry, index): ParsedSubclass[] => {
     if (!isRecord(entry)) {
       const name = text(entry);
-      return name ? [{ name, features: [] }] : [];
+      return name ? [{ slug: slugify(name), name, features: [] }] : [];
     }
     const name = text(entry.name ?? entry.title ?? entry.label) ?? `Підклас ${index + 1}`;
     const featureValue = entry.features ?? entry.class_features ?? entry.traits;
@@ -46,6 +51,7 @@ export function parseSubclasses(value: unknown): ParsedSubclass[] {
       };
     });
     return [{
+      slug: text(entry.slug ?? entry.id) ?? slugify(name),
       name,
       originalName: text(entry.original_name ?? entry.originalTitle),
       description: text(entry.description ?? entry.summary),

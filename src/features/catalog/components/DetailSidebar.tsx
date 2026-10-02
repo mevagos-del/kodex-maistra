@@ -23,9 +23,6 @@ type DetailSidebarProps = {
   variant?: 'race' | 'class' | 'item';
   hideImage?: boolean;
   hideImageOnError?: boolean;
-  subclasses?: Array<{ name: string; originalName?: string }>;
-  selectedSubclassIndex?: number;
-  onSelectSubclass?: (index: number) => void;
 };
 
 export function DetailSidebar({
@@ -44,9 +41,6 @@ export function DetailSidebar({
   variant,
   hideImage = false,
   hideImageOnError = false,
-  subclasses = [],
-  selectedSubclassIndex = 0,
-  onSelectSubclass,
 }: DetailSidebarProps) {
   const isCodexSidebar = Boolean(variant);
 
@@ -90,7 +84,7 @@ export function DetailSidebar({
       </div>
 
       {navigation.length > 0 ? (
-        <nav className="detail-v2-section-nav" aria-label="Перехід по розділах">
+        <nav className="detail-v2-section-nav detail-v2-section-nav--desktop" aria-label="Перехід по розділах">
           <h2>Перехід по розділах</h2>
           <ol>
             {navigation.map((item) => (
@@ -105,25 +99,22 @@ export function DetailSidebar({
         </nav>
       ) : null}
 
-      {subclasses.length > 0 ? (
-        <section className="class-sidebar-subclasses" aria-labelledby="class-sidebar-subclasses-title">
-          <h2 id="class-sidebar-subclasses-title">Підкласи</h2>
-          <div className="class-sidebar-subclass-list" role="tablist" aria-label="Підкласи класу">
-            {subclasses.map((subclass, index) => (
-              <button
-                key={`${subclass.name}-${index}`}
-                type="button"
-                role="tab"
-                aria-selected={selectedSubclassIndex === index}
-                className={selectedSubclassIndex === index ? 'class-sidebar-subclass class-sidebar-subclass--active' : 'class-sidebar-subclass'}
-                onClick={() => onSelectSubclass?.(index)}
-              >
-                <span>{subclass.name}</span>
-                {subclass.originalName ? <small>{subclass.originalName}</small> : null}
-              </button>
-            ))}
-          </div>
-        </section>
+      {navigation.length > 0 ? (
+        <details className="detail-v2-section-menu">
+          <summary>Розділи сторінки</summary>
+          <nav aria-label="Перехід по розділах на мобільному">
+            <ol>
+              {navigation.map((item) => (
+                <li key={item.href}>
+                  <a href={item.href} onClick={(event) => event.currentTarget.closest('details')?.removeAttribute('open')}>
+                    <span aria-hidden="true">{String(item.number).padStart(2, '0')}</span>
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </details>
       ) : null}
 
       {quickItems.length > 0 ? (
