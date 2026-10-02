@@ -16,4 +16,42 @@
   --archive-radius: 8px;
   --archive-fast: 160ms ease;
   --archive-normal: 220ms ease;
+
+  /* Responsive archive scale: compact on desktop, touch-safe on narrow screens. */
+  --archive-page-max: 94rem;
+  --archive-page-padding: clamp(1.125rem, 2.6vw, 2.5rem);
+  --archive-section-gap: clamp(0.75rem, 1.15vw, 1.125rem);
+  --archive-card-gap: clamp(0.75rem, 1.1vw, 1.125rem);
+  --archive-card-padding: clamp(0.75rem, 0.9vw, 0.9375rem);
+  --archive-control-height: 2.375rem;
+  --archive-title-page: clamp(2.5rem, 3.2vw, 3.5rem);
+  --archive-title-section: clamp(1.125rem, 1.25vw, 1.375rem);
+  --archive-title-card: clamp(0.95rem, 1vw, 1.0625rem);
+  --archive-text-body: 0.9375rem;
+  --archive-text-meta: 0.75rem;
+  --archive-icon-control: 1.125rem;
+  --archive-icon-card: 1.75rem;
+  --archive-radius-panel: 0.75rem;
+  --archive-radius-card: 0.625rem;
+  --archive-detail-sidebar-width: 16.25rem;
+}
+
+@media (max-width: 1023px) {
+  :root {
+    --archive-page-padding: clamp(1rem, 2.5vw, 1.5rem);
+    --archive-control-height: 2.625rem;
+    --archive-section-gap: 0.875rem;
+    --archive-card-gap: 0.875rem;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --archive-page-padding: 0.75rem;
+    --archive-control-height: 2.75rem;
+    --archive-title-page: clamp(2rem, 10vw, 2.75rem);
+    --archive-title-section: 1.125rem;
+    --archive-text-body: 0.9375rem;
+    --archive-radius-panel: 0.625rem;
+  }
 }
