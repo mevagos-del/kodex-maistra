@@ -19,6 +19,16 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes archive-dust-fall {
+  from { transform: translate3d(-1.2%, -10%, 0); }
+  to { transform: translate3d(1.4%, 10%, 0); }
+}
+
+@keyframes archive-dust-float {
+  from { opacity: 0.045; transform: translate3d(-2%, 1.5%, 0); }
+  to { opacity: 0.085; transform: translate3d(2%, -1.5%, 0); }
+}
+
 @keyframes archive-loading-pulse {
   0%, 100% { opacity: 0.48; transform: scale(0.86); }
   50% { opacity: 1; transform: scale(1); }
@@ -62,6 +72,14 @@
   animation: archive-loading-pulse 1.1s ease-in-out infinite;
 }
 
+.archive-atmosphere__layer--falling {
+  animation: archive-dust-fall 34s linear infinite;
+}
+
+.archive-atmosphere__layer--floating {
+  animation: archive-dust-float 27s cubic-bezier(0.5, 0, 0.5, 1) infinite alternate;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .archive-shell__frame,
   .archive-sidebar,
@@ -81,8 +99,13 @@
   .catalog-archive-results > .empty-state,
   .catalog-archive-results > .archive-status-panel,
   .archive-loading-indicator__mark,
+  .archive-atmosphere__layer,
   .archive-shell :is(.accent-link, .tile-action, .accent-button)::after {
     animation: none !important;
+  }
+
+  .archive-atmosphere__layer {
+    transform: none !important;
   }
 
   .catalog-archive-header::after {

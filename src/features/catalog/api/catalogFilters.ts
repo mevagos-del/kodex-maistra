@@ -24,6 +24,19 @@ function normalize(value: string) {
   return value.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('uk-UA');
 }
 
+const entitySearchAliases: Record<EntityType, string> = {
+  race: 'раса раси вид species race',
+  class: 'клас класи class',
+  item: 'предмет предмети спорядження item',
+};
+
+const contentTypeSearchAliases: Record<CatalogEntry['content_type'], string> = {
+  official: 'офіційний official',
+  homebrew: 'авторський homebrew',
+  campaign: 'кампанія campaign',
+  draft: 'чернетка draft',
+};
+
 function includesSearch(entry: CatalogEntry, search: string) {
   const query = normalize(search);
   if (!query) return true;
@@ -31,15 +44,20 @@ function includesSearch(entry: CatalogEntry, search: string) {
   const haystack = [
     entry.title_ua,
     entry.title_original ?? '',
+    entry.slug,
+    entitySearchAliases[entry.entityType],
+    contentTypeSearchAliases[entry.content_type],
     entry.short_description ?? '',
     ...(entry.tags ?? []),
   ]
-    .join(' ')
-    .normalize('NFKC')
-    .replace(/\s+/g, ' ')
-    .toLocaleLowerCase('uk-UA');
+    .join(' ');
+  const normalizedHaystack = normalize(haystack);
 
-  return haystack.includes(query);
+  if (query.length <= 3) {
+    return normalizedHaystack.split(/\s+/).some((token) => token.startsWith(query));
+  }
+
+  return normalizedHaystack.includes(query);
 }
 
 function matchesBooleanFilter(value: boolean, filterValue: string) {

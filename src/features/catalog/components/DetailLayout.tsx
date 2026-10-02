@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { ArchiveAtmosphere } from './ArchiveAtmosphere';
 
 type DetailLayoutProps = {
   sidebar: ReactNode;
@@ -17,7 +18,12 @@ export function DetailLayout({ sidebar, children, variant }: DetailLayoutProps) 
   );
 
   if (variant) {
-    return <div className={`detail-codex-stage detail-codex-stage--${variant}${variant === 'race' ? ' race-detail-stage' : ''}`}>{layout}</div>;
+    return (
+      <div className={`detail-codex-stage detail-codex-stage--${variant}${variant === 'race' ? ' race-detail-stage' : ''}`}>
+        <ArchiveAtmosphere />
+        {layout}
+      </div>
+    );
   }
 
   return layout;

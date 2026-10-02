@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { coreSections } from '@/data/navigation';
 import { globalSearch } from '@/features/catalog/api/catalogFilters';
+import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { CatalogCard } from '@/features/catalog/components/CatalogCard';
 import { EmptyState } from '@/features/catalog/components/EmptyState';
 import { useCatalogList } from '@/features/catalog/hooks/useCatalogData';
@@ -34,6 +35,7 @@ export function SectionPage({ section }: SectionPageProps) {
 
   return (
     <div className={`catalog-archive-page catalog-archive-page--${section}`}>
+      <ArchiveAtmosphere />
       <header className="catalog-archive-header">
         <div className="catalog-archive-header__copy">
           <p>Довідник</p>

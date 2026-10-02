@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CatalogCard } from '@/features/catalog/components/CatalogCard';
-import { EmptyState } from '@/features/catalog/components/EmptyState';
 import { globalSearch } from '@/features/catalog/api/catalogFilters';
-import { useCatalogList, usePublishedSections } from '@/features/catalog/hooks/useCatalogData';
+import { sectionSlugForEntity } from '@/features/catalog/api/catalogApi';
+import { useCatalogList } from '@/features/catalog/hooks/useCatalogData';
+import type { EntityType } from '@/types/content';
 import { referenceQuickAccess } from '@/data/navigation';
 
 const quickAccessIcons: Record<string, string> = {
@@ -17,9 +17,14 @@ function getQuickAccessIcon(title: string) {
   return quickAccessIcons[title] ?? '/icons/spells.webp';
 }
 
+const entityLabels: Record<EntityType, string> = {
+  race: 'Раса',
+  class: 'Клас',
+  item: 'Предмет',
+};
+
 export function HomePage() {
   const [search, setSearch] = useState('');
-  const sections = usePublishedSections();
   const races = useCatalogList('race');
   const classes = useCatalogList('class');
   const items = useCatalogList('item');
@@ -51,10 +56,35 @@ export function HomePage() {
               type="search"
               placeholder="Пошук у довіднику…"
               value={search}
+              aria-controls="global-search-results"
+              aria-expanded={Boolean(search.trim())}
               onChange={(event) => setSearch(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Escape' && search) {
+                  setSearch('');
+                }
+              }}
             />
-            {!sections.isLoading && sections.data.length === 0 ? (
-              <span>Опубліковані матеріали не знайдені або Supabase ще не налаштовано.</span>
+            {search.trim() ? (
+              <div id="global-search-results" className="global-search-results" aria-live="polite">
+                {searchResults.length > 0 ? (
+                  searchResults.map((entry) => (
+                    <Link
+                      key={`${entry.entityType}-${entry.slug}`}
+                      to={`/${sectionSlugForEntity(entry.entityType)}/${entry.slug}`}
+                      className="global-search-result"
+                    >
+                      <span className="global-search-result__copy">
+                        <strong>{entry.title_ua}</strong>
+                        {entry.title_original ? <small>{entry.title_original}</small> : null}
+                      </span>
+                      <span className="global-search-result__type">{entityLabels[entry.entityType]}</span>
+                    </Link>
+                  ))
+                ) : (
+                  <p className="global-search-results__empty">Нічого не знайдено. Спробуйте змінити пошуковий запит.</p>
+                )}
+              </div>
             ) : null}
           </div>
 
@@ -84,19 +114,6 @@ export function HomePage() {
         </div>
       </section>
 
-      {search.trim() ? (
-        <section className="home-search-results-panel" aria-label="Результати пошуку">
-          {searchResults.length > 0 ? (
-            <div className="catalog-grid catalog-grid-compact">
-              {searchResults.map((entry) => (
-                <CatalogCard key={entry.entityType + '-' + entry.id} entry={entry} compact />
-              ))}
-            </div>
-          ) : (
-            <EmptyState description="Спробуйте змінити пошуковий запит або фільтри." />
-          )}
-        </section>
-      ) : null}
     </div>
   );
 }

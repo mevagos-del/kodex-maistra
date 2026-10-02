@@ -4066,6 +4066,8 @@ body::before {
 }
 
 .hero-search {
+  position: relative;
+  z-index: 8;
   width: min(700px, 100%);
   margin-top: clamp(20px, 3.2vw, 30px);
 }
@@ -4107,6 +4109,93 @@ body::before {
   border-radius: 10px;
   padding: 16px;
   background: linear-gradient(180deg, rgb(16 20 29 / 88%), rgb(7 10 15 / 92%));
+}
+
+.global-search-results {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  left: 0;
+  z-index: 12;
+  display: grid;
+  max-height: min(48vh, 420px);
+  overflow-y: auto;
+  border: 1px solid rgb(214 169 74 / 34%);
+  border-radius: 10px;
+  padding: 7px;
+  background: linear-gradient(180deg, rgb(13 17 23 / 98%), rgb(6 9 13 / 99%));
+  box-shadow: 0 22px 52px rgb(0 0 0 / 56%), inset 0 1px rgb(255 236 195 / 5%);
+  text-align: left;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(195 144 68 / 42%) transparent;
+}
+
+.global-search-result {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 10px 12px;
+  color: var(--text-main);
+  text-decoration: none;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.global-search-result:hover,
+.global-search-result:focus-visible {
+  border-color: rgb(214 169 74 / 28%);
+  background: linear-gradient(90deg, rgb(189 132 55 / 14%), transparent);
+  outline: none;
+  transform: translateX(2px);
+}
+
+.global-search-result:focus-visible {
+  outline: 2px solid rgb(224 193 118 / 64%);
+  outline-offset: -2px;
+}
+
+.global-search-result__copy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.global-search-result__copy strong,
+.global-search-result__copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.global-search-result__copy strong {
+  color: var(--gold-soft);
+  font-family: var(--heading-font);
+  font-size: 0.98rem;
+}
+
+.global-search-result__copy small {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.global-search-result__type {
+  flex: 0 0 auto;
+  color: var(--gold-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.global-search-results__empty {
+  margin: 0;
+  padding: 14px 12px;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  text-align: center;
 }
 
 .quick-access-section-v2 {
