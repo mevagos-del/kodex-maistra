@@ -12,7 +12,7 @@ export function DetailLayout({ sidebar, children, variant }: DetailLayoutProps) 
 
   const layout = (
     <article className={`detail-v2-shell${variantClass}`}>
-      {sidebar}
+      <header className="detail-v2-page-header">{sidebar}</header>
       <main className="detail-v2-main">{children}</main>
     </article>
   );

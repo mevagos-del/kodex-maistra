@@ -83,7 +83,7 @@ export function DetailOptionSelector({ id, number, label, options, selectedKey, 
         </span>
         {options.length > 1 ? (
           <button ref={triggerRef} type="button" className="detail-option-current__change" onClick={() => setIsOpen(true)}>
-            Змінити
+            Змінити <span aria-hidden="true">›</span>
           </button>
         ) : null}
       </div>

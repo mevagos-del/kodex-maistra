@@ -45,7 +45,7 @@ export function DetailSidebar({
   const isCodexSidebar = Boolean(variant);
 
   return (
-    <aside className={`detail-v2-sidebar${isCodexSidebar ? ` codex-identity-sidebar codex-identity-sidebar--${variant}` : ''}${variant === 'race' ? ' race-identity-sidebar' : ''}`}>
+    <div className={`detail-v2-sidebar${isCodexSidebar ? ` codex-identity-sidebar codex-identity-sidebar--${variant}` : ''}${variant === 'race' ? ' race-identity-sidebar' : ''}`}>
       <div className={`detail-v2-identity-card${isCodexSidebar ? ' codex-identity-card' : ''}${variant === 'race' ? ' race-identity-card' : ''}`}>
         <div className="detail-v2-type">{label}</div>
         <h1>{title}</h1>
@@ -129,6 +129,6 @@ export function DetailSidebar({
           </ul>
         </section>
       ) : null}
-    </aside>
+    </div>
   );
 }
