@@ -25,7 +25,8 @@ function materialCountLabel(count: number) {
 
 export function SectionPage({ section }: SectionPageProps) {
   const entity = sectionToEntity[section];
-  const [search, setSearch] = useState('');
+  const [searchState, setSearchState] = useState({ section, value: '' });
+  const search = searchState.section === section ? searchState.value : '';
   const meta = coreSections.find((item) => item.slug === section);
   const catalog = useCatalogList(entity);
   const filteredEntries = useMemo(() => globalSearch(catalog.data, search), [catalog.data, search]);
@@ -50,7 +51,12 @@ export function SectionPage({ section }: SectionPageProps) {
             aria-label={`Пошук у розділі ${title}`}
             placeholder="Пошук у розділі…"
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => setSearchState({ section, value: event.target.value })}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape' && search) {
+                setSearchState({ section, value: '' });
+              }
+            }}
           />
         </div>
       </header>
@@ -65,7 +71,9 @@ export function SectionPage({ section }: SectionPageProps) {
             {filteredEntries.map((entry, index) => <CatalogCard key={entry.id} entry={entry} priority={index === 0} />)}
           </div>
         ) : (
-          <EmptyState description="Спробуйте змінити пошуковий запит." />
+          <EmptyState
+            description={search.trim() ? 'Спробуйте змінити або очистити пошуковий запит.' : 'У цьому розділі поки немає матеріалів.'}
+          />
         )}
       </section>
     </div>

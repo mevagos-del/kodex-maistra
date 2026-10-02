@@ -21,7 +21,7 @@ export const defaultCatalogFilters: CatalogFilters = {
 };
 
 function normalize(value: string) {
-  return value.trim().toLowerCase();
+  return value.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('uk-UA');
 }
 
 function includesSearch(entry: CatalogEntry, search: string) {
@@ -32,10 +32,12 @@ function includesSearch(entry: CatalogEntry, search: string) {
     entry.title_ua,
     entry.title_original ?? '',
     entry.short_description ?? '',
-    ...entry.tags,
+    ...(entry.tags ?? []),
   ]
     .join(' ')
-    .toLowerCase();
+    .normalize('NFKC')
+    .replace(/\s+/g, ' ')
+    .toLocaleLowerCase('uk-UA');
 
   return haystack.includes(query);
 }

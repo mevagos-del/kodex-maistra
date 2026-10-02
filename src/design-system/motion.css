@@ -3,6 +3,22 @@
   to { opacity: 1; }
 }
 
+@keyframes archive-engraved-reveal {
+  from { opacity: 0; transform: scaleX(0); }
+  to { opacity: 0.78; transform: scaleX(1); }
+}
+
+@keyframes archive-metal-glint {
+  0% { opacity: 0; transform: translateX(-220%) skewX(-18deg); }
+  28% { opacity: 0.72; }
+  100% { opacity: 0; transform: translateX(720%) skewX(-18deg); }
+}
+
+@keyframes archive-ink-fade {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes archive-loading-pulse {
   0%, 100% { opacity: 0.48; transform: scale(0.86); }
   50% { opacity: 1; transform: scale(1); }
@@ -10,6 +26,36 @@
 
 .catalog-archive-grid {
   animation: archive-grid-in 220ms ease-out both;
+}
+
+.catalog-archive-header::after {
+  animation: archive-engraved-reveal 420ms cubic-bezier(0, 0, 0.3, 1) 60ms both;
+}
+
+.catalog-archive-results > .empty-state,
+.catalog-archive-results > .archive-status-panel {
+  animation: archive-ink-fade 240ms ease-out both;
+}
+
+.archive-shell :is(.accent-link, .tile-action, .accent-button) {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.archive-shell :is(.accent-link, .tile-action, .accent-button)::after {
+  content: '';
+  position: absolute;
+  inset: -35% auto -35% -22%;
+  width: 14%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgb(255 231 177 / 38%), transparent);
+  opacity: 0;
+  transform: translateX(-220%) skewX(-18deg);
+}
+
+.archive-shell :is(.accent-link, .tile-action, .accent-button):is(:hover, :focus-visible):not(:disabled)::after {
+  animation: archive-metal-glint 420ms ease-out 1;
 }
 
 .archive-loading-indicator__mark {
@@ -31,7 +77,16 @@
   }
 
   .catalog-archive-grid,
-  .archive-loading-indicator__mark {
+  .catalog-archive-header::after,
+  .catalog-archive-results > .empty-state,
+  .catalog-archive-results > .archive-status-panel,
+  .archive-loading-indicator__mark,
+  .archive-shell :is(.accent-link, .tile-action, .accent-button)::after {
     animation: none !important;
+  }
+
+  .catalog-archive-header::after {
+    opacity: 0.78;
+    transform: scaleX(1);
   }
 }
