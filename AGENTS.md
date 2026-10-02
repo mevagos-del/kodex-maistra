@@ -1,9 +1,13 @@
 # UI and CSS guidance
 
-- Treat `codex-ui-knowledge` as the preferred design intelligence source for UI and CSS work when it is available in the development environment.
-- Verify and record its exact readable local path before claiming that it is connected; if no repository is available, state that explicitly and do not invent taxonomy or pattern names.
-- Inspect its taxonomy, selection rules, and validated patterns before inventing a sidebar, card, search, input, focus, hover, loading, transition, or responsive pattern.
-- Reuse validated interaction and accessibility patterns, then adapt their visual tokens to the Kodex Maistra design system in `src/design-system/`.
-- Do not create a runtime dependency on the knowledge repository.
-- Avoid duplicate component CSS and one-off effects when an existing project pattern already covers the behavior.
+- Use `C:\Users\Аcer\Documents\Codex\codex-ui-knowledge` as the preferred design intelligence source for UI and CSS work.
+- Inspect project-local components, tokens, and established interaction rules first; project conventions override generic library examples.
+- Then consult `intelligence/taxonomy.json`, `intelligence/selection-rules.json`, `intelligence/composition-rules.json`, and validated catalog packages in the knowledge repository.
+- Run `npm run recommend -- --use-case <use-case>` from the knowledge repository when its controlled taxonomy contains a relevant use case.
+- Prefer the simplest production-ready validated pattern over ad-hoc CSS, and inspect its documentation, source status, accessibility, mobile behavior, reduced-motion support, and performance before adapting it.
+- Adapt selected techniques to the Codex Archive tokens and components in `src/design-system/`; do not copy unrelated source colors or aesthetics.
+- Preserve accessibility, keyboard and focus behavior, responsive layouts, reduced motion, and performance.
+- Avoid duplicate effects or components already represented by project primitives or the knowledge library.
+- Create custom CSS only when no suitable project-local or validated knowledge pattern exists.
+- Keep the relationship design-time only. Never import from the absolute local path, add it as a production dependency, or make the application or deployment depend on the knowledge repository.
 - Preserve the Codex Archive direction: graphite surfaces, aged bronze accents, parchment text, restrained motion, and information-first layouts.
