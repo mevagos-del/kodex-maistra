@@ -74,18 +74,22 @@ export function DetailOptionSelector({ id, number, label, options, selectedKey, 
         ) : null}
         <span className="detail-option-current__copy">
           <small>Поточний вибір</small>
-          <strong>{selected.title}</strong>
-          {selected.originalTitle ? <span>{selected.originalTitle}</span> : null}
+          <span className="detail-option-current__title-row">
+            <strong>{selected.title}</strong>
+            {options.length > 1 ? (
+              <button ref={triggerRef} type="button" className="detail-option-current__change" onClick={() => setIsOpen(true)}>
+                Змінити <span aria-hidden="true">›</span>
+              </button>
+            ) : null}
+          </span>
+          {selected.originalTitle ? <span className="detail-option-current__original">{selected.originalTitle}</span> : null}
+          {selected.edition || selected.meta ? (
+            <span className="detail-option-current__metadata">
+              {selected.edition ? <small>{selected.edition}</small> : null}
+              {selected.meta ? <small>{selected.meta}</small> : null}
+            </span>
+          ) : null}
         </span>
-        <span className="detail-option-current__meta">
-          {selected.edition ? <small>{selected.edition}</small> : null}
-          {selected.meta ? <small>{selected.meta}</small> : null}
-        </span>
-        {options.length > 1 ? (
-          <button ref={triggerRef} type="button" className="detail-option-current__change" onClick={() => setIsOpen(true)}>
-            Змінити <span aria-hidden="true">›</span>
-          </button>
-        ) : null}
       </div>
 
       <dialog
