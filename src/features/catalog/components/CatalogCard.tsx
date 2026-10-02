@@ -24,6 +24,7 @@ function catalogCardImage(entry: CatalogEntry, sectionSlug: ReturnType<typeof se
 export function CatalogCard({ entry, compact = false, priority = false }: CatalogCardProps) {
   const sectionSlug = sectionSlugForEntity(entry.entityType);
   const imageUrl = catalogCardImage(entry, sectionSlug);
+  const editionLabel = entry.rules_version === '2024' ? 'D&D 2024' : null;
 
   return (
     <article
@@ -60,13 +61,9 @@ export function CatalogCard({ entry, compact = false, priority = false }: Catalo
         <div className="catalog-card__header">
           <h3>{entry.title_ua}</h3>
           {entry.title_original ? <p className="original-title">{entry.title_original}</p> : null}
+          {editionLabel ? <p className="catalog-card__meta">{editionLabel}</p> : null}
         </div>
       </Link>
-      <div className="catalog-card__footer">
-        <Link to={`/${sectionSlug}/${entry.slug}`} className="catalog-card__open-link">
-          Відкрити
-        </Link>
-      </div>
     </article>
   );
 }

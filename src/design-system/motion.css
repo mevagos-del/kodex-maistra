@@ -97,8 +97,8 @@
   .archive-sidebar__link::before,
   .archive-topbar__toggle,
   .catalog-archive-page .catalog-card,
+  .catalog-archive-page .catalog-card::after,
   .catalog-archive-page .catalog-card__image,
-  .catalog-archive-page .catalog-card__open-link,
   .catalog-archive-search input,
   .catalog-archive-search > span {
     transition: none !important;
