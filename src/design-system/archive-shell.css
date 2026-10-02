@@ -171,7 +171,7 @@
 }
 
 .archive-atmosphere {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 0;
   contain: paint;
@@ -181,34 +181,53 @@
 
 .archive-atmosphere__layer {
   position: absolute;
-  inset: -14%;
+  inset: -18%;
   background-repeat: repeat;
   pointer-events: none;
 }
 
 .archive-atmosphere__layer--falling {
-  opacity: 0.12;
+  opacity: 0.27;
   background-image:
-    radial-gradient(circle, rgb(231 193 120 / 72%) 0 1px, transparent 1.5px),
-    radial-gradient(circle, rgb(196 137 61 / 50%) 0 1.5px, transparent 2px),
-    radial-gradient(circle, rgb(244 222 178 / 36%) 0 1px, transparent 1.6px);
+    radial-gradient(circle at 18% 26%, rgb(226 190 121 / 74%) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 72% 64%, rgb(179 126 62 / 62%) 0 1.7px, transparent 2.4px),
+    radial-gradient(circle at 43% 82%, rgb(205 192 165 / 48%) 0 2.2px, transparent 2.9px);
   background-position: 4px 10px, 42px 68px, 96px 24px;
-  background-size: 93px 121px, 157px 193px, 239px 281px;
+  background-size: 107px 139px, 173px 227px, 271px 331px;
 }
 
 .archive-atmosphere__layer--floating {
-  opacity: 0.07;
+  opacity: 0.14;
   background-image:
-    radial-gradient(circle, rgb(222 174 92 / 70%) 0 1px, transparent 1.8px),
-    radial-gradient(circle, rgb(242 223 184 / 42%) 0 2px, transparent 2.5px);
+    radial-gradient(circle at 67% 31%, rgb(205 157 82 / 68%) 0 1.5px, transparent 2.2px),
+    radial-gradient(circle at 29% 74%, rgb(201 190 166 / 50%) 0 2.5px, transparent 3.3px);
   background-position: 28px 18px, 110px 76px;
-  background-size: 181px 167px, 307px 263px;
+  background-size: 167px 151px, 293px 247px;
+}
+
+.archive-atmosphere__layer--motes {
+  opacity: 0.11;
+  background-image:
+    radial-gradient(circle, rgb(205 158 86 / 58%) 0 1px, rgb(174 126 69 / 20%) 2.8px, transparent 5.5px),
+    radial-gradient(circle, rgb(210 198 171 / 46%) 0 1.4px, rgb(189 151 92 / 16%) 3.6px, transparent 7.5px);
+  background-position: 42px 86px, 218px 34px;
+  background-size: 431px 367px, 617px 529px;
 }
 
 .catalog-archive-page > :not(.archive-atmosphere),
 .detail-codex-stage > .detail-v2-shell {
   position: relative;
   z-index: 1;
+}
+
+.home-hero > .archive-atmosphere {
+  z-index: 4;
+}
+
+@media (max-width: 600px) {
+  .archive-atmosphere__layer--falling { opacity: 0.22; }
+  .archive-atmosphere__layer--floating { opacity: 0.11; }
+  .archive-atmosphere__layer--motes { opacity: 0.08; }
 }
 
 .catalog-archive-header { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 460px); gap: clamp(24px, 5vw, 72px); align-items: end; padding-bottom: 24px; }

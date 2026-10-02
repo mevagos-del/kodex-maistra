@@ -20,13 +20,19 @@
 }
 
 @keyframes archive-dust-fall {
-  from { transform: translate3d(-1.2%, -10%, 0); }
-  to { transform: translate3d(1.4%, 10%, 0); }
+  from { transform: translate3d(-1.4%, -13%, 0); }
+  to { transform: translate3d(1.8%, 13%, 0); }
 }
 
 @keyframes archive-dust-float {
-  from { opacity: 0.045; transform: translate3d(-2%, 1.5%, 0); }
-  to { opacity: 0.085; transform: translate3d(2%, -1.5%, 0); }
+  from { opacity: 0.1; transform: translate3d(-2.5%, 1.8%, 0); }
+  to { opacity: 0.18; transform: translate3d(2.5%, -1.8%, 0); }
+}
+
+@keyframes archive-motes-drift {
+  0% { opacity: 0.07; transform: translate3d(-1%, 2%, 0); }
+  50% { opacity: 0.15; }
+  100% { opacity: 0.09; transform: translate3d(2%, -2.5%, 0); }
 }
 
 @keyframes archive-loading-pulse {
@@ -73,11 +79,15 @@
 }
 
 .archive-atmosphere__layer--falling {
-  animation: archive-dust-fall 34s linear infinite;
+  animation: archive-dust-fall 26s linear infinite;
 }
 
 .archive-atmosphere__layer--floating {
-  animation: archive-dust-float 27s cubic-bezier(0.5, 0, 0.5, 1) infinite alternate;
+  animation: archive-dust-float 38s cubic-bezier(0.5, 0, 0.5, 1) infinite alternate;
+}
+
+.archive-atmosphere__layer--motes {
+  animation: archive-motes-drift 46s cubic-bezier(0.5, 0, 0.5, 1) infinite alternate;
 }
 
 @media (prefers-reduced-motion: reduce) {

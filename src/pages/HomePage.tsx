@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { globalSearch } from '@/features/catalog/api/catalogFilters';
 import { sectionSlugForEntity } from '@/features/catalog/api/catalogApi';
+import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { useCatalogList } from '@/features/catalog/hooks/useCatalogData';
 import type { EntityType } from '@/types/content';
 import { referenceQuickAccess } from '@/data/navigation';
@@ -38,9 +39,9 @@ export function HomePage() {
   return (
     <div className="page-stack home-page codex-home codex-home-v2">
       <section className="hero home-hero cinematic-hero cinematic-hero-v2" aria-labelledby="home-title">
+        <ArchiveAtmosphere />
         <div className="home-hero-vignette" aria-hidden="true" />
         <div className="home-candle-glow" aria-hidden="true" />
-        <div className="home-hero-particles" aria-hidden="true" />
         <div className="home-hero-sigil" aria-hidden="true" />
 
         <div className="cinematic-hero__content home-hero-content-v2">
