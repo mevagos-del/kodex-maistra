@@ -40,7 +40,6 @@ export function SubclassSelector({ value, id, number, selectedIndex, onSelectedI
         }}
       />
       <div className="detail-selection-content" key={selected.slug}>
-        {selected.level ? <p className="subclass-choice-level">Підклас обирається на {selected.level} рівні.</p> : null}
         {selected.description ? <p>{selected.description}</p> : null}
       </div>
     </div>

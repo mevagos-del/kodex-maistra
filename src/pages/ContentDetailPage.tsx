@@ -6,7 +6,7 @@ import { referenceCards } from '@/features/catalog/api/detailReference';
 import { DetailLayout } from '@/features/catalog/components/DetailLayout';
 import { DetailSidebar } from '@/features/catalog/components/DetailSidebar';
 import { EmptyState } from '@/features/catalog/components/EmptyState';
-import { EquipmentSection } from '@/features/catalog/components/EquipmentSection';
+import { ClassStartSection } from '@/features/catalog/components/ClassStartSection';
 import { MechanicInfoGrid } from '@/features/catalog/components/MechanicInfoGrid';
 import { ProgressionTable } from '@/features/catalog/components/ProgressionTable';
 import { QuickScanSection } from '@/features/catalog/components/QuickScanSection';
@@ -62,13 +62,6 @@ function addInfo(blocks: Array<{ label: string; value: string }>, label: string,
   if (value) blocks.push({ label, value });
 }
 
-function classSkillSummary(value: unknown) {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
-  const record = value as Record<string, unknown>;
-  const count = record.choose ?? record.count ?? record.amount;
-  return typeof count === 'number' || typeof count === 'string' ? `Обрати ${count}` : null;
-}
-
 const raceTermLabels: Record<string, string> = {
   humanoid: 'Гуманоїд', 'гуманоїд': 'Гуманоїд', medium: 'Середній', 'середній': 'Середній',
   small: 'Малий', 'малий': 'Малий', common: 'Спільна', 'спільна': 'Спільна',
@@ -98,10 +91,6 @@ function mainInfoBlocks(entry: CatalogEntry) {
     addInfo(blocks, 'Кістка хітів', entry.hit_die);
     addInfo(blocks, 'Основна характеристика', entry.primary_ability);
     addInfo(blocks, 'Ряткидки', entry.saving_throws.join(', '));
-    addInfo(blocks, 'Володіння обладунками', entry.armor_proficiencies.join(', '));
-    addInfo(blocks, 'Володіння зброєю', entry.weapon_proficiencies.join(', '));
-    addInfo(blocks, 'Володіння інструментами', entry.tool_proficiencies.join(', '));
-    addInfo(blocks, 'Навички', classSkillSummary(entry.skill_choices));
     blocks.push({ label: 'Заклинання', value: booleanLabel(entry.has_spellcasting) });
   }
 
@@ -174,14 +163,6 @@ function safeText(value: unknown): string | null {
   return formatValueSafely(value);
 }
 
-function choiceText(value: unknown) {
-  if (!isRecord(value)) return safeText(value);
-  const count = safeText(value.choose ?? value.count ?? value.amount);
-  const options = safeText(value.from ?? value.options ?? value.items);
-  if (count && options) return `Обери ${count} з переліку: ${options}.`;
-  return options ?? safeText(value);
-}
-
 function normalizeClassFeatures(entry: ClassEntry) {
   const metadataTitles = new Set([
     'заклинальна характеристика',
@@ -240,16 +221,6 @@ function progressionFeatureCards(value: unknown) {
       kind: 'base' as const,
     }));
   });
-}
-
-function classProficiencyGroups(entry: ClassEntry) {
-  return [
-    { title: 'Обладунки', values: entry.armor_proficiencies },
-    { title: 'Зброя', values: entry.weapon_proficiencies },
-    { title: 'Інструменти', values: entry.tool_proficiencies },
-    { title: 'Ряткидки', values: entry.saving_throws },
-    { title: 'Навички', values: choiceText(entry.skill_choices) ? [choiceText(entry.skill_choices) as string] : [] },
-  ].filter((group) => group.values.length > 0);
 }
 
 const itemUsageLabels = new Set(['Використання', 'Тип дії', 'Відновлення', 'Тривалість', 'Дальність', 'Обмеження', 'Вимога']);
@@ -348,11 +319,10 @@ function ClassDetailContent({ entry, imageUrl }: { entry: ClassEntry; imageUrl: 
   };
   const navigation = [
     { href: '#class-passport', label: 'Паспорт класу', number: 1 },
-    ...(subclasses.length ? [{ href: '#class-subclasses', label: 'Підклас', number: 2 }] : []),
-    { href: '#class-progression', label: 'Таблиця прогресії', number: subclasses.length ? 3 : 2 },
-    { href: '#class-features', label: 'Уміння класу', number: subclasses.length ? 4 : 3 },
-    { href: '#class-proficiencies', label: 'Володіння', number: subclasses.length ? 5 : 4 },
-    { href: '#class-equipment', label: 'Спорядження', number: subclasses.length ? 6 : 5 },
+    { href: '#class-start', label: 'Старт класу', number: 2 },
+    ...(subclasses.length ? [{ href: '#class-subclasses', label: 'Підклас', number: 3 }] : []),
+    { href: '#class-progression', label: 'Таблиця прогресії', number: subclasses.length ? 4 : 3 },
+    { href: '#class-features', label: 'Уміння класу', number: subclasses.length ? 5 : 4 },
   ];
   const offset = subclasses.length ? 1 : 0;
 
@@ -362,13 +332,12 @@ function ClassDetailContent({ entry, imageUrl }: { entry: ClassEntry; imageUrl: 
         <h2 className="codex-detail-title"><span>1.</span> Паспорт класу</h2>
         <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="class" />
       </section>
-      {subclasses.length ? <SubclassSelector value={entry.subclasses} id="class-subclasses" number={2} selectedIndex={selectedSubclassIndex} onSelectedIndexChange={selectSubclass} /> : null}
-      <ProgressionTable id="class-progression" number={2 + offset} value={entry.class_progression} features={features} onFeatureNavigate={navigateToFeature} />
+      <ClassStartSection id="class-start" number={2} armor={entry.armor_proficiencies} weapons={entry.weapon_proficiencies} tools={entry.tool_proficiencies} skills={entry.skill_choices} equipment={entry.starting_equipment} />
+      {subclasses.length ? <SubclassSelector value={entry.subclasses} id="class-subclasses" number={3} selectedIndex={selectedSubclassIndex} onSelectedIndexChange={selectSubclass} /> : null}
+      <ProgressionTable id="class-progression" number={3 + offset} value={entry.class_progression} features={features} onFeatureNavigate={navigateToFeature} />
       <div className="detail-selection-content" key={selectedSubclass?.slug ?? 'base'}>
-        <QuickScanSection id="class-features" number={3 + offset} title="Уміння класу" cards={features} iconForCard={classFeatureIconForTitle} emptyMessage="Уміння класу не вказано у доступному джерелі." groupByLevel highlightedAnchor={highlightedFeatureAnchor} />
+        <QuickScanSection id="class-features" number={4 + offset} title="Уміння класу" cards={features} iconForCard={classFeatureIconForTitle} emptyMessage="Уміння класу не вказано у доступному джерелі." groupByLevel highlightedAnchor={highlightedFeatureAnchor} />
       </div>
-      <DetailGroupPanel id="class-proficiencies" sectionNumber={4 + offset} title="Володіння" groups={classProficiencyGroups(entry)} presentation="rows" showCodexIcons />
-      <EquipmentSection id="class-equipment" number={5 + offset} value={entry.starting_equipment} />
       <SourceFooter id="class-source" title={entry.source?.title} />
     </DetailLayout>
   );
