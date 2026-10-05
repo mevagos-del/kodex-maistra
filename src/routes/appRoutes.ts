@@ -6,6 +6,8 @@ export const appRoutes = {
   classDetail: '/classes/:slug',
   items: '/items',
   itemDetail: '/items/:slug',
+  spells: '/spells',
+  spellDetail: '/spells/:slug',
   admin: '/admin',
   login: '/login',
 } as const;
@@ -15,4 +17,5 @@ export const publicNavigation = [
   { label: 'Раси', path: appRoutes.races },
   { label: 'Класи', path: appRoutes.classes },
   { label: 'Предмети', path: appRoutes.items },
+  { label: 'Закляття', path: appRoutes.spells },
 ];

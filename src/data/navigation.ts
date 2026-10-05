@@ -32,7 +32,7 @@ export const referenceQuickAccess = [
   { title: 'Раси', path: appRoutes.races, symbol: 'Р', isDisabled: false },
   { title: 'Класи', path: appRoutes.classes, symbol: 'К', isDisabled: false },
   { title: 'Предмети', path: appRoutes.items, symbol: 'П', isDisabled: false },
-  { title: 'Закляття', path: null, symbol: 'З', isDisabled: true },
+  { title: 'Закляття', path: appRoutes.spells, symbol: 'З', isDisabled: false },
 ] as const;
 
 export const toolNavigation = [
@@ -45,7 +45,6 @@ export const toolNavigation = [
 ] as const;
 
 export const futureModules: FutureModule[] = [
-  { title: 'Заклинання', description: 'Назва, рівень, школа, час накладання.', status: 'Скоро' },
   { title: 'Монстри', description: 'Статблоки, тип істоти, КЗ, хіти, дії.', status: 'Скоро' },
   { title: 'Магічні предмети', description: 'Рідкість, налаштування, властивості.', status: 'Скоро' },
   { title: 'Зона майстра', description: 'Нотатки, сцени, правила кампанії.', status: 'Скоро' },

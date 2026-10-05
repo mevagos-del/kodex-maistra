@@ -12,6 +12,8 @@ const HomePage = lazy(() => import('@/pages/HomePage').then((module) => ({ defau
 const LoginPage = lazy(() => import('@/pages/LoginPage').then((module) => ({ default: module.LoginPage })));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage })));
 const SectionPage = lazy(() => preloadCatalogRoute().then((module) => ({ default: module.SectionPage })));
+const SpellsPage = lazy(() => import('@/pages/SpellsPage').then((module) => ({ default: module.SpellsPage })));
+const SpellDetailPage = lazy(() => import('@/pages/SpellDetailPage').then((module) => ({ default: module.SpellDetailPage })));
 
 function RouteFallback() {
   return <div className="archive-route-fallback"><LoadingIndicator label="Відкриваємо розділ…" /></div>;
@@ -28,6 +30,8 @@ export function App() {
         <Route path={appRoutes.classDetail} element={<Suspense fallback={<RouteFallback />}><ContentDetailPage entity="class" /></Suspense>} />
         <Route path={appRoutes.items} element={<Suspense fallback={<RouteFallback />}><SectionPage section="items" /></Suspense>} />
         <Route path={appRoutes.itemDetail} element={<Suspense fallback={<RouteFallback />}><ContentDetailPage entity="item" /></Suspense>} />
+        <Route path={appRoutes.spells} element={<Suspense fallback={<RouteFallback />}><SpellsPage /></Suspense>} />
+        <Route path={appRoutes.spellDetail} element={<Suspense fallback={<RouteFallback />}><SpellDetailPage /></Suspense>} />
         <Route
           path={appRoutes.admin}
           element={

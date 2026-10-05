@@ -1,0 +1,47 @@
+.spells-controls { display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+.spells-filters { display: flex; flex-wrap: wrap; gap: 12px; min-width: 0; }
+.spells-filters label { display: grid; gap: 6px; color: var(--archive-muted); font-size: .8rem; }
+.spells-filters select, .spells-view button { min-height: 42px; border: 1px solid var(--archive-border); border-radius: var(--archive-radius); padding: 8px 12px; background: var(--archive-surface-inset); color: var(--archive-text); font: inherit; }
+/* Inset Search Field focus treatment, adapted to local Archive tokens. */
+.spells-page :is(select, input):focus-visible { outline: 2px solid var(--archive-gold); outline-offset: 3px; box-shadow: inset 0 -2px var(--archive-gold); }
+.spells-view { display: flex; gap: 4px; }
+.spells-view button { cursor: pointer; }
+.spells-view button[aria-pressed="true"] { border-color: var(--archive-gold); color: var(--archive-gold-bright); background: var(--archive-surface-raised); }
+.spell-list { display: grid; gap: 8px; }
+.spell-record { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(220px, 1.4fr) minmax(130px, .6fr); gap: 16px; align-items: center; padding: 16px 20px; border: 1px solid var(--archive-border); border-radius: var(--archive-radius); background: var(--archive-surface); text-decoration: none; color: var(--archive-text); }
+.spell-record h2 { font-size: 1.125rem; color: var(--archive-gold-bright); margin: 0 0 3px; }
+.spell-record small, .spell-table small { display: block; font-size: .78rem; color: var(--archive-muted); }
+.spell-record__facts, .spell-record__status { display: grid; gap: 4px; font-size: .85rem; }
+.spell-record__status { color: var(--archive-muted); }
+.spell-record:hover, .spell-table tr:focus-within, .spell-table tbody tr:hover { background: var(--archive-surface-raised); border-color: var(--archive-border-strong); }
+.spells-page :is(a, button):focus-visible, .spell-detail a:focus-visible, .spell-table-scroll:focus-visible { outline: 2px solid var(--archive-gold); outline-offset: 3px; }
+.spell-table-scroll { overflow: auto; max-width: 100%; max-height: 70vh; border: 1px solid var(--archive-border); border-radius: var(--archive-radius); }
+.spell-table { width: 100%; min-width: 1080px; border-collapse: collapse; font-size: .84rem; background: var(--archive-surface); }
+.spell-table th { position: sticky; top: 0; background: var(--archive-surface-raised); color: var(--archive-gold); z-index: 1; text-align: left; }
+.spell-table :is(th, td) { padding: 12px; border-bottom: 1px solid var(--archive-border); }
+.spell-table th button { border: 0; background: none; color: inherit; font: inherit; cursor: pointer; padding: 4px 0; }
+.spell-table a { color: var(--archive-text); text-decoration: none; }
+.spell-table tbody tr { cursor: pointer; }
+.spell-detail { position: relative; width: min(100%, 1080px); padding: var(--archive-page-padding); margin-inline: auto; color: var(--archive-text); overflow-wrap: anywhere; }
+.spell-detail__header { margin-bottom: 28px; }
+.spell-detail :is(h1, h2), .spell-record h2 { font-family: var(--heading-font); }
+.spell-detail__header h1 { color: var(--archive-gold-bright); font-size: 2.5rem; margin: 12px 0 4px; }
+.spell-detail__header p { color: var(--archive-muted); margin: 0 0 12px; }
+.spell-detail a { color: var(--archive-gold); }
+.spell-detail section { padding: 20px 0; border-top: 1px solid var(--archive-border); }
+.spell-detail h2 { font-size: 1.25rem; color: var(--archive-gold-bright); margin: 0 0 16px; }
+.spell-detail section p { line-height: 1.65; margin: 10px 0; }
+.spell-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 24px; margin: 0; }
+.spell-facts dt { color: var(--archive-muted); font-size: .8rem; margin-bottom: 4px; }
+.spell-facts dd { margin: 0; line-height: 1.5; }
+.spell-relationships { display: flex; flex-wrap: wrap; gap: 8px 24px; padding-left: 20px; margin: 0; }
+.spell-detail footer { border-top: 1px solid var(--archive-border); padding-top: 20px; color: var(--archive-muted); font-size: .8rem; line-height: 1.6; }
+@media (max-width: 767px) {
+  .spell-record { grid-template-columns: 1fr; gap: 10px; padding: 14px; }
+  .spell-record__status { display: flex; flex-wrap: wrap; gap: 12px; }
+  .spells-filters { width: 100%; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .spells-filters select { width: 100%; min-width: 0; }
+  .spell-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .spell-detail__header h1 { font-size: 2rem; }
+}
+@media (max-width: 400px) { .spell-facts { grid-template-columns: 1fr; } }
