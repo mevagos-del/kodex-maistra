@@ -870,18 +870,19 @@
   }
 }
 
-/* Class detail information architecture: compact passport, unified starting data. */
-.archive-shell .detail-v2-shell--class #class-passport {
-  width: min(100%, 54rem);
-}
-
-.archive-shell .detail-v2-shell--class .class-start-section {
-  width: min(100%, 60rem);
+/* Section frames share the page grid; only reading blocks use compact widths. */
+.archive-shell .detail-v2-shell--class .detail-v2-main,
+.archive-shell .detail-v2-shell--class .detail-v2-main > *,
+.archive-shell .detail-v2-shell--class .codex-detail-section,
+.archive-shell .detail-v2-shell--class .detail-option-section {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
 }
 
 .archive-shell .class-start-layout {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(18rem, 1.1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
   align-items: start;
 }
@@ -977,10 +978,6 @@
 }
 
 /* Keep the selected subclass close to its action and supporting metadata. */
-.archive-shell .detail-v2-shell--class .detail-option-section {
-  width: min(100%, 54rem);
-}
-
 .archive-shell .detail-v2-shell--class .detail-option-current {
   grid-template-columns: 2.25rem minmax(0, 1fr);
   width: min(100%, 52rem);
