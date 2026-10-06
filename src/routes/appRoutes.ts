@@ -8,6 +8,8 @@ export const appRoutes = {
   itemDetail: '/items/:slug',
   spells: '/spells',
   spellDetail: '/spells/:slug',
+  conditions: '/conditions',
+  conditionDetail: '/conditions/:slug',
   admin: '/admin',
   login: '/login',
 } as const;

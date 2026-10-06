@@ -12,7 +12,7 @@ const referenceItems: SidebarItem[] = [
   { label: 'Предмети', icon: '/icons/codex/37-icon-items.png', path: appRoutes.items },
   { label: 'Закляття', icon: '/icons/codex/38-icon-spells.png', path: appRoutes.spells },
   { label: 'Правила', icon: '/icons/codex/01-icon-rule-version.png', disabled: true },
-  { label: 'Стани', icon: '/icons/codex/32-icon-condition.png', disabled: true },
+  { label: 'Стани', icon: '/icons/codex/32-icon-condition.png', path: appRoutes.conditions },
   { label: 'Бестіарій', icon: '/icons/codex/03-icon-creature-type.png', disabled: true },
 ];
 

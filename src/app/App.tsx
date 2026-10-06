@@ -14,6 +14,8 @@ const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((module) => 
 const SectionPage = lazy(() => preloadCatalogRoute().then((module) => ({ default: module.SectionPage })));
 const SpellsPage = lazy(() => import('@/pages/SpellsPage').then((module) => ({ default: module.SpellsPage })));
 const SpellDetailPage = lazy(() => import('@/pages/SpellDetailPage').then((module) => ({ default: module.SpellDetailPage })));
+const ConditionsPage = lazy(() => import('@/pages/ConditionsPage').then((module) => ({ default: module.ConditionsPage })));
+const ConditionDetailPage = lazy(() => import('@/pages/ConditionDetailPage').then((module) => ({ default: module.ConditionDetailPage })));
 
 function RouteFallback() {
   return <div className="archive-route-fallback"><LoadingIndicator label="Відкриваємо розділ…" /></div>;
@@ -32,6 +34,8 @@ export function App() {
         <Route path={appRoutes.itemDetail} element={<Suspense fallback={<RouteFallback />}><ContentDetailPage entity="item" /></Suspense>} />
         <Route path={appRoutes.spells} element={<Suspense fallback={<RouteFallback />}><SpellsPage /></Suspense>} />
         <Route path={appRoutes.spellDetail} element={<Suspense fallback={<RouteFallback />}><SpellDetailPage /></Suspense>} />
+        <Route path={appRoutes.conditions} element={<Suspense fallback={<RouteFallback />}><ConditionsPage /></Suspense>} />
+        <Route path={appRoutes.conditionDetail} element={<Suspense fallback={<RouteFallback />}><ConditionDetailPage /></Suspense>} />
         <Route
           path={appRoutes.admin}
           element={
