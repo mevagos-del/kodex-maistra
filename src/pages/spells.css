@@ -30,7 +30,7 @@
 .spell-detail a { color: var(--archive-gold); }
 .spell-detail section { padding: 20px 0; border-top: 1px solid var(--archive-border); }
 .spell-detail h2 { font-size: 1.25rem; color: var(--archive-gold-bright); margin: 0 0 16px; }
-.spell-detail section p { line-height: 1.65; margin: 10px 0; }
+.spell-detail section p { line-height: 1.65; margin: 10px 0; white-space: pre-line; }
 .spell-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px 24px; margin: 0; }
 .spell-facts dt { color: var(--archive-muted); font-size: .8rem; margin-bottom: 4px; }
 .spell-facts dd { margin: 0; line-height: 1.5; }

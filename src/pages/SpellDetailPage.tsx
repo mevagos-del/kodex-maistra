@@ -14,7 +14,7 @@ export function SpellDetailPage() {
   if (!spell) return <div className="spell-detail"><h1>Закляття не знайдено</h1><Link to="/spells">До списку заклять</Link></div>;
   const facts = [
     { label: 'Час накладання', value: spell.castingTime }, { label: 'Дальність', value: spell.range },
-    ...(spell.castingTrigger ? [{ label: 'Умова реакції', value: spell.castingTrigger }] : []),
+    ...(spell.castingTrigger ? [{ label: spell.castingTime === '1 реакція' ? 'Умова реакції' : 'Умова накладання', value: spell.castingTrigger }] : []),
     { label: 'Компоненти', value: spell.components.join(', ') }, { label: 'Тривалість', value: spell.duration },
     ...(spell.materialComponent ? [{ label: 'Матеріальний компонент', value: spell.materialComponent }] : []),
     ...(spell.concentration ? [{ label: 'Концентрація', value: 'Потрібна' }] : []),
@@ -33,6 +33,6 @@ export function SpellDetailPage() {
     {spell.higherLevels && <section><h2>На вищих рівнях</h2><p>{spell.higherLevels}</p></section>}
     <section><h2>Доступно класам</h2><ul className="spell-relationships">{spell.classes.map((key) => <li key={key}><Link to={`/classes/${key}`}>{spellClasses[key]}</Link></li>)}</ul></section>
     {!!spell.relatedRules.length && <section><h2>Пов’язані правила</h2><ul className="spell-relationships">{spell.relatedRules.map((rule) => <li key={rule.slug}>{rule.path ? <Link to={rule.path}>{rule.label}</Link> : rule.label}</li>)}</ul></section>}
-    <footer>Джерело: <a href={`${spell.source.url}#page=${spell.source.page}`} target="_blank" rel="noreferrer">{spell.source.title}, с. {spell.source.page}</a> · <a href="https://creativecommons.org/licenses/by/4.0/">{spell.source.license}</a>.<br />System Reference Document 5.2 © Wizards of the Coast LLC. Текст перекладено українською; оригінал англійською за посиланням.</footer>
+    <footer>Джерело: <a href={`${spell.source.url}#page=${spell.source.page}`} target="_blank" rel="noreferrer">{spell.source.title}, с. {spell.source.page}</a> · <a href="https://creativecommons.org/licenses/by/4.0/">{spell.source.license}</a>.<br />Ця робота містить матеріал із {spell.source.title} від Wizards of the Coast LLC, доступний на <a href="https://www.dndbeyond.com/srd">dndbeyond.com/srd</a> за ліцензією CC-BY-4.0. Текст перекладено українською; оригінал англійською за посиланням.{spell.source.supplement && <><br />Завершення прикладу: <a href={spell.source.supplement.url} target="_blank" rel="noreferrer">{spell.source.supplement.title}</a>.</>}</footer>
   </article>;
 }

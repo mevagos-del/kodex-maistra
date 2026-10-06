@@ -1,0 +1,68 @@
+{
+  "complete": true,
+  "source": {
+    "title": "SRD 5.2.1",
+    "url": "https://media.dndbeyond.com/compendium-images/srd/5.2/SRD_CC_v5.2.1.pdf",
+    "license": "CC-BY-4.0"
+  },
+  "sourceCount": 339,
+  "translatedCount": 339,
+  "missingCount": 0,
+  "countsByLevel": {
+    "0": 27,
+    "1": 57,
+    "2": 57,
+    "3": 42,
+    "4": 34,
+    "5": 38,
+    "6": 31,
+    "7": 20,
+    "8": 17,
+    "9": 16
+  },
+  "sourceCountsByLevel": {
+    "0": 27,
+    "1": 57,
+    "2": 57,
+    "3": 42,
+    "4": 34,
+    "5": 38,
+    "6": 31,
+    "7": 20,
+    "8": 17,
+    "9": 16
+  },
+  "countsBySchool": {
+    "Ілюзія": 29,
+    "Аб’юрація": 49,
+    "Виклик": 54,
+    "Віщування": 31,
+    "Евокація": 54,
+    "Зачарування": 34,
+    "Некромантія": 27,
+    "Трансмутація": 61
+  },
+  "countsByClass": {
+    "bard": 130,
+    "cleric": 109,
+    "druid": 124,
+    "paladin": 38,
+    "ranger": 48,
+    "sorcerer": 140,
+    "warlock": 72,
+    "wizard": 218
+  },
+  "concentrationCount": 133,
+  "ritualCount": 29,
+  "officialOpenSourceCount": 339,
+  "ttgSourceCount": 0,
+  "officialSupplements": [
+    {
+      "slug": "telekinesis",
+      "title": "Офіційні Basic Rules 2024: Телекінез",
+      "url": "https://www.dndbeyond.com/sources/dnd/br-2024/spell-descriptions#Telekinesis"
+    }
+  ],
+  "intentionallyExcluded": [],
+  "missingTranslations": []
+}
