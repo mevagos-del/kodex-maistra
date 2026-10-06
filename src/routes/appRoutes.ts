@@ -10,6 +10,8 @@ export const appRoutes = {
   spellDetail: '/spells/:slug',
   conditions: '/conditions',
   conditionDetail: '/conditions/:slug',
+  feats: '/feats',
+  featDetail: '/feats/:slug',
   admin: '/admin',
   login: '/login',
 } as const;

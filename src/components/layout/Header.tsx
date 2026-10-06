@@ -9,6 +9,7 @@ function pageContext(pathname: string) {
   if (pathname.startsWith('/items')) return 'Довідник / Предмети';
   if (pathname.startsWith('/spells')) return 'Довідник / Закляття';
   if (pathname.startsWith('/conditions')) return 'Довідник / Стани';
+  if (pathname.startsWith('/feats')) return 'Довідник / Риси';
   if (pathname.startsWith('/admin')) return 'Система / Адміністрування';
   if (pathname.startsWith('/login')) return 'Система / Обліковий запис';
   return 'Кодекс Майстра';
