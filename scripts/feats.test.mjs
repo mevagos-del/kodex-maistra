@@ -28,24 +28,30 @@ const { officialClasses: classes } = loadLocalRules(resolve(rulesRoot, 'classes'
 const { officialItems: items } = loadLocalRules(resolve(rulesRoot, 'items'));
 const { officialConditions: conditions } = loadLocalRules(resolve(rulesRoot, 'conditions.ts'));
 const bySlug = slug => entries.find(entry => entry.slug === slug);
+const srdEntries = entries.filter(entry => entry.source.origin === 'srd');
+const { phb2024FeatInventory } = loadLocalRules(resolve(rulesRoot, 'feat-inventory'));
 const text = slug => bySlug(slug).effects.map(effect => effect.text).join(' ');
 const identities = ['Alert', 'Magic Initiate', 'Savage Attacker', 'Skilled', 'Ability Score Improvement', 'Grappler', 'Archery', 'Defense', 'Great Weapon Fighting', 'Two-Weapon Fighting', 'Boon of Combat Prowess', 'Boon of Dimensional Travel', 'Boon of Fate', 'Boon of Irresistible Offense', 'Boon of Spell Recall', 'Boon of the Night Spirit', 'Boon of Truesight'];
 const effectCounts = [2, 3, 1, 1, 0, 3, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1];
 
 test('complete SRD 5.2.1 feat identities and category counts', () => {
-  assert.deepEqual(entries.map(entry => entry.nameEn), identities);
-  assert.equal(new Set(entries.map(entry => entry.slug)).size, 17);
-  assert.equal(new Set(entries.map(entry => entry.nameUk)).size, 17);
-  assert.deepEqual(Object.keys(featCategories).map(category => entries.filter(entry => entry.category === category).length), [4, 2, 4, 7]);
+  assert.deepEqual(srdEntries.map(entry => entry.nameEn), identities);
+  assert.equal(new Set(srdEntries.map(entry => entry.slug)).size, 17);
+  assert.equal(new Set(srdEntries.map(entry => entry.nameUk)).size, 17);
+  assert.deepEqual(Object.keys(featCategories).map(category => srdEntries.filter(entry => entry.category === category).length), [4, 2, 4, 7]);
   assert.equal(featSource.license, 'CC-BY-4.0');
   assert.equal(featSource.edition, 'D&D 2024');
 });
 for (const entry of entries) test(`${entry.slug}: Ukrainian text, source, no duplicate effects or invalid values`, () => {
   assert.match(entry.slug, /^[a-z]+(?:-[a-z]+)*$/);
   assert.match(entry.nameUk, /^[А-ЯІЇЄҐ]/);
-  assert.ok([87, 88].includes(entry.page));
+  if (entry.source.origin === 'srd') assert.ok([87, 88].includes(entry.page));
+  else assert.equal(entry.page, undefined);
+  assert.equal(entry.source.edition, 'D&D 2024');
+  assert.ok(['srd', 'official-reference', 'ttg'].includes(entry.source.origin));
+  assert.ok(entry.source.title && entry.source.url.startsWith('https://'));
   assert.ok(entry.effects.length || entry.increase);
-  assert.equal(entry.effects.length, effectCounts[identities.indexOf(entry.nameEn)]);
+  if (entry.source.origin === 'srd') assert.equal(entry.effects.length, effectCounts[identities.indexOf(entry.nameEn)]);
   const paragraphs = entry.effects.map(effect => effect.text);
   assert.equal(new Set(paragraphs).size, paragraphs.length);
   for (const value of [entry.nameUk, entry.summary, ...paragraphs]) assert.doesNotMatch(value, /\[object Object\]|undefined|null|[a-z]{3}|не вказано|за правилами кампанії/i);
@@ -53,7 +59,7 @@ for (const entry of entries) test(`${entry.slug}: Ukrainian text, source, no dup
   assert.ok(entry.conditions.every(slug => ['incapacitated', 'grappled', 'invisible'].includes(slug)));
 });
 test('prerequisites: no inferred restrictions and exact OR semantics', () => {
-  assert.equal(filterFeats('', '', 'none').length, 4);
+  assert.equal(filterFeats('', '', 'none').length, 8);
   assert.equal(filterFeats('', '', 'level').length, 9);
   assert.equal(filterFeats('', '', 'ability').length, 1);
   assert.equal(filterFeats('', '', 'feature').length, 5);
@@ -140,5 +146,50 @@ test('all class, weapon, spell and condition links resolve to actual static reco
   const rogue = classes.find(entry => entry.slug === 'rogue');
   assert.ok(fighter.subclasses.some(entry => entry.slug === 'eldritch-knight'));
   assert.ok(rogue.subclasses.some(entry => entry.slug === 'arcane-trickster'));
+});
+test('expansion retains unique 2024 identities and honest per-entry provenance', () => {
+  assert.equal(entries.length, 21);
+  for (const key of ['slug', 'nameUk', 'nameEn']) assert.equal(new Set(entries.map(entry => entry[key])).size, entries.length);
+  const additions = entries.filter(entry => entry.source.origin !== 'srd');
+  assert.deepEqual(additions.map(entry => entry.slug), ['lucky', 'tough', 'healer', 'tavern-brawler']);
+  for (const entry of additions) {
+    assert.equal(entry.source.origin, 'official-reference');
+    assert.equal(entry.source.presentation, 'summary');
+    assert.equal(entry.source.license, undefined);
+    assert.ok(['www.dndbeyond.com', 'media.dndbeyond.com'].includes(new URL(entry.source.url).hostname));
+    assert.equal(entry.category, 'origin');
+    assert.equal(entry.prerequisites.length, 0);
+    assert.equal(entry.repeatable, false);
+    assert.equal(entry.increase, undefined);
+  }
+});
+test('PHB identity inventory exposes missing content instead of publishing placeholders', () => {
+  const expected = Object.values(phb2024FeatInventory).flat();
+  assert.equal(expected.length, 75);
+  assert.equal(new Set(expected).size, 75);
+  assert.deepEqual(Object.values(phb2024FeatInventory).map(list => list.length), [10, 43, 10, 12]);
+  for (const entry of entries) assert.ok(phb2024FeatInventory[entry.category].includes(entry.nameEn));
+  assert.equal(expected.filter(name => !entries.some(entry => entry.nameEn === name)).length, 54);
+  assert.ok(!expected.includes('Mobile'));
+  assert.ok(expected.includes('Speedy'));
+});
+test('new origin feats preserve resource, range, recharge and 2024 changes', () => {
+  assert.match(text('lucky'), /тривалого відпочинку.*бонусу майстерності/);
+  assert.match(text('lucky'), /1 очко.*перевірку к20.*Перевагу.*1 очко.*атаки проти тебе.*Невдачу/);
+  assert.doesNotMatch(text('lucky'), /3 очк|перекинути/);
+  assert.match(text('tough'), /подвоєний поточний рівень персонажа.*наступний.*ще 2/);
+  assert.match(text('healer'), /Дією Використання.*одне використання.*5 футів.*одну свою кістку хітів.*ти кидаєш.*твій бонус майстерності/);
+  assert.match(text('healer'), /закляттям.*результат 1.*Новий результат обов’язковий/);
+  assert.doesNotMatch(text('healer'), /1к6|4 хіти|раз.*відпочинок/);
+  assert.match(text('tavern-brawler'), /1к4.*модифікатор Сили.*перекинути.*новий результат обов’язковий/);
+  assert.match(text('tavern-brawler'), /Раз за хід.*дії Атака.*додатково до шкоди.*5 футів/);
+  assert.doesNotMatch(text('tavern-brawler'), /бонусною дією.*захоп/);
+});
+test('every published name and slug is searchable, filterable and alphabetically grouped', () => {
+  for (const entry of entries) {
+    for (const query of [entry.slug, entry.nameEn, entry.nameUk]) assert.ok(filterFeats(query).some(found => found.slug === entry.slug));
+    assert.ok(filterFeats('', entry.category).includes(entry));
+    assert.ok(filterFeats('', '', entry.prerequisites.length ? entry.prerequisites[0].kind : 'none').includes(entry));
+  }
 });
 console.log(JSON.stringify({ feats: entries.length, linkedClasses: new Set(entries.flatMap(entry => entry.classSlugs)).size, linkedWeapons: new Set(entries.flatMap(entry => eligibleFeatWeapons(entry, items).map(item => item.slug))).size, linkedSpells: new Set(entries.flatMap(entry => eligibleFeatSpells(entry, spells).map(spell => spell.slug))).size, magicInitiateSpells: eligibleFeatSpells(bySlug('magic-initiate'), spells).length, spellRecallSpells: eligibleFeatSpells(bySlug('boon-of-spell-recall'), spells).length, linkedConditions: new Set(entries.flatMap(entry => entry.conditions)).size, relatedRules: new Set(entries.flatMap(entry => entry.rules.map(rule => rule.slug))).size }));

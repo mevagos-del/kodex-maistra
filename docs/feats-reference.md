@@ -2,6 +2,9 @@
 
 ## Source and scope
 
+This document records the initial 17-entry SRD implementation. For the current expansion,
+per-entry provenance and outstanding coverage, see [feats-expansion.md](feats-expansion.md).
+
 All 17 feats in SRD 5.2.1, pages 87–88, are included as Ukrainian translations.
 The official D&D Beyond Basic Rules feat list was cross-checked and contains the same set.
 

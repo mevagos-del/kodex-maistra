@@ -9,7 +9,8 @@ type Ability = keyof typeof featAbilities;
 export type FeatPrerequisite = { kind: 'level'; minimum: number } | { kind: 'ability'; anyOf: Ability[]; minimum: number } | { kind: 'feature'; feature: 'fighting-style' | 'spellcasting'; label: string };
 type Increase = { choices: Ability[]; amount: number; maximum: number; alternative?: { count: number; amount: number } };
 export type FeatEntry = {
-  slug: string; nameUk: string; nameEn: string; category: FeatCategory; page: number; summary: string;
+  slug: string; nameUk: string; nameEn: string; category: FeatCategory; page?: number; summary: string;
+  source: FeatSource;
   prerequisites: FeatPrerequisite[]; repeatable: boolean; repeatRestriction?: string;
   effects: { title: string; text: string }[]; increase?: Increase;
   classSlugs: string[]; classContext?: string; weaponRule?: 'any' | 'ranged' | 'two-handed-melee' | 'light';
@@ -17,7 +18,10 @@ export type FeatEntry = {
   spellSlotInteraction?: { minimum: number; maximum: number };
   conditions: ConditionSlug[]; rules: { slug: string; label: string }[];
 };
-export const featSource = { title: 'SRD 5.2.1', edition: 'D&D 2024', license: 'CC-BY-4.0', url: 'https://media.dndbeyond.com/compendium-images/srd/5.2/SRD_CC_v5.2.1.pdf' };
+export type FeatSource =
+  | { origin: 'srd'; title: string; edition: 'D&D 2024'; license: 'CC-BY-4.0'; url: string }
+  | { origin: 'official-reference' | 'ttg'; title: string; edition: 'D&D 2024'; presentation: 'summary'; url: string };
+export const featSource: FeatSource = { origin: 'srd', title: 'SRD 5.2.1', edition: 'D&D 2024', license: 'CC-BY-4.0', url: 'https://media.dndbeyond.com/compendium-images/srd/5.2/SRD_CC_v5.2.1.pdf' };
 const allAbilities = Object.keys(featAbilities) as Ability[];
 const level = (minimum: number): FeatPrerequisite[] => [{ kind: 'level', minimum }];
 const style: FeatPrerequisite[] = [{ kind: 'feature', feature: 'fighting-style', label: 'Уміння «Бойовий стиль»' }];
@@ -26,11 +30,11 @@ const attack = rule('attack-rolls', 'Кидки атаки');
 const damage = rule('damage-rolls', 'Кидки шкоди');
 const movement = rule('movement', 'Переміщення');
 const combatStyles = ['fighter', 'paladin', 'ranger'];
-const base = { prerequisites: [] as FeatPrerequisite[], repeatable: false, classSlugs: [] as string[], conditions: [] as ConditionSlug[], rules: [] as FeatEntry['rules'] };
+const base = { source: featSource, prerequisites: [] as FeatPrerequisite[], repeatable: false, classSlugs: [] as string[], conditions: [] as ConditionSlug[], rules: [] as FeatEntry['rules'] };
 const boon = { ...base, category: 'epicBoon' as const, page: 88, prerequisites: level(19), increase: { choices: allAbilities, amount: 1, maximum: 30 } };
 const fighting = { ...base, category: 'fightingStyle' as const, prerequisites: style, classSlugs: combatStyles, classContext: 'Ці класи надають уміння «Бойовий стиль». Потрібне саме це уміння, а не лише рівень у класі.' };
 
-// Complete licensed feat section, SRD 5.2.1 pp. 87–88. Ability increases are rendered once, separately from effects.
+// Licensed SRD entries stay intact; additions carry their own provenance. Increases render separately from effects.
 export const officialFeats: FeatEntry[] = [
   { ...base, slug: 'alert', nameUk: 'Пильний', nameEn: 'Alert', category: 'origin', page: 87,
     summary: 'Додаєш бонус майстерності до Ініціативи; можеш обмінятися Ініціативою із союзником.',
@@ -89,6 +93,30 @@ export const officialFeats: FeatEntry[] = [
     effects: [{ title: 'Злиття з тінями', text: 'Перебуваючи в тьмяному світлі або темряві, можеш надати собі стан Невидимий бонусною дією. Стан завершується на тобі одразу після того, як виконуєш дію, бонусну дію або Реакцію.' }, { title: 'Тіньова форма', text: 'Перебуваючи в тьмяному світлі або темряві, маєш Стійкість до всієї шкоди, крім психічної та променистої.' }], conditions: ['invisible'], rules: [rule('light', 'Світло й темрява'), rule('bonus-action', 'Бонусна дія'), rule('resistance', 'Стійкість'), rule('damage-types', 'Типи шкоди')] },
   { ...boon, slug: 'boon-of-truesight', nameUk: 'Благословення істинного зору', nameEn: 'Boon of Truesight',
     summary: 'Маєш Істинний зір із дальністю 60 футів.', effects: [{ title: 'Істинний зір', text: 'Маєш Істинний зір із дальністю 60 футів.' }], rules: [rule('truesight', 'Істинний зір')] },
+  { ...base, slug: 'lucky', nameUk: 'Щасливий', nameEn: 'Lucky', category: 'origin',
+    source: { origin: 'official-reference', title: 'D&D Beyond · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://www.dndbeyond.com/posts/1801-the-12-best-feats-for-warlocks-in-the-2024-players' },
+    summary: 'Очки удачі надають Перевагу на твої перевірки к20 або Невдачу на атаки проти тебе.',
+    effects: [{ title: 'Очки удачі', text: 'Після тривалого відпочинку маєш кількість очок удачі, що дорівнює твоєму бонусу майстерності.' },
+      { title: 'Вплив на кидок', text: 'Витрать 1 очко, коли здійснюєш перевірку к20, щоб отримати Перевагу на цей кидок. Або витрать 1 очко, коли істота кидає к20 для атаки проти тебе, щоб надати Невдачу на цей кидок атаки.' }],
+    rules: [rule('d20-tests', 'Перевірки к20'), attack, rule('advantage', 'Перевага й Невдача'), rule('proficiency', 'Бонус майстерності'), rule('long-rest', 'Тривалий відпочинок')] },
+  { ...base, slug: 'tough', nameUk: 'Міцний', nameEn: 'Tough', category: 'origin',
+    source: { origin: 'official-reference', title: 'Wizards of the Coast · Niko · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://media.dndbeyond.com/compendium-images/uhlh/downloads/nikos-character-sheet.pdf#page=2' },
+    summary: 'Максимум хітів зростає на 2 за кожен рівень персонажа.',
+    effects: [{ title: 'Додаткові хіти', text: 'Коли отримуєш рису, додай до максимуму хітів подвоєний поточний рівень персонажа. За кожен наступний здобутий рівень персонажа додай ще 2 до максимуму хітів.' }],
+    rules: [rule('hit-points', 'Хіти'), rule('character-level', 'Рівень персонажа')] },
+  { ...base, slug: 'healer', nameUk: 'Лікар', nameEn: 'Healer', category: 'origin',
+    source: { origin: 'official-reference', title: 'Wizards of the Coast · Niko · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://media.dndbeyond.com/compendium-images/uhlh/downloads/nikos-character-sheet.pdf#page=2' },
+    summary: 'Набір лікаря дозволяє лікувати кісткою хітів цілі; одиниці на кістках лікування можна перекидати.',
+    effects: [{ title: 'Лікування набором', text: 'Дією Використання витрать одне використання набору лікаря на істоту в межах 5 футів. Вона може витратити одну свою кістку хітів; ти кидаєш її, а істота відновлює хіти в кількості, що дорівнює результату плюс твій бонус майстерності.' },
+      { title: 'Перекидання лікування', text: 'Коли кидаєш кістку для визначення хітів, відновлених твоїм закляттям або лікуванням набором цієї риси, можеш перекинути результат 1. Новий результат обов’язковий.' }],
+    rules: [rule('utilize-action', 'Дія Використання'), rule('hit-dice', 'Кістки хітів'), rule('healing', 'Лікування'), rule('proficiency', 'Бонус майстерності')] },
+  { ...base, slug: 'tavern-brawler', nameUk: 'Шинковий забіяка', nameEn: 'Tavern Brawler', category: 'origin',
+    source: { origin: 'official-reference', title: 'D&D Beyond · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://www.dndbeyond.com/posts/1785-the-backgrounds-and-origin-feats-in-the-2024' },
+    summary: 'Посилюєш беззбройні удари, володієш імпровізованою зброєю та можеш відштовхувати ціль.',
+    effects: [{ title: 'Беззбройний удар', text: 'При влучанні беззбройним ударом із завданням шкоди можеш завдати 1к4 + модифікатор Сили. Якщо кістка шкоди твого беззбройного удару показала 1, можеш перекинути її; новий результат обов’язковий.' },
+      { title: 'Імпровізована зброя', text: 'Маєш володіння імпровізованою зброєю.' },
+      { title: 'Відштовхування', text: 'Раз за хід, коли влучаєш в істоту беззбройним ударом як частиною дії Атака, можеш додатково до шкоди відштовхнути її на 5 футів від себе.' }],
+    rules: [rule('unarmed-strike', 'Беззбройний удар'), rule('attack-action', 'Дія Атака'), damage, movement, rule('improvised-weapons', 'Імпровізована зброя')] },
 ];
 
 export function prerequisiteLabel(value: FeatPrerequisite): string {

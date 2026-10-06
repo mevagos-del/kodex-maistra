@@ -16,7 +16,7 @@ export function FeatsPage() {
     <header className="catalog-archive-header">
       <div className="catalog-archive-header__copy"><p>Довідник</p>
         <div className="catalog-archive-header__title-row"><h1>Риси</h1><span aria-live="polite">Знайдено: {entries.length}</span></div>
-        <p className="catalog-archive-header__summary">Усі 17 рис SRD 5.2.1: походження, загальні риси, бойові стилі та епічні благословення.</p>
+        <p className="catalog-archive-header__summary">Риси D&D 2024 з SRD 5.2.1 та перевірених офіційних матеріалів: походження, загальні риси, бойові стилі й епічні благословення. Довідник поступово доповнюється.</p>
       </div>
       <div role="search" className="catalog-archive-search"><input type="search" aria-label="Пошук рис" placeholder="Назва українською або англійською…" value={search} onChange={event => setSearch(event.target.value)} /></div>
     </header>
