@@ -15,6 +15,7 @@ const magic = read('src/data/rules/items/magicItems.ts');
 const repository = read('src/features/catalog/api/officialCatalogRepository.ts');
 const detail = read('src/pages/ContentDetailPage.tsx');
 const catalog = read('src/features/catalog/components/ItemsArchiveCatalog.tsx');
+const terminology = read('src/features/catalog/utils/itemTerminology.ts');
 
 assert.equal(tupleCount(weapons), 38, 'SRD weapon table must contain 38 weapons');
 assert.equal(tupleCount(armor), 13, 'armor table must contain 12 suits and one shield');
@@ -31,6 +32,13 @@ assert.doesNotMatch(detail, /versatileMatch|match\(\/універсальн/);
 assert.match(catalog, /categoryOrder = \['Зброя', 'Обладунки', 'Пригодницьке спорядження', 'Інструменти', 'Магічні предмети'\]/);
 assert.match(catalog, /aria-expanded/);
 assert.match(catalog, /entry\.title_original/);
+assert.match(catalog, /categoryDescriptions/);
+assert.match(catalog, /aria-current/);
+assert.match(detail, /compactEntry=\{mastery\}/);
+assert.doesNotMatch(detail, /const masteryUk/);
+for (const mastery of ['Cleave','Graze','Nick','Push','Sap','Slow','Topple','Vex']) assert.match(terminology, new RegExp(`${mastery}:`));
+assert.match(detail, /addInfo\(blocks, 'Клас'/);
+assert.doesNotMatch(detail, /addInfo\(blocks, 'Підтип'/);
 assert.doesNotMatch([weapons,armor,tools,gear,magic].join('\n'), /['"](?:\[object Object\]|undefined|null)['"]/);
 
 console.log('Items tests passed: 158 verified runtime records, 38 weapons, 13 armor/shields, 79 gear, 25 tools, 3 magic items.');

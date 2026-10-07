@@ -1,9 +1,16 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { ItemEntry } from '../types';
+import { capitalizeItemTerm, itemMasteryLabel } from '../utils/itemTerminology';
 
 const categoryOrder = ['Зброя', 'Обладунки', 'Пригодницьке спорядження', 'Інструменти', 'Магічні предмети'];
-const masteryLabels: Record<string,string> = { Cleave:'Розсікання', Graze:'Зачіпання', Nick:'Швидкий надріз', Push:'Поштовх', Sap:'Ослаблення', Slow:'Уповільнення', Topple:'Збивання', Vex:'Виснаження' };
+const categoryDescriptions: Record<string, string> = {
+  'Зброя': 'Проста та бойова',
+  'Обладунки': 'Легкі, середні, важкі та щити',
+  'Пригодницьке спорядження': 'Набори, припаси та спорядження',
+  'Інструменти': 'Ремісничі, музичні та спеціальні',
+  'Магічні предмети': 'Перевірені записи з відкритих правил',
+};
 
 function normalize(value: string) {
   return value.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('uk-UA');
@@ -19,10 +26,10 @@ function itemMatchesSearch(entry: ItemEntry, search: string) {
 }
 
 function summary(entry: ItemEntry) {
-  if (entry.item_type === 'зброя') return [entry.subcategory, entry.damage && `${entry.damage} ${entry.damage_type ?? ''}`.trim(), entry.mastery ? masteryLabels[entry.mastery] ?? entry.mastery : null].filter(Boolean).join(' · ');
-  if (entry.item_type === 'обладунок' || entry.item_type === 'щит') return [entry.subcategory, entry.armor_class && `КЗ ${entry.armor_class}`, entry.required_strength && `Сила ${entry.required_strength}`].filter(Boolean).join(' · ');
-  if (entry.is_magical) return [entry.item_type, entry.rarity, entry.requires_attunement ? 'Налаштування' : null].filter(Boolean).join(' · ');
-  return [entry.subcategory, entry.price, entry.weight].filter(Boolean).join(' · ');
+  if (entry.item_type === 'зброя') return [entry.subcategory && capitalizeItemTerm(entry.subcategory), entry.damage && `${entry.damage} ${entry.damage_type ?? ''}`.trim(), entry.mastery ? itemMasteryLabel(entry.mastery) : null].filter(Boolean).join(' · ');
+  if (entry.item_type === 'обладунок' || entry.item_type === 'щит') return [entry.subcategory && `${capitalizeItemTerm(entry.subcategory)}${entry.subcategory === 'щит' ? '' : ' обладунки'}`, entry.armor_class && `КЗ ${entry.armor_class}`, entry.required_strength && `Сила ${entry.required_strength}`].filter(Boolean).join(' · ');
+  if (entry.is_magical) return [entry.item_type && capitalizeItemTerm(entry.item_type), entry.rarity && capitalizeItemTerm(entry.rarity), entry.requires_attunement ? 'Налаштування' : null].filter(Boolean).join(' · ');
+  return [entry.subcategory && capitalizeItemTerm(entry.subcategory), entry.price, entry.weight].filter(Boolean).join(' · ');
 }
 
 type Props = { entries: ItemEntry[]; search: string };
@@ -35,6 +42,7 @@ export function ItemsArchiveCatalog({ entries, search }: Props) {
   const [attunement, setAttunement] = useState('');
   const [weaponCategory, setWeaponCategory] = useState('');
   const [armorCategory, setArmorCategory] = useState('');
+  const [activeLetters, setActiveLetters] = useState<Record<string, string>>({});
   const filtered = useMemo(() => entries.filter((entry) => itemMatchesSearch(entry, search))
     .filter((entry) => !subcategory || entry.subcategory === subcategory)
     .filter((entry) => !rarity || entry.rarity === rarity)
@@ -47,7 +55,7 @@ export function ItemsArchiveCatalog({ entries, search }: Props) {
 
   return <>
     <details className="item-archive-filters">
-      <summary>Уточнити каталог</summary>
+      <summary>Фільтри</summary>
       <div className="item-archive-filter-grid">
         <label>Підтип<select value={subcategory} onChange={(event)=>setSubcategory(event.target.value)}><option value="">Усі</option>{options('subcategory').map((value)=><option key={value}>{value}</option>)}</select></label>
         <label>Рідкість<select value={rarity} onChange={(event)=>setRarity(event.target.value)}><option value="">Усі</option>{options('rarity').map((value)=><option key={value}>{value}</option>)}</select></label>
@@ -71,11 +79,11 @@ export function ItemsArchiveCatalog({ entries, search }: Props) {
         }, new Map<string, ItemEntry[]>());
         return <section key={category} className="item-archive-category">
           <button type="button" className="item-archive-category__toggle" aria-expanded={open} onClick={()=>setExpanded((state)=>({...state,[category]:!state[category]}))}>
-            <span>{category}</span><span>{items.length}</span><span aria-hidden="true">{open ? '−' : '+'}</span>
+            <span className="item-archive-category__heading"><strong>{category}</strong><small>{categoryDescriptions[category]}</small></span><span>{items.length}</span><span aria-hidden="true">{open ? '−' : '+'}</span>
           </button>
           {open ? <div className="item-archive-category__content">
             {items.length ? <>
-              <nav className="item-archive-alphabet" aria-label={`Алфавіт категорії ${category}`}>{Array.from(groups.keys()).map((letter)=><a key={letter} href={`#items-${category}-${letter}`}>{letter}</a>)}</nav>
+              <nav className="item-archive-alphabet" aria-label={`Алфавіт категорії ${category}`}>{Array.from(groups.keys()).map((letter)=><a className={activeLetters[category] === letter ? 'is-active' : undefined} aria-current={activeLetters[category] === letter ? 'location' : undefined} onClick={()=>setActiveLetters((state)=>({...state,[category]:letter}))} key={letter} href={`#items-${category}-${letter}`}>{letter}</a>)}</nav>
               {Array.from(groups.entries()).map(([letter, group])=><section key={letter} id={`items-${category}-${letter}`} className="item-archive-letter-group"><h2>{letter}</h2><div>{group.map((entry)=><Link className="item-archive-row" key={entry.id} to={`/items/${entry.slug}`}><span><strong>{entry.title_ua}</strong><small>{entry.title_original}</small></span><span>{summary(entry)}</span><span aria-hidden="true">›</span></Link>)}</div></section>)}
             </> : <p className="item-archive-empty">Немає предметів за вибраними умовами.</p>}
           </div> : null}

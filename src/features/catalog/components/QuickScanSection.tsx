@@ -11,10 +11,11 @@ type QuickScanSectionProps = {
   emptyMessage?: string;
   groupByLevel?: boolean;
   highlightedAnchor?: string | null;
+  compactEntry?: { label: string; value: string; description?: string; ruleSlug?: string } | null;
 };
 
-export function QuickScanSection({ id, number, title, cards, iconForCard, emptyMessage, groupByLevel = false, highlightedAnchor }: QuickScanSectionProps) {
-  if (cards.length === 0 && !emptyMessage) return null;
+export function QuickScanSection({ id, number, title, cards, iconForCard, emptyMessage, groupByLevel = false, highlightedAnchor, compactEntry }: QuickScanSectionProps) {
+  if (cards.length === 0 && !compactEntry && !emptyMessage) return null;
 
   const visibleCards = groupByLevel
     ? cards.filter((card) => Number.isFinite(Number.parseInt(referenceLevel(card), 10)))
@@ -87,7 +88,14 @@ export function QuickScanSection({ id, number, title, cards, iconForCard, emptyM
             </div>
           </section>)}
         </div>
-      ) : <p className="codex-empty-note">{emptyMessage}</p>}
+      ) : !compactEntry ? <p className="codex-empty-note">{emptyMessage}</p> : null}
+      {compactEntry ? (
+        <div className="codex-compact-mechanic" data-rule-slug={compactEntry.ruleSlug}>
+          <span>{compactEntry.label}</span>
+          <strong>{compactEntry.value}</strong>
+          {compactEntry.description ? <p><RuleText>{compactEntry.description}</RuleText></p> : null}
+        </div>
+      ) : null}
     </section>
   );
 }

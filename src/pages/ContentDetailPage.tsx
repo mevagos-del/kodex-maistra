@@ -27,6 +27,7 @@ import {
 import { formatValueSafely, isRecord, isUsefulValue, referenceLevel, sourceRuleText } from '@/features/catalog/utils/detailContent';
 import { parseSubclasses } from '@/features/catalog/utils/subclassData';
 import { resolveCatalogImageUrl } from '@/features/catalog/utils/catalogImages';
+import { capitalizeItemTerm, itemMasteryLabel, itemWeaponPropertyLabel } from '@/features/catalog/utils/itemTerminology';
 import type { EntityType } from '@/types/content';
 
 type ContentDetailPageProps = {
@@ -95,9 +96,18 @@ function mainInfoBlocks(entry: CatalogEntry) {
   }
 
   if (entry.entityType === 'item') {
-    addInfo(blocks, 'Тип', entry.item_type);
     addInfo(blocks, 'Категорія', entry.category);
-    addInfo(blocks, 'Підтип', entry.subcategory);
+    if (entry.item_type === 'зброя') {
+      addInfo(blocks, 'Клас', entry.weapon_category ? capitalizeItemTerm(entry.weapon_category) : null);
+      addInfo(blocks, 'Бій', entry.weapon_mode ? capitalizeItemTerm(entry.weapon_mode) : null);
+    } else if (entry.item_type === 'обладунок' || entry.item_type === 'щит') {
+      addInfo(blocks, 'Клас', entry.armor_category ? capitalizeItemTerm(entry.armor_category) : null);
+    } else {
+      const specificType = entry.subcategory && entry.subcategory.toLocaleLowerCase('uk-UA') !== entry.category?.toLocaleLowerCase('uk-UA')
+        ? entry.subcategory
+        : entry.item_type;
+      addInfo(blocks, 'Тип', specificType ? capitalizeItemTerm(specificType) : null);
+    }
     addInfo(blocks, 'Рідкість', entry.rarity);
     addInfo(blocks, 'Вартість', entry.price);
     addInfo(blocks, 'Вага', entry.weight);
@@ -219,7 +229,6 @@ function progressionFeatureCards(value: unknown) {
   });
 }
 
-const masteryUk: Record<string, string> = { Cleave:'Розсікання', Graze:'Зачіпання', Nick:'Швидкий надріз', Push:'Поштовх', Sap:'Ослаблення', Slow:'Уповільнення', Topple:'Збивання', Vex:'Виснаження' };
 const masteryRules: Record<string,string> = {
   Cleave:'Після влучання атакою ближнього бою можеш атакувати другу істоту в межах 5 футів від першої та у своїй досяжності. При влучанні друга ціль отримує шкоду зброї без додавання модифікатора характеристики, якщо він не від’ємний. Один раз за хід.',
   Graze:'Якщо атака цією зброєю не влучає, ціль отримує шкоду типу зброї, що дорівнює модифікатору характеристики атаки. Цю шкоду можна збільшити лише збільшенням самого модифікатора.',
@@ -232,7 +241,7 @@ const masteryRules: Record<string,string> = {
 };
 
 function weaponPropertyDescription(property: string) {
-  const name = property.replace(/\s*\([^)]*\)$/, '');
+  const name = itemWeaponPropertyLabel(property).replace(/\s*\([^)]*\)$/, '');
   const rules: Record<string,string> = {
     'Боєприпаси':'Для далекобійної атаки потрібен зазначений боєприпас; кожна атака витрачає один боєприпас.',
     'Фехтувальна':'Для кидків атаки й шкоди можеш використати модифікатор Сили або Спритності; для обох кидків використовується та сама характеристика.',
@@ -249,14 +258,22 @@ function weaponPropertyDescription(property: string) {
 
 function itemPropertyData(entry: ItemEntry) {
   const cards = referenceCards(entry.properties, 'Властивість');
-  const weaponCards = entry.weapon_properties.map((property) => ({ title: property.replace(/\s*\([^)]*\)$/, ''), description: weaponPropertyDescription(property), rows: [] }));
+  const weaponCards = entry.weapon_properties.map((property) => ({ title: itemWeaponPropertyLabel(property).replace(/\s*\([^)]*\)$/, ''), description: weaponPropertyDescription(property), rows: [] }));
   if (entry.versatile_damage && !weaponCards.some((card)=>/універсаль/i.test(card.title))) weaponCards.push({title:'Універсальна',description:`При використанні двома руками кістка шкоди становить ${entry.versatile_damage}.`,rows:[]});
-  if (entry.mastery) weaponCards.push({title:`Майстерність: ${masteryUk[entry.mastery] ?? entry.mastery}`,description:`${masteryRules[entry.mastery] ?? ''} Ця властивість діє лише за наявності уміння, що відкриває майстерність цієї зброї.`.trim(),rows:[]});
   const normalizedCards = cards
     .map((card) => card.description || card.rows.some((row) => row.value !== 'Так')
       ? { ...card, description: card.description ? sourceRuleText(card.description) : undefined, rows: card.rows.map((row) => ({ ...row, value: safeText(row.value) ?? 'Не вказано' })) }
       : { ...card, description: 'Точне значення не вказано у доступному джерелі.', rows: [] });
-  return { properties: [...weaponCards, ...normalizedCards], variants: referenceCards(entry.variants, 'Варіант') };
+  return {
+    properties: [...weaponCards, ...normalizedCards],
+    mastery: entry.mastery ? {
+      label: 'Майстерність',
+      value: `${itemMasteryLabel(entry.mastery)} (${entry.mastery})`,
+      description: `${masteryRules[entry.mastery] ?? ''} Ця властивість діє лише за наявності уміння, що відкриває майстерність цієї зброї.`.trim(),
+      ruleSlug: `weapon-mastery-${entry.mastery.toLowerCase()}`,
+    } : null,
+    variants: referenceCards(entry.variants, 'Варіант'),
+  };
 }
 
 function itemUsageGroups(entry: ItemEntry) {
@@ -354,12 +371,13 @@ function ClassDetailContent({ entry, imageUrl }: { entry: ClassEntry; imageUrl: 
 function ItemDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ItemEntry; imageUrl: string; fallbackImageUrl: string }) {
   const propertyData = itemPropertyData(entry);
   const properties = propertyData.properties;
+  const mastery = propertyData.mastery;
   const variants = propertyData.variants;
   const usageGroups = itemUsageGroups(entry);
   const description = descriptionWithoutHeading(entry.full_description_markdown, entry.title_ua, entry.short_description);
   const navigation = [
     { href: '#item-passport', label: 'Паспорт предмета', number: 1 },
-    ...(properties.length ? [{ href: '#item-properties', label: 'Властивості', number: 2 }] : []),
+    ...(properties.length || mastery ? [{ href: '#item-properties', label: 'Властивості', number: 2 }] : []),
     ...(usageGroups.length ? [{ href: '#item-usage', label: 'Правила використання', number: 3 }] : []),
     ...(variants.length ? [{ href: '#item-variants', label: 'Варіанти / покращення', number: 4 }] : []),
     ...(description ? [{ href: '#item-description', label: 'Опис', number: 5 }] : []),
@@ -371,7 +389,7 @@ function ItemDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ItemE
         <h2 className="codex-detail-title"><span>1.</span> Паспорт предмета</h2>
         <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="item" itemType={entry.item_type} itemCategory={entry.category} />
       </section>
-      <QuickScanSection id="item-properties" number={2} title="Властивості" cards={properties} iconForCard={() => itemIconForType(entry.item_type, entry.category, entry.is_magical ? 'магічний' : null)} emptyMessage="Властивості не вказано у доступному джерелі." />
+      <QuickScanSection id="item-properties" number={2} title="Властивості" cards={properties} compactEntry={mastery} iconForCard={() => itemIconForType(entry.item_type, entry.category, entry.is_magical ? 'магічний' : null)} emptyMessage="Властивості не вказано у доступному джерелі." />
       <DetailGroupPanel id="item-usage" sectionNumber={3} title="Правила використання" groups={usageGroups} presentation="rows" showCodexIcons />
       <QuickScanSection id="item-variants" number={4} title="Варіанти / покращення" cards={variants} iconForCard={() => CODEX_ICONS.choice} />
       {description ? <section id="item-description" className="detail-v2-description-panel codex-detail-section"><h2 className="codex-detail-title"><span>5.</span> Опис</h2><div className="markdown-content"><ReactMarkdown>{description}</ReactMarkdown></div></section> : null}
