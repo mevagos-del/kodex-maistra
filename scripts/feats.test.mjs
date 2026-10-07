@@ -9,7 +9,7 @@ import { loadSpells } from './load-spells.mjs';
 
 const source = await readFile(new URL('../src/data/rules/feats.ts', import.meta.url), 'utf8');
 const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } });
-const { officialFeats: entries, featCategories, featAbilities, featSource, filterFeats, groupFeats, featPrerequisites, eligibleFeatSpells, eligibleFeatWeapons } = await import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`);
+const { officialFeats: entries, featCategories, featAbilities, featSource, featPublicSource, filterFeats, groupFeats, featPrerequisites, eligibleFeatSpells, eligibleFeatWeapons } = await import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`);
 const { officialSpells: spells } = await loadSpells();
 const modules = new Map();
 function loadLocalRules(path) {
@@ -60,15 +60,15 @@ for (const entry of entries) test(`${entry.slug}: Ukrainian text, source, no dup
 });
 test('prerequisites: no inferred restrictions and exact OR semantics', () => {
   assert.equal(filterFeats('', '', 'none').length, 8);
-  assert.equal(filterFeats('', '', 'level').length, 9);
-  assert.equal(filterFeats('', '', 'ability').length, 1);
+  assert.equal(filterFeats('', '', 'level').length, 10);
+  assert.equal(filterFeats('', '', 'ability').length, 2);
   assert.equal(filterFeats('', '', 'feature').length, 5);
   assert.equal(featPrerequisites(bySlug('grappler')), 'Рівень 4+; Сила або Спритність 13+');
   assert.equal(featPrerequisites(bySlug('boon-of-spell-recall')), 'Рівень 19+; Уміння «Накладання заклять»');
   assert.equal(bySlug('magic-initiate').prerequisites.length, 0);
 });
 test('ability increases: exact amounts, choices, maxima and alternative', () => {
-  assert.equal(entries.filter(entry => entry.increase).length, 9);
+  assert.equal(entries.filter(entry => entry.increase).length, 10);
   assert.deepEqual(bySlug('ability-score-improvement').increase, { choices: Object.keys(featAbilities), amount: 2, maximum: 20, alternative: { count: 2, amount: 1 } });
   assert.deepEqual(bySlug('grappler').increase, { choices: ['strength', 'dexterity'], amount: 1, maximum: 20 });
   for (const entry of entries.filter(entry => entry.category === 'epicBoon')) assert.equal(entry.increase.maximum, 30);
@@ -148,20 +148,45 @@ test('all class, weapon, spell and condition links resolve to actual static reco
   assert.ok(rogue.subclasses.some(entry => entry.slug === 'arcane-trickster'));
 });
 test('expansion retains unique 2024 identities and honest per-entry provenance', () => {
-  assert.equal(entries.length, 21);
+  assert.equal(entries.length, 22);
   for (const key of ['slug', 'nameUk', 'nameEn']) assert.equal(new Set(entries.map(entry => entry[key])).size, entries.length);
   const additions = entries.filter(entry => entry.source.origin !== 'srd');
-  assert.deepEqual(additions.map(entry => entry.slug), ['lucky', 'tough', 'healer', 'tavern-brawler']);
+  assert.deepEqual(additions.map(entry => entry.slug), ['lucky', 'tough', 'healer', 'tavern-brawler', 'speedy']);
   for (const entry of additions) {
     assert.equal(entry.source.origin, 'official-reference');
     assert.equal(entry.source.presentation, 'summary');
     assert.equal(entry.source.license, undefined);
     assert.ok(['www.dndbeyond.com', 'media.dndbeyond.com'].includes(new URL(entry.source.url).hostname));
-    assert.equal(entry.category, 'origin');
-    assert.equal(entry.prerequisites.length, 0);
+    if (entry.slug !== 'speedy') {
+      assert.equal(entry.category, 'origin');
+      assert.equal(entry.prerequisites.length, 0);
+      assert.equal(entry.increase, undefined);
+    }
     assert.equal(entry.repeatable, false);
-    assert.equal(entry.increase, undefined);
   }
+});
+test('public source metadata hides working references while preserving SRD attribution', () => {
+  for (const entry of entries) {
+    const displayed = featPublicSource(entry);
+    assert.doesNotMatch(JSON.stringify(displayed), /ttg|Niko|summary|Власний український виклад/i);
+    assert.ok(['SRD 5.2.1', 'Player’s Handbook 2024'].includes(displayed.title));
+    if (entry.source.origin === 'srd') {
+      assert.equal(displayed.url, `${entry.source.url}#page=${entry.page}`);
+      assert.equal(entry.source.license, 'CC-BY-4.0');
+    }
+  }
+  const reference = bySlug('lucky');
+  const fallback = { ...reference, source: { ...reference.source, origin: 'ttg', title: 'TTG.club', url: 'https://new.ttg.club/feats/lucky-phb' } };
+  assert.deepEqual(featPublicSource(fallback), featPublicSource(reference));
+});
+test('Speedy preserves revised prerequisites, ability choice and movement effects', () => {
+  const entry = bySlug('speedy');
+  assert.equal(featPrerequisites(entry), 'Рівень 4+; Спритність або Статура 13+');
+  assert.deepEqual(entry.increase, { choices: ['dexterity', 'constitution'], amount: 1, maximum: 20 });
+  assert.match(text('speedy'), /Швидкість збільшується на 10 футів/);
+  assert.match(text('speedy'), /дію Ривок.*Складна місцевість не коштує.*додаткового переміщення/);
+  assert.match(text('speedy'), /Провоковані атаки.*з Невдачею/);
+  assert.doesNotMatch(text('speedy'), /не провокуєш|після.*атаки/);
 });
 test('PHB identity inventory exposes missing content instead of publishing placeholders', () => {
   const expected = Object.values(phb2024FeatInventory).flat();
@@ -169,7 +194,7 @@ test('PHB identity inventory exposes missing content instead of publishing place
   assert.equal(new Set(expected).size, 75);
   assert.deepEqual(Object.values(phb2024FeatInventory).map(list => list.length), [10, 43, 10, 12]);
   for (const entry of entries) assert.ok(phb2024FeatInventory[entry.category].includes(entry.nameEn));
-  assert.equal(expected.filter(name => !entries.some(entry => entry.nameEn === name)).length, 54);
+  assert.equal(expected.filter(name => !entries.some(entry => entry.nameEn === name)).length, 53);
   assert.ok(!expected.includes('Mobile'));
   assert.ok(expected.includes('Speedy'));
 });

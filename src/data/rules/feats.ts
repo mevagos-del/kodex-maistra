@@ -20,8 +20,16 @@ export type FeatEntry = {
 };
 export type FeatSource =
   | { origin: 'srd'; title: string; edition: 'D&D 2024'; license: 'CC-BY-4.0'; url: string }
-  | { origin: 'official-reference' | 'ttg'; title: string; edition: 'D&D 2024'; presentation: 'summary'; url: string };
+  | { origin: 'official-reference' | 'ttg'; title: string; edition: 'D&D 2024'; presentation: 'summary'; url: string; officialTitle: string; officialUrl: string };
 export const featSource: FeatSource = { origin: 'srd', title: 'SRD 5.2.1', edition: 'D&D 2024', license: 'CC-BY-4.0', url: 'https://media.dndbeyond.com/compendium-images/srd/5.2/SRD_CC_v5.2.1.pdf' };
+const phbSource = { officialTitle: 'Player’s Handbook 2024', officialUrl: 'https://www.dndbeyond.com/sources/dnd/phb-2024' };
+
+// Working references remain auditable in data; the UI only receives official publication metadata.
+export function featPublicSource(entry: FeatEntry): { title: string; url: string } {
+  const source = entry.source;
+  if (source.origin !== 'srd') return { title: source.officialTitle, url: source.officialUrl };
+  return { title: source.title, url: entry.page ? `${source.url}#page=${entry.page}` : source.url };
+}
 const allAbilities = Object.keys(featAbilities) as Ability[];
 const level = (minimum: number): FeatPrerequisite[] => [{ kind: 'level', minimum }];
 const style: FeatPrerequisite[] = [{ kind: 'feature', feature: 'fighting-style', label: 'Уміння «Бойовий стиль»' }];
@@ -94,29 +102,38 @@ export const officialFeats: FeatEntry[] = [
   { ...boon, slug: 'boon-of-truesight', nameUk: 'Благословення істинного зору', nameEn: 'Boon of Truesight',
     summary: 'Маєш Істинний зір із дальністю 60 футів.', effects: [{ title: 'Істинний зір', text: 'Маєш Істинний зір із дальністю 60 футів.' }], rules: [rule('truesight', 'Істинний зір')] },
   { ...base, slug: 'lucky', nameUk: 'Щасливий', nameEn: 'Lucky', category: 'origin',
-    source: { origin: 'official-reference', title: 'D&D Beyond · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://www.dndbeyond.com/posts/1801-the-12-best-feats-for-warlocks-in-the-2024-players' },
+    source: { ...phbSource, origin: 'official-reference', title: 'D&D Beyond · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://www.dndbeyond.com/posts/1801-the-12-best-feats-for-warlocks-in-the-2024-players' },
     summary: 'Очки удачі надають Перевагу на твої перевірки к20 або Невдачу на атаки проти тебе.',
     effects: [{ title: 'Очки удачі', text: 'Після тривалого відпочинку маєш кількість очок удачі, що дорівнює твоєму бонусу майстерності.' },
       { title: 'Вплив на кидок', text: 'Витрать 1 очко, коли здійснюєш перевірку к20, щоб отримати Перевагу на цей кидок. Або витрать 1 очко, коли істота кидає к20 для атаки проти тебе, щоб надати Невдачу на цей кидок атаки.' }],
     rules: [rule('d20-tests', 'Перевірки к20'), attack, rule('advantage', 'Перевага й Невдача'), rule('proficiency', 'Бонус майстерності'), rule('long-rest', 'Тривалий відпочинок')] },
   { ...base, slug: 'tough', nameUk: 'Міцний', nameEn: 'Tough', category: 'origin',
-    source: { origin: 'official-reference', title: 'Wizards of the Coast · Niko · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://media.dndbeyond.com/compendium-images/uhlh/downloads/nikos-character-sheet.pdf#page=2' },
+    source: { ...phbSource, origin: 'official-reference', title: 'Wizards of the Coast · Niko · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://media.dndbeyond.com/compendium-images/uhlh/downloads/nikos-character-sheet.pdf#page=2' },
     summary: 'Максимум хітів зростає на 2 за кожен рівень персонажа.',
     effects: [{ title: 'Додаткові хіти', text: 'Коли отримуєш рису, додай до максимуму хітів подвоєний поточний рівень персонажа. За кожен наступний здобутий рівень персонажа додай ще 2 до максимуму хітів.' }],
     rules: [rule('hit-points', 'Хіти'), rule('character-level', 'Рівень персонажа')] },
   { ...base, slug: 'healer', nameUk: 'Лікар', nameEn: 'Healer', category: 'origin',
-    source: { origin: 'official-reference', title: 'Wizards of the Coast · Niko · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://media.dndbeyond.com/compendium-images/uhlh/downloads/nikos-character-sheet.pdf#page=2' },
+    source: { ...phbSource, origin: 'official-reference', title: 'Wizards of the Coast · Niko · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://media.dndbeyond.com/compendium-images/uhlh/downloads/nikos-character-sheet.pdf#page=2' },
     summary: 'Набір лікаря дозволяє лікувати кісткою хітів цілі; одиниці на кістках лікування можна перекидати.',
     effects: [{ title: 'Лікування набором', text: 'Дією Використання витрать одне використання набору лікаря на істоту в межах 5 футів. Вона може витратити одну свою кістку хітів; ти кидаєш її, а істота відновлює хіти в кількості, що дорівнює результату плюс твій бонус майстерності.' },
       { title: 'Перекидання лікування', text: 'Коли кидаєш кістку для визначення хітів, відновлених твоїм закляттям або лікуванням набором цієї риси, можеш перекинути результат 1. Новий результат обов’язковий.' }],
     rules: [rule('utilize-action', 'Дія Використання'), rule('hit-dice', 'Кістки хітів'), rule('healing', 'Лікування'), rule('proficiency', 'Бонус майстерності')] },
   { ...base, slug: 'tavern-brawler', nameUk: 'Шинковий забіяка', nameEn: 'Tavern Brawler', category: 'origin',
-    source: { origin: 'official-reference', title: 'D&D Beyond · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://www.dndbeyond.com/posts/1785-the-backgrounds-and-origin-feats-in-the-2024' },
+    source: { ...phbSource, origin: 'official-reference', title: 'D&D Beyond · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://www.dndbeyond.com/posts/1785-the-backgrounds-and-origin-feats-in-the-2024' },
     summary: 'Посилюєш беззбройні удари, володієш імпровізованою зброєю та можеш відштовхувати ціль.',
     effects: [{ title: 'Беззбройний удар', text: 'При влучанні беззбройним ударом із завданням шкоди можеш завдати 1к4 + модифікатор Сили. Якщо кістка шкоди твого беззбройного удару показала 1, можеш перекинути її; новий результат обов’язковий.' },
       { title: 'Імпровізована зброя', text: 'Маєш володіння імпровізованою зброєю.' },
       { title: 'Відштовхування', text: 'Раз за хід, коли влучаєш в істоту беззбройним ударом як частиною дії Атака, можеш додатково до шкоди відштовхнути її на 5 футів від себе.' }],
     rules: [rule('unarmed-strike', 'Беззбройний удар'), rule('attack-action', 'Дія Атака'), damage, movement, rule('improvised-weapons', 'Імпровізована зброя')] },
+  { ...base, slug: 'speedy', nameUk: 'Прудкий', nameEn: 'Speedy', category: 'general',
+    source: { ...phbSource, origin: 'official-reference', title: 'D&D Beyond · PHB 2024', edition: 'D&D 2024', presentation: 'summary', url: 'https://www.dndbeyond.com/posts/1791-12-best-feats-for-clerics-in-the-2024-players' },
+    prerequisites: [...level(4), { kind: 'ability', anyOf: ['dexterity', 'constitution'], minimum: 13 }],
+    increase: { choices: ['dexterity', 'constitution'], amount: 1, maximum: 20 },
+    summary: 'Швидкість зростає на 10 футів; легше пересуваєшся складною місцевістю та уникаєш провокованих атак.',
+    effects: [{ title: 'Швидкість', text: 'Твоя Швидкість збільшується на 10 футів.' },
+      { title: 'Спритний ривок', text: 'Коли виконуєш дію Ривок, Складна місцевість не коштує тобі додаткового переміщення протягом решти цього ходу.' },
+      { title: 'Спритне переміщення', text: 'Провоковані атаки проти тебе здійснюються з Невдачею.' }],
+    rules: [movement, rule('dash', 'Дія Ривок'), rule('difficult-terrain', 'Складна місцевість'), rule('opportunity-attacks', 'Провоковані атаки'), rule('advantage-disadvantage', 'Перевага та Невдача')] },
 ];
 
 export function prerequisiteLabel(value: FeatPrerequisite): string {

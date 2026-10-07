@@ -1,10 +1,10 @@
 # Feat expansion audit
 
-## Published coverage, 2026-10-06
+## Published coverage, 2026-10-07
 
 This is a **partial expansion**, not a complete PHB or revised-edition catalog.
-21 entries are published: 17 unchanged SRD entries plus 4 independently worded Ukrainian
-mechanical summaries. Categories: Origin 8, General 2, Fighting Style 4, Epic Boon 7.
+22 entries are published: 17 unchanged SRD entries plus 5 independently worded Ukrainian
+mechanical summaries. Categories: Origin 8, General 3, Fighting Style 4, Epic Boon 7.
 No legacy 2014, playtest, homebrew or unverified rules were added.
 
 The user approved original Ukrainian summaries instead of wholesale translations of
@@ -36,7 +36,7 @@ timed out after network access was allowed. Consequently, the index alone was **
 as evidence for prerequisites, ASI, action timing or exceptions. No missing rule was guessed.
 
 `src/data/rules/feat-inventory.ts` records the 75 PHB 2024 identities, separately from runtime
-entries. Tests enforce uniqueness, category matching and explicitly expose 54 unpublished
+entries. Tests enforce uniqueness, category matching and explicitly expose 53 unpublished
 identities. This inventory is not imported by the application and does not create placeholder
 detail pages, empty rules, misleading source flags or dead navigation links.
 
@@ -48,12 +48,12 @@ detail pages, empty rules, misleading source flags or dead navigation links.
   Thrown Weapon Fighting; Unarmed Fighting.
 - Epic Boon (5): Boon of Energy Resistance; Boon of Fortitude; Boon of Recovery;
   Boon of Skill; Boon of Speed.
-- General (41): Actor; Athlete; Charger; Chef; Crossbow Expert; Crusher; Defensive Duelist;
+- General (40): Actor; Athlete; Charger; Chef; Crossbow Expert; Crusher; Defensive Duelist;
   Dual Wielder; Durable; Elemental Adept; Fey-Touched; Great Weapon Master; Heavily Armored;
   Heavy Armor Master; Inspiring Leader; Keen Mind; Lightly Armored; Mage Slayer;
   Martial Weapon Training; Medium Armor Master; Moderately Armored; Mounted Combatant;
   Observant; Piercer; Poisoner; Polearm Master; Resilient; Ritual Caster; Sentinel;
-  Shadow-Touched; Sharpshooter; Shield Master; Skill Expert; Skulker; Slasher; Speedy;
+  Shadow-Touched; Sharpshooter; Shield Master; Skill Expert; Skulker; Slasher;
   Spell Sniper; Telekinetic; Telepathic; War Caster; Weapon Master.
 
 The TTG index also contains official revised-edition supplements (e.g. EFA and FRHoF),
@@ -65,12 +65,41 @@ Legacy-only Mobile is not substituted for revised Speedy. No legacy duplicate wa
 ## Relationship audit
 
 Unique linked records remain 9 classes, 1 existing weapon, 214 spells and 3 conditions.
-General rule references increased from 25 to 31; they remain plain Ukrainian labels without
+General rule references increased from 25 to 35; they remain plain Ukrainian labels without
 links to nonexistent routes. Existing Magic Initiate (72 choices) and Spell Recall (190 slot
 interactions) selectors are unchanged. No arbitrary new spell candidates are granted by the
 new entries. All internal targets resolve to existing static data in tests.
 
 ## Validation
+
+### 2026-10-07 continuation
+
+The remaining PHB inventory was checked again rather than treating TTG access failure as a
+reason to abandon unrelated work. Direct access to the Actor detail timed out after 20 seconds;
+the web reader returned the index instead of rules. Every identity in the four pending lists
+above lacks a verified complete rules text in the sources reviewed: Origin 2, General 40,
+Fighting Style 6, Epic Boon 5. No placeholder mechanics were published.
+
+One additional identity, **Speedy / Прудкий**, was verified using the official
+[Cleric feats article](https://www.dndbeyond.com/posts/1791-12-best-feats-for-clerics-in-the-2024-players):
+level 4+, Dexterity or Constitution 13+, +1 Dexterity or Constitution, +10 feet Speed,
+Dash bypasses extra Difficult Terrain movement cost, Opportunity Attacks have Disadvantage.
+It is not the legacy Mobile feat. No arbitrary spell/class/weapon relationships were added.
+
+Public source presentation now uses `featPublicSource`: official publication title/link only.
+Working article/PDF/TTG provenance remains in static data for audit, never in the visible
+source header/footer. Editorial summary explanations were removed from the detail page.
+SRD author, license link and translation attribution remain compact to preserve CC-BY credit.
+Tests cover source separation (including a synthetic TTG reference) and Speedy regressions.
+
+Current continuation validation: all 86 feat/condition/spell tests passed (38 feat tests).
+Build passed; lint passed with the existing AuthProvider Fast Refresh warning and no errors.
+All 22 detail routes were browser-checked at 390 x 844: no invalid values, editorial source
+text, TTG/Niko leakage or horizontal overflow. Speedy search and combined General/ability
+filters returned the correct entry. Its desktop detail at 1440 x 900 also had no overflow.
+No layout, styling, catalog search implementation or unrelated runtime behavior was changed.
+
+The results below are retained as the historical 21-entry validation pass.
 
 - Expanded feat suite checks all published identities, provenance, license separation,
   duplicate slugs/names, prerequisites, ASI, repeatability, relationships and alphabetical search.
