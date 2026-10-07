@@ -136,9 +136,11 @@ test('fixed, school and ritual spell relationships expose only mechanically elig
   assert.ok(eligibleFeatSpells(bySlug('ritual-caster'), spells).every(spell => spell.level === 1 && spell.ritual));
 });
 test('weapon relationships derive from existing property data, not duplicate definitions', () => {
-  const weapon = { slug: 'longsword', itemType: 'зброя', category: 'військова зброя ближнього бою', properties: [{ scanLine: { property: 'універсальна (1к10)' } }] };
+  const weapon = { slug: 'longsword', itemType: 'зброя', category: 'Зброя', weaponMode: 'ближнього бою', weaponProperties: ['Універсальна (1к10)'], properties: [] };
   const items = [weapon, { ...weapon, slug: 'armor', itemType: 'обладунок' }];
-  assert.deepEqual(eligibleFeatWeapons(bySlug('great-weapon-fighting'), items).map(item => item.slug), ['longsword']);
+  const greatWeapons = eligibleFeatWeapons(bySlug('great-weapon-fighting'), items);
+  assert.ok(greatWeapons.some(item => item.slug === 'longsword'));
+  assert.ok(greatWeapons.every(item => item.weaponMode === 'ближнього бою' && item.weaponProperties.some(property => /Дворучна|Універсальна/i.test(property))));
   assert.equal(eligibleFeatWeapons(bySlug('archery'), items).length, 0);
   assert.equal(eligibleFeatWeapons(bySlug('two-weapon-fighting'), items).length, 0);
   assert.equal(eligibleFeatWeapons(bySlug('savage-attacker'), items).length, 1);
@@ -153,7 +155,9 @@ test('all class, weapon, spell and condition links resolve to actual static reco
   }
   const styles = bySlug('archery').classSlugs.map(slug => classes.find(entry => entry.slug === slug));
   assert.ok(styles.every(entry => entry.features.some(feature => feature.nameOriginal === 'Fighting Style' || feature.nameUk === 'Бойовий стиль')));
-  assert.deepEqual(eligibleFeatWeapons(bySlug('great-weapon-fighting'), items).map(item => item.slug), ['longsword']);
+  const greatWeapons = eligibleFeatWeapons(bySlug('great-weapon-fighting'), items);
+  assert.ok(greatWeapons.length > 0);
+  assert.ok(greatWeapons.every(item => item.weaponMode === 'ближнього бою' && item.weaponProperties.some(property => /Дворучна|Універсальна/i.test(property))));
   const fighter = classes.find(entry => entry.slug === 'fighter');
   const rogue = classes.find(entry => entry.slug === 'rogue');
   assert.ok(fighter.subclasses.some(entry => entry.slug === 'eldritch-knight'));

@@ -97,22 +97,18 @@ function mainInfoBlocks(entry: CatalogEntry) {
   if (entry.entityType === 'item') {
     addInfo(blocks, 'Тип', entry.item_type);
     addInfo(blocks, 'Категорія', entry.category);
+    addInfo(blocks, 'Підтип', entry.subcategory);
     addInfo(blocks, 'Рідкість', entry.rarity);
     addInfo(blocks, 'Вартість', entry.price);
     addInfo(blocks, 'Вага', entry.weight);
     addInfo(blocks, 'Шкода', entry.damage);
     addInfo(blocks, 'Тип шкоди', entry.damage_type);
     addInfo(blocks, 'Клас захисту', entry.armor_class);
-    addInfo(blocks, 'Дальність', entry.range);
-    const versatileMatch = entry.full_description_markdown?.match(/універсальн\w*\s+([^\s.,;]+)/i);
-    const propertyNames = referenceCards(entry.properties, 'Властивість')
-      .map((property) => property.title)
-      .filter((title) => title !== 'Властивість');
-    if (versatileMatch) propertyNames.unshift(`Універсальна ${versatileMatch[1]}`);
-    addInfo(blocks, 'Властивості', Array.from(new Set(propertyNames)).join(', '));
-    blocks.push({ label: 'Магічний предмет', value: booleanLabel(entry.is_magical) });
-    blocks.push({ label: 'Налаштування', value: booleanLabel(entry.requires_attunement) });
+    addInfo(blocks, 'Дальність', entry.normal_range && entry.long_range ? `${entry.normal_range}/${entry.long_range} футів` : entry.range);
+    if (entry.is_magical) blocks.push({ label: 'Магічний предмет', value: 'Так' });
+    if (entry.requires_attunement) blocks.push({ label: 'Налаштування', value: entry.attunement_requirement ?? 'Потрібне' });
     addInfo(blocks, 'Вимоги', entry.required_strength ? `Сила ${entry.required_strength}` : null);
+    if (entry.stealth_disadvantage) blocks.push({ label: 'Скритність', value: 'Перешкода' });
   }
 
   return blocks;
@@ -223,39 +219,51 @@ function progressionFeatureCards(value: unknown) {
   });
 }
 
-const itemUsageLabels = new Set(['Використання', 'Тип дії', 'Відновлення', 'Тривалість', 'Дальність', 'Обмеження', 'Вимога']);
+const masteryUk: Record<string, string> = { Cleave:'Розсікання', Graze:'Зачіпання', Nick:'Швидкий надріз', Push:'Поштовх', Sap:'Ослаблення', Slow:'Уповільнення', Topple:'Збивання', Vex:'Виснаження' };
+const masteryRules: Record<string,string> = {
+  Cleave:'Після влучання атакою ближнього бою можеш атакувати другу істоту в межах 5 футів від першої та у своїй досяжності. При влучанні друга ціль отримує шкоду зброї без додавання модифікатора характеристики, якщо він не від’ємний. Один раз за хід.',
+  Graze:'Якщо атака цією зброєю не влучає, ціль отримує шкоду типу зброї, що дорівнює модифікатору характеристики атаки. Цю шкоду можна збільшити лише збільшенням самого модифікатора.',
+  Nick:'Додаткову атаку властивості «Легка» виконуєш як частину дії Атака, а не бонусною дією. Один раз за хід.',
+  Push:'Після влучання можеш відштовхнути істоту Великого або меншого розміру на відстань до 10 футів прямо від себе.',
+  Sap:'Після влучання ціль має Перешкоду на наступний кидок атаки до початку твого наступного ходу.',
+  Slow:'Після влучання зі шкодою можеш зменшити Швидкість цілі на 10 футів до початку твого наступного ходу. Кілька влучань цією властивістю не збільшують зменшення.',
+  Topple:'Після влучання можеш змусити ціль виконати ряткидок Статури зі СК 8 + модифікатор характеристики атаки + бонус майстерності. У разі провалу ціль отримує стан «Збита з ніг».',
+  Vex:'Після влучання зі шкодою маєш Перевагу на наступний кидок атаки проти цієї цілі до кінця свого наступного ходу.',
+};
+
+function weaponPropertyDescription(property: string) {
+  const name = property.replace(/\s*\([^)]*\)$/, '');
+  const rules: Record<string,string> = {
+    'Боєприпаси':'Для далекобійної атаки потрібен зазначений боєприпас; кожна атака витрачає один боєприпас.',
+    'Фехтувальна':'Для кидків атаки й шкоди можеш використати модифікатор Сили або Спритності; для обох кидків використовується та сама характеристика.',
+    'Важка':'Маєш Перешкоду на атаки, якщо для важкої зброї ближнього бою Сила нижча за 13 або для далекобійної Спритність нижча за 13.',
+    'Легка':'Після атаки легкою зброєю дією Атака можеш пізніше цього ходу виконати бонусною дією одну атаку іншою легкою зброєю; додатний модифікатор характеристики не додається до шкоди цієї атаки.',
+    'Перезаряджання':'Незалежно від кількості доступних атак можеш випустити лише один боєприпас цією зброєю, коли використовуєш дію, бонусну дію або реакцію для пострілу.',
+    'Досяжність':'Додає 5 футів до досяжності атак цією зброєю та до визначення досяжності для провокованих атак.',
+    'Метальна':'Можеш метнути зброю для далекобійної атаки й дістати її як частину цієї атаки.',
+    'Дворучна':'Для атаки цією зброєю потрібні дві руки.',
+    'Універсальна':'Можеш атакувати однією або двома руками; при використанні двома руками застосовуй зазначену кістку шкоди.',
+  };
+  return rules[name] ?? property;
+}
 
 function itemPropertyData(entry: ItemEntry) {
   const cards = referenceCards(entry.properties, 'Властивість');
-  const versatileMatch = entry.full_description_markdown?.match(/універсальн\w*\s+([^\s.,;]+)/i);
-  const coreRows = [
-    entry.damage ? { label: 'Шкода', value: [entry.damage, entry.damage_type].filter(Boolean).join(' ') } : null,
-    entry.range ? { label: 'Дальність', value: entry.range } : null,
-    entry.armor_class ? { label: 'Клас захисту', value: entry.armor_class } : null,
-    versatileMatch ? { label: 'Властивість', value: `універсальна ${versatileMatch[1]}` } : null,
-  ].filter((row): row is { label: string; value: string } => Boolean(row));
-  const coreCard = coreRows.length > 0 ? [{ title: entry.title_ua, description: entry.short_description ?? undefined, rows: coreRows }] : [];
+  const weaponCards = entry.weapon_properties.map((property) => ({ title: property.replace(/\s*\([^)]*\)$/, ''), description: weaponPropertyDescription(property), rows: [] }));
+  if (entry.versatile_damage && !weaponCards.some((card)=>/універсаль/i.test(card.title))) weaponCards.push({title:'Універсальна',description:`При використанні двома руками кістка шкоди становить ${entry.versatile_damage}.`,rows:[]});
+  if (entry.mastery) weaponCards.push({title:`Майстерність: ${masteryUk[entry.mastery] ?? entry.mastery}`,description:`${masteryRules[entry.mastery] ?? ''} Ця властивість діє лише за наявності уміння, що відкриває майстерність цієї зброї.`.trim(),rows:[]});
   const normalizedCards = cards
-    .filter((card) => !(versatileMatch && /універсаль/i.test(card.title)))
     .map((card) => card.description || card.rows.some((row) => row.value !== 'Так')
       ? { ...card, description: card.description ? sourceRuleText(card.description) : undefined, rows: card.rows.map((row) => ({ ...row, value: safeText(row.value) ?? 'Не вказано' })) }
       : { ...card, description: 'Точне значення не вказано у доступному джерелі.', rows: [] });
-  const allCards = [...coreCard, ...normalizedCards];
-  const variants = allCards.filter((card) => /варіант|покращ|\+\d/i.test(card.title));
-  const properties = allCards
-    .filter((card) => !variants.includes(card))
-    .map((card) => ({ ...card, rows: card.rows.filter((row) => !itemUsageLabels.has(row.label)) }));
-  const usageRows = allCards.flatMap((card) => card.rows.filter((row) => itemUsageLabels.has(row.label)));
-  return { properties, variants, usageRows };
+  return { properties: [...weaponCards, ...normalizedCards], variants: referenceCards(entry.variants, 'Варіант') };
 }
 
-function itemUsageGroups(entry: ItemEntry, propertyRows: Array<{ label: string; value: string }>) {
+function itemUsageGroups(entry: ItemEntry) {
+  const labels: Record<string,string> = { activation:'Активація',charges:'Заряди',recharge:'Відновлення',duration:'Тривалість',range:'Дальність',saveDc:'СК ряткидка',restrictions:'Обмеження' };
   const rows = [
-    entry.required_strength ? { title: 'Вимоги', values: [`Сила ${entry.required_strength}`] } : null,
-    entry.range ? { title: 'Дальність', values: [entry.range] } : null,
-    entry.stealth_disadvantage ? { title: 'Скритність', values: ['Невдача'] } : null,
     entry.quantity ? { title: 'Кількість', values: [entry.quantity] } : null,
-    ...propertyRows.map((row) => ({ title: row.label === 'Тип дії' ? 'Активація' : row.label, values: [row.value] })),
+    ...Object.entries(entry.usage).map(([key,value])=>({title:labels[key] ?? key,values:[value]})),
   ].filter((row): row is { title: string; values: string[] } => Boolean(row));
   return rows.filter((row, index) => rows.findIndex((candidate) => candidate.title === row.title && candidate.values.join('|') === row.values.join('|')) === index);
 }
@@ -347,7 +355,7 @@ function ItemDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ItemE
   const propertyData = itemPropertyData(entry);
   const properties = propertyData.properties;
   const variants = propertyData.variants;
-  const usageGroups = itemUsageGroups(entry, propertyData.usageRows);
+  const usageGroups = itemUsageGroups(entry);
   const description = descriptionWithoutHeading(entry.full_description_markdown, entry.title_ua, entry.short_description);
   const navigation = [
     { href: '#item-passport', label: 'Паспорт предмета', number: 1 },
@@ -363,7 +371,7 @@ function ItemDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ItemE
         <h2 className="codex-detail-title"><span>1.</span> Паспорт предмета</h2>
         <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="item" itemType={entry.item_type} itemCategory={entry.category} />
       </section>
-      <QuickScanSection id="item-properties" number={2} title="Основний ефект / Властивості" cards={properties} iconForCard={() => itemIconForType(entry.item_type, entry.category, entry.is_magical ? 'магічний' : null)} emptyMessage="Властивості не вказано у доступному джерелі." />
+      <QuickScanSection id="item-properties" number={2} title="Властивості" cards={properties} iconForCard={() => itemIconForType(entry.item_type, entry.category, entry.is_magical ? 'магічний' : null)} emptyMessage="Властивості не вказано у доступному джерелі." />
       <DetailGroupPanel id="item-usage" sectionNumber={3} title="Правила використання" groups={usageGroups} presentation="rows" showCodexIcons />
       <QuickScanSection id="item-variants" number={4} title="Варіанти / покращення" cards={variants} iconForCard={() => CODEX_ICONS.choice} />
       {description ? <section id="item-description" className="detail-v2-description-panel codex-detail-section"><h2 className="codex-detail-title"><span>5.</span> Опис</h2><div className="markdown-content"><ReactMarkdown>{description}</ReactMarkdown></div></section> : null}

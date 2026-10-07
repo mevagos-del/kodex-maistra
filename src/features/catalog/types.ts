@@ -71,6 +71,7 @@ export type ItemEntry = CatalogBase & {
   entityType: 'item';
   item_type: string | null;
   category: string | null;
+  subcategory: string | null;
   rarity: string | null;
   price: string | null;
   weight: string | null;
@@ -79,10 +80,29 @@ export type ItemEntry = CatalogBase & {
   properties: unknown;
   damage: string | null;
   damage_type: string | null;
+  versatile_damage: string | null;
   range: string | null;
+  normal_range: string | null;
+  long_range: string | null;
+  weapon_category: string | null;
+  weapon_mode: string | null;
+  weapon_properties: string[];
+  mastery: string | null;
+  ammunition: string | null;
   armor_class: string | null;
+  armor_category: string | null;
+  dexterity_modifier: string | null;
   required_strength: string | null;
   stealth_disadvantage: boolean;
+  shield: boolean;
+  shield_bonus: string | null;
+  tool_type: string | null;
+  consumable: boolean;
+  contents: string[];
+  capacity: string | null;
+  attunement_requirement: string | null;
+  usage: Record<string, string>;
+  variants: unknown;
   quantity: string | null;
 };
 

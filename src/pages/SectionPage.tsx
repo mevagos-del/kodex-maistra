@@ -4,7 +4,9 @@ import { globalSearch } from '@/features/catalog/api/catalogFilters';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { CatalogCard } from '@/features/catalog/components/CatalogCard';
 import { EmptyState } from '@/features/catalog/components/EmptyState';
+import { ItemsArchiveCatalog } from '@/features/catalog/components/ItemsArchiveCatalog';
 import { useCatalogList } from '@/features/catalog/hooks/useCatalogData';
+import type { ItemEntry } from '@/features/catalog/types';
 import type { CoreSectionSlug, EntityType } from '@/types/content';
 
 type SectionPageProps = { section: CoreSectionSlug };
@@ -68,6 +70,8 @@ export function SectionPage({ section }: SectionPageProps) {
           <div className="archive-status-panel">Завантажуємо матеріали...</div>
         ) : catalog.errorMessage ? (
           <div className="archive-status-panel">Не вдалося завантажити матеріали: {catalog.errorMessage}</div>
+        ) : section === 'items' ? (
+          <ItemsArchiveCatalog entries={catalog.data.filter((entry): entry is ItemEntry => entry.entityType === 'item')} search={search} />
         ) : filteredEntries.length > 0 ? (
           <div className="catalog-archive-grid">
             {filteredEntries.map((entry, index) => <CatalogCard key={entry.id} entry={entry} priority={index === 0} />)}

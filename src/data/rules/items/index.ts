@@ -1,6 +1,8 @@
 import type { OfficialItemEntry } from '../types';
-import { adventurersPack } from './adventurersPack';
-import { leatherArmor } from './leatherArmor';
-import { longsword } from './longsword';
+import { adventuringGear } from './adventuringGear';
+import { armor } from './armor';
+import { magicItems } from './magicItems';
+import { tools } from './tools';
+import { weapons } from './weapons';
 
-export const officialItems: OfficialItemEntry[] = [longsword, leatherArmor, adventurersPack];
+export const officialItems: OfficialItemEntry[] = [...weapons, ...armor, ...adventuringGear, ...tools, ...magicItems];

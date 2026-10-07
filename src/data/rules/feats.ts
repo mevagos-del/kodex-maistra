@@ -359,9 +359,9 @@ export function eligibleFeatWeapons(entry: FeatEntry, items: OfficialItemEntry[]
   return items.filter(item => {
     if (!entry.weaponRule || item.itemType !== 'зброя') return false;
     if (entry.weaponRule === 'any') return true;
-    const properties = item.properties.map(property => `${property.nameUk} ${property.sourceText} ${property.scanLine?.property ?? ''}`).join(' ').toLocaleLowerCase('uk');
-    if (entry.weaponRule === 'melee') return /ближнього бою/.test(item.category);
-    if (entry.weaponRule === 'ranged') return /далекобійн/.test(item.category);
+    const properties = (item.weaponProperties ?? []).join(' ').toLocaleLowerCase('uk');
+    if (entry.weaponRule === 'melee') return item.weaponMode === 'ближнього бою';
+    if (entry.weaponRule === 'ranged') return item.weaponMode === 'далекобійна';
     if (entry.weaponRule === 'light') return /легка/.test(properties);
     if (entry.weaponRule === 'finesse') return /фехтувальн/.test(properties);
     if (entry.weaponRule === 'heavy') return /важка/.test(properties);
@@ -369,6 +369,6 @@ export function eligibleFeatWeapons(entry: FeatEntry, items: OfficialItemEntry[]
     if (entry.weaponRule === 'polearm') return /посох|спис|досяжність/.test(`${item.nameUk} ${item.nameOriginal} ${properties}`.toLocaleLowerCase('uk'));
     if (entry.weaponRule === 'thrown') return /метальна/.test(properties);
     if (entry.weaponRule === 'slashing') return /рубальн/.test(item.damageType ?? '');
-    return /ближнього бою/.test(item.category) && /дворучна|універсальна/.test(properties);
+    return item.weaponMode === 'ближнього бою' && /дворучна|універсальна/.test(properties);
   });
 }

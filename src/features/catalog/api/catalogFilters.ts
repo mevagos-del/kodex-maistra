@@ -49,6 +49,10 @@ function includesSearch(entry: CatalogEntry, search: string) {
     contentTypeSearchAliases[entry.content_type],
     entry.short_description ?? '',
     ...(entry.tags ?? []),
+    ...(entry.entityType === 'item' ? [
+      entry.category ?? '', entry.subcategory ?? '', entry.item_type ?? '', entry.weapon_category ?? '', entry.weapon_mode ?? '',
+      entry.armor_category ?? '', entry.mastery ?? '', ...entry.weapon_properties,
+    ] : []),
   ]
     .join(' ');
   const normalizedHaystack = normalize(haystack);

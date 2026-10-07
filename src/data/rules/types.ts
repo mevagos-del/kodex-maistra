@@ -96,21 +96,54 @@ export type OfficialItemProperty = {
   scanLine?: Record<string, string | number>;
 };
 
+export type OfficialWeaponMastery = 'Cleave' | 'Graze' | 'Nick' | 'Push' | 'Sap' | 'Slow' | 'Topple' | 'Vex';
+
+export type OfficialItemUsage = {
+  activation?: string;
+  charges?: string;
+  recharge?: string;
+  duration?: string;
+  range?: string;
+  saveDc?: string;
+  restrictions?: string;
+};
+
 export type OfficialItemEntry = OfficialCatalogBase & {
   entity: 'item';
   itemType: string;
   category: string;
+  subcategory?: string;
   rarity: string;
+  magical: boolean;
   attunement: boolean;
+  attunementRequirement?: string;
   weight: string;
   cost: string;
   damage?: string;
   damageType?: string;
+  versatileDamage?: string;
+  normalRange?: string;
+  longRange?: string;
+  weaponCategory?: 'проста' | 'бойова';
+  weaponMode?: 'ближнього бою' | 'далекобійна';
+  weaponProperties?: string[];
+  mastery?: OfficialWeaponMastery;
+  ammunition?: string;
   properties: OfficialItemProperty[];
+  armorCategory?: 'легкі' | 'середні' | 'важкі' | 'щит';
   armorClass?: string;
+  dexterityModifier?: string;
   strengthRequirement?: string;
+  stealthDisadvantage?: boolean;
+  shield?: boolean;
+  shieldBonus?: string;
+  toolType?: string;
+  consumable?: boolean;
+  contents?: string[];
+  capacity?: string;
+  baseItemType?: string;
   sourceText?: string;
-  usage?: Record<string, string>;
+  usage?: OfficialItemUsage;
   variants?: OfficialItemProperty[];
 };
 
