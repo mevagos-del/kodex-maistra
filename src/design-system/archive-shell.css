@@ -1083,7 +1083,8 @@
 .archive-shell .item-archive-categories { display: grid; gap: 0.625rem; }
 .archive-shell .item-archive-category { min-width: 0; border: 1px solid rgb(190 137 61 / 30%); background: linear-gradient(180deg,rgb(14 18 23 / 94%),rgb(7 10 14 / 98%)); }
 .archive-shell .item-archive-category__toggle { width: 100%; min-height: 3rem; display: grid; grid-template-columns: 1fr auto 1.5rem; align-items: center; gap: 0.75rem; padding: 0.6rem 0.875rem; color: var(--archive-text); border: 0; background: transparent; text-align: left; cursor: pointer; font: 700 0.9rem/1.2 var(--heading-font); }
-.archive-shell .item-archive-category__heading { display: grid; gap: 0.15rem; }
+.archive-shell .item-archive-category__heading { display: flex; align-items: center; gap: 0.55rem; }
+.archive-shell .item-archive-category__heading > span { display: grid; gap: 0.15rem; }
 .archive-shell .item-archive-category__heading strong { font: inherit; }
 .archive-shell .item-archive-category__heading small { color: var(--archive-muted); font: 500 0.68rem/1.25 var(--body-font); }
 .archive-shell .item-archive-category__toggle span:nth-child(2) { color: var(--archive-muted); font: 600 0.72rem/1 var(--body-font); }
@@ -1128,12 +1129,23 @@
   border-bottom: 1px solid rgb(214 168 92 / 16%);
   background: linear-gradient(90deg, rgb(214 168 92 / 8%), transparent 56%);
 }
+.archive-shell .detail-v2-shell--item .codex-compact-mechanic:has(.reference-icon--mastery) {
+  grid-template-columns: 2rem 8rem minmax(0, 1fr);
+}
+.archive-shell .detail-v2-shell--item .codex-compact-mechanic:has(.reference-icon--mastery) > p { grid-column: 3; }
+.archive-shell .reference-icon { display: block; object-fit: contain; filter: none; }
+.archive-shell .reference-icon--category { width: 1.65rem; height: 1.65rem; flex: 0 0 auto; }
+.archive-shell .reference-icon--mastery { width: 1.75rem; height: 1.75rem; grid-row: 1 / span 2; align-self: center; }
 .archive-shell .detail-v2-shell--item .codex-compact-mechanic > span { color: var(--archive-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; }
 .archive-shell .detail-v2-shell--item .codex-compact-mechanic > strong { color: var(--archive-gold); font: 700 0.92rem/1.3 var(--heading-font); }
 .archive-shell .detail-v2-shell--item .codex-compact-mechanic > p { grid-column: 2; margin: 0; color: var(--archive-text); font-size: 0.82rem; line-height: 1.45; }
 @media (max-width: 520px) {
  .archive-shell .detail-v2-shell--item .codex-compact-mechanic { grid-template-columns: 1fr; }
  .archive-shell .detail-v2-shell--item .codex-compact-mechanic > p { grid-column: 1; }
+ .archive-shell .detail-v2-shell--item .codex-compact-mechanic:has(.reference-icon--mastery) { grid-template-columns: 1.75rem minmax(0, 1fr); }
+ .archive-shell .detail-v2-shell--item .codex-compact-mechanic:has(.reference-icon--mastery) > span,
+ .archive-shell .detail-v2-shell--item .codex-compact-mechanic:has(.reference-icon--mastery) > strong,
+ .archive-shell .detail-v2-shell--item .codex-compact-mechanic:has(.reference-icon--mastery) > p { grid-column: 2; }
 }
 @media (max-width: 767px) {
  .archive-shell .detail-v2-shell--item .codex-identity-sidebar {

@@ -26,7 +26,7 @@ export function MechanicInfoGrid({ items, variant, itemType, itemCategory }: Mec
           {variant ? (
             <span className="race-fact-icon codex-fact-icon" aria-hidden="true">
               <img
-                className="codex-icon codex-icon--fact"
+                className="codex-icon codex-icon--fact reference-icon"
                 src={variant === 'race'
                   ? factIconForLabel(item.label)
                   : variant === 'class'

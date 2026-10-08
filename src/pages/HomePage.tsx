@@ -6,20 +6,21 @@ import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphe
 import { useCatalogList } from '@/features/catalog/hooks/useCatalogData';
 import type { EntityType } from '@/types/content';
 import { referenceQuickAccess } from '@/data/navigation';
+import { HOME_ICONS } from '@/features/catalog/utils/codexIcons';
 
 const quickAccessIcons: Record<string, string> = {
-  Раси: '/icons/races.webp',
-  Класи: '/icons/classes.webp',
-  Риси: '/icons/codex/34-icon-choice-optional-rule.png',
-  Закляття: '/icons/spells.webp',
-  Предмети: '/icons/items.webp',
-  Стани: '/icons/codex/32-icon-condition.png',
-  Правила: '/icons/codex/01-icon-rule-version.png',
-  Бестіарій: '/icons/codex/03-icon-creature-type.png',
+  Раси: HOME_ICONS.races,
+  Класи: HOME_ICONS.classes,
+  Риси: HOME_ICONS.feats,
+  Закляття: HOME_ICONS.spells,
+  Предмети: HOME_ICONS.items,
+  Стани: HOME_ICONS.conditions,
+  Правила: HOME_ICONS.rules,
+  Бестіарій: HOME_ICONS.bestiary,
 };
 
 function getQuickAccessIcon(title: string) {
-  return quickAccessIcons[title] ?? '/icons/spells.webp';
+  return quickAccessIcons[title] ?? HOME_ICONS.rules;
 }
 
 const entityLabels: Record<EntityType, string> = {

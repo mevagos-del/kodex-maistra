@@ -11,7 +11,7 @@ type QuickScanSectionProps = {
   emptyMessage?: string;
   groupByLevel?: boolean;
   highlightedAnchor?: string | null;
-  compactEntry?: { label: string; value: string; description?: string; ruleSlug?: string } | null;
+  compactEntry?: { label: string; value: string; description?: string; ruleSlug?: string; icon?: string } | null;
 };
 
 export function QuickScanSection({ id, number, title, cards, iconForCard, emptyMessage, groupByLevel = false, highlightedAnchor, compactEntry }: QuickScanSectionProps) {
@@ -91,6 +91,7 @@ export function QuickScanSection({ id, number, title, cards, iconForCard, emptyM
       ) : !compactEntry ? <p className="codex-empty-note">{emptyMessage}</p> : null}
       {compactEntry ? (
         <div className="codex-compact-mechanic" data-rule-slug={compactEntry.ruleSlug}>
+          {compactEntry.icon ? <img className="reference-icon reference-icon--mastery" src={compactEntry.icon} alt="" aria-hidden="true" /> : null}
           <span>{compactEntry.label}</span>
           <strong>{compactEntry.value}</strong>
           {compactEntry.description ? <p><RuleText>{compactEntry.description}</RuleText></p> : null}

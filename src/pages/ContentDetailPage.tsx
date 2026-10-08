@@ -23,6 +23,7 @@ import {
   CODEX_ICONS,
   itemIconForType,
   registryIconForLabel,
+  weaponMasteryIconForName,
 } from '@/features/catalog/utils/codexIcons';
 import { formatValueSafely, isRecord, isUsefulValue, referenceLevel, sourceRuleText } from '@/features/catalog/utils/detailContent';
 import { parseSubclasses } from '@/features/catalog/utils/subclassData';
@@ -271,6 +272,7 @@ function itemPropertyData(entry: ItemEntry) {
       value: `${itemMasteryLabel(entry.mastery)} (${entry.mastery})`,
       description: `${masteryRules[entry.mastery] ?? ''} Ця властивість діє лише за наявності уміння, що відкриває майстерність цієї зброї.`.trim(),
       ruleSlug: `weapon-mastery-${entry.mastery.toLowerCase()}`,
+      icon: weaponMasteryIconForName(entry.mastery),
     } : null,
     variants: referenceCards(entry.variants, 'Варіант'),
   };

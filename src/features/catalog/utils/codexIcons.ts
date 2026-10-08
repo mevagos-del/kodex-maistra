@@ -50,24 +50,99 @@ export const CODEX_ICONS = {
   protection: '/icons/codex/55-icon-protection-spell.png',
 } as const;
 
+export const HOME_ICONS = {
+  races: '/icons/home/races.webp',
+  classes: '/icons/home/classes.webp',
+  feats: '/icons/home/feats.webp',
+  spells: '/icons/home/spells.webp',
+  items: '/icons/home/items.webp',
+  conditions: '/icons/home/conditions.webp',
+  rules: '/icons/home/rules.webp',
+  bestiary: '/icons/home/bestiary.webp',
+} as const;
+
+export const MECHANIC_ICONS = {
+  abilityCheck: '/icons/mechanics/ability-check.webp',
+  armorClass: '/icons/mechanics/armor-class.webp',
+  attackRoll: '/icons/mechanics/attack-roll.webp',
+  charisma: '/icons/mechanics/charisma.webp',
+  constitution: '/icons/mechanics/constitution.webp',
+  criticalHit: '/icons/mechanics/critical-hit.webp',
+  dexterity: '/icons/mechanics/dexterity.webp',
+  difficultyClass: '/icons/mechanics/difficulty-class.webp',
+  healing: '/icons/mechanics/healing.webp',
+  hitPoints: '/icons/mechanics/hit-points.webp',
+  initiative: '/icons/mechanics/initiative.webp',
+  intelligence: '/icons/mechanics/intelligence.webp',
+  savingThrow: '/icons/mechanics/saving-throw.webp',
+  speed: '/icons/mechanics/speed.webp',
+  strength: '/icons/mechanics/strength.webp',
+  wisdom: '/icons/mechanics/wisdom.webp',
+} as const;
+
+export const WEAPON_MASTERY_ICONS = {
+  Cleave: '/icons/weapon-mastery/cleave.webp',
+  Graze: '/icons/weapon-mastery/graze.webp',
+  Nick: '/icons/weapon-mastery/nick.webp',
+  Push: '/icons/weapon-mastery/push.webp',
+  Sap: '/icons/weapon-mastery/sap.webp',
+  Slow: '/icons/weapon-mastery/slow.webp',
+  Topple: '/icons/weapon-mastery/topple.webp',
+  Vex: '/icons/weapon-mastery/vex.webp',
+} as const;
+
+export const ITEM_ICONS = {
+  ammunition: '/icons/items/ammunition.webp',
+  armor: '/icons/items/armor.webp',
+  potions: '/icons/items/potions.webp',
+  rings: '/icons/items/rings.webp',
+  rods: '/icons/items/rods.webp',
+  scrolls: '/icons/items/scrolls.webp',
+  shields: '/icons/items/shields.webp',
+  staffs: '/icons/items/staffs.webp',
+  tools: '/icons/items/tools.webp',
+  wands: '/icons/items/wands.webp',
+  weapons: '/icons/items/weapons.webp',
+  wondrous: '/icons/items/wondrous.webp',
+} as const;
+
+export const RULE_ICONS = {
+  action: '/icons/rules/action.webp',
+  advantage: '/icons/rules/advantage.webp',
+  attack: '/icons/rules/attack.webp',
+  bonusAction: '/icons/rules/bonus-action.webp',
+  concentration: '/icons/rules/concentration.webp',
+  cover: '/icons/rules/cover.webp',
+  disadvantage: '/icons/rules/disadvantage.webp',
+  dodge: '/icons/rules/dodge.webp',
+  help: '/icons/rules/help.webp',
+  initiative: '/icons/rules/initiative.webp',
+  longRest: '/icons/rules/long-rest.webp',
+  movement: '/icons/rules/movement.webp',
+  reaction: '/icons/rules/reaction.webp',
+  ready: '/icons/rules/ready.webp',
+  savingThrow: '/icons/rules/saving-throw.webp',
+  shortRest: '/icons/rules/short-rest.webp',
+} as const;
+
 const factIcons: Record<string, string> = {
   'Версія правил': CODEX_ICONS.ruleVersion,
   'Тип контенту': CODEX_ICONS.contentType,
   'Тип істоти': CODEX_ICONS.creatureType,
   'Розмір': CODEX_ICONS.size,
-  'Швидкість': CODEX_ICONS.speed,
+  'Швидкість': MECHANIC_ICONS.speed,
   'Мови': CODEX_ICONS.languages,
   'Тривалість життя': CODEX_ICONS.lifespan,
   'Поведінка': CODEX_ICONS.behavior,
 };
 
 const abilityIcons: Record<string, string> = {
-  'Сила': CODEX_ICONS.strength,
-  'Спритність': CODEX_ICONS.dexterity,
-  'Статура': CODEX_ICONS.constitution,
-  'Інтелект': CODEX_ICONS.intelligence,
-  'Мудрість': CODEX_ICONS.wisdom,
-  'Харизма': CODEX_ICONS.charisma,
+  'Сила': MECHANIC_ICONS.strength,
+  'Спритність': MECHANIC_ICONS.dexterity,
+  'Статура': MECHANIC_ICONS.constitution,
+  'Інтелект': MECHANIC_ICONS.intelligence,
+  'Мудрість': MECHANIC_ICONS.wisdom,
+  'Харизма': MECHANIC_ICONS.charisma,
 };
 
 export function factIconForLabel(label: string) {
@@ -112,7 +187,7 @@ export function registryIconForLabel(label: string) {
   if (/збро/.test(normalized)) return CODEX_ICONS.weaponProficiency;
   if (/брон|обладунк/.test(normalized)) return CODEX_ICONS.armorProficiency;
   if (/навич/.test(normalized)) return CODEX_ICONS.skillProficiency;
-  if (/ряткид/.test(normalized)) return CODEX_ICONS.savingThrow;
+  if (/ряткид/.test(normalized)) return MECHANIC_ICONS.savingThrow;
   if (/мов/.test(normalized)) return CODEX_ICONS.languages;
   if (/стійк/.test(normalized)) return CODEX_ICONS.resistance;
   if (/переваг/.test(normalized)) return CODEX_ICONS.advantage;
@@ -129,12 +204,12 @@ export function subraceIconForTitle(title: string) {
 
 export function classFactIconForLabel(label: string, value = '') {
   const normalized = `${label} ${value}`.toLowerCase();
-  if (/кістк.*хіт/.test(normalized)) return CODEX_ICONS.dwarvenToughness;
+  if (/кістк.*хіт/.test(normalized)) return MECHANIC_ICONS.hitPoints;
   if (/основн.*характер/.test(normalized)) {
     const ability = Object.keys(abilityIcons).find((name) => normalized.includes(name.toLowerCase()));
     return ability ? abilityIconForLabel(ability) : CODEX_ICONS.classes;
   }
-  if (/ряткид/.test(normalized)) return CODEX_ICONS.savingThrow;
+  if (/ряткид/.test(normalized)) return MECHANIC_ICONS.savingThrow;
   if (/обладунк|брон/.test(normalized)) return CODEX_ICONS.armorProficiency;
   if (/збро/.test(normalized)) return CODEX_ICONS.weaponProficiency;
   if (/інструмент/.test(normalized)) return CODEX_ICONS.tools;
@@ -155,15 +230,33 @@ export function classFeatureIconForTitle(title: string) {
 
 export function itemIconForType(...values: Array<string | null | undefined>) {
   const normalized = values.filter(Boolean).join(' ').toLowerCase();
-  if (/збро|меч|weapon|sword/.test(normalized)) return CODEX_ICONS.weapon;
-  if (/брон|обладунк|armor/.test(normalized)) return CODEX_ICONS.armor;
-  if (/зілл|potion/.test(normalized)) return CODEX_ICONS.potion;
-  if (/перст|кільц|ring/.test(normalized)) return CODEX_ICONS.ring;
-  if (/жезл|wand/.test(normalized)) return CODEX_ICONS.wand;
-  if (/сувій|scroll/.test(normalized)) return CODEX_ICONS.scroll;
-  if (/магі|magic/.test(normalized)) return CODEX_ICONS.magicItem;
-  if (/споряд|набір|gear|pack/.test(normalized)) return CODEX_ICONS.adventuringGear;
+  if (/боєприпас|ammunition/.test(normalized)) return ITEM_ICONS.ammunition;
+  if (/щит|shield/.test(normalized)) return ITEM_ICONS.shields;
+  if (/брон|обладунк|armor/.test(normalized)) return ITEM_ICONS.armor;
+  if (/зілл|potion/.test(normalized)) return ITEM_ICONS.potions;
+  if (/перст|кільц|ring/.test(normalized)) return ITEM_ICONS.rings;
+  if (/жезл|rod/.test(normalized)) return ITEM_ICONS.rods;
+  if (/паличк|wand/.test(normalized)) return ITEM_ICONS.wands;
+  if (/посох|staff/.test(normalized)) return ITEM_ICONS.staffs;
+  if (/сувій|scroll/.test(normalized)) return ITEM_ICONS.scrolls;
+  if (/інструмент|tool/.test(normalized)) return ITEM_ICONS.tools;
+  if (/збро|меч|weapon|sword/.test(normalized)) return ITEM_ICONS.weapons;
+  if (/магі|дивовиж|wondrous|magic/.test(normalized)) return ITEM_ICONS.wondrous;
   return CODEX_ICONS.items;
+}
+
+export function itemCategoryIconForLabel(label: string) {
+  const normalized = label.toLowerCase();
+  if (/^зброя$/.test(normalized)) return ITEM_ICONS.weapons;
+  if (/обладунк/.test(normalized)) return ITEM_ICONS.armor;
+  if (/інструмент/.test(normalized)) return ITEM_ICONS.tools;
+  if (/магічн.*предмет/.test(normalized)) return ITEM_ICONS.wondrous;
+  return undefined;
+}
+
+export function weaponMasteryIconForName(name: string) {
+  const key = Object.keys(WEAPON_MASTERY_ICONS).find((mastery) => mastery.toLowerCase() === name.trim().toLowerCase());
+  return key ? WEAPON_MASTERY_ICONS[key as keyof typeof WEAPON_MASTERY_ICONS] : undefined;
 }
 
 export function itemFactIconForLabel(label: string, itemType?: string | null, category?: string | null) {

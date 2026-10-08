@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import type { ItemEntry } from '../types';
 import { capitalizeItemTerm, itemMasteryLabel } from '../utils/itemTerminology';
+import { itemCategoryIconForLabel } from '../utils/codexIcons';
 
 const categoryOrder = ['Зброя', 'Обладунки', 'Пригодницьке спорядження', 'Інструменти', 'Магічні предмети'];
 const categoryDescriptions: Record<string, string> = {
@@ -70,6 +71,7 @@ export function ItemsArchiveCatalog({ entries, search }: Props) {
         const items = filtered.filter((entry)=>entry.category===category).sort((a,b)=>a.title_ua.localeCompare(b.title_ua,'uk'));
         if ((searching || subcategory || rarity || magical || attunement || weaponCategory || armorCategory) && items.length === 0) return null;
         const open = searching || Boolean(expanded[category]);
+        const categoryIcon = itemCategoryIconForLabel(category);
         const groups = items.reduce((result, entry) => {
           const letter = entry.title_ua[0]?.toLocaleUpperCase('uk') ?? '#';
           const group = result.get(letter) ?? [];
@@ -79,7 +81,10 @@ export function ItemsArchiveCatalog({ entries, search }: Props) {
         }, new Map<string, ItemEntry[]>());
         return <section key={category} className="item-archive-category">
           <button type="button" className="item-archive-category__toggle" aria-expanded={open} onClick={()=>setExpanded((state)=>({...state,[category]:!state[category]}))}>
-            <span className="item-archive-category__heading"><strong>{category}</strong><small>{categoryDescriptions[category]}</small></span><span>{items.length}</span><span aria-hidden="true">{open ? '−' : '+'}</span>
+            <span className="item-archive-category__heading">
+              {categoryIcon ? <img className="reference-icon reference-icon--category" src={categoryIcon} alt="" aria-hidden="true" /> : null}
+              <span><strong>{category}</strong><small>{categoryDescriptions[category]}</small></span>
+            </span><span>{items.length}</span><span aria-hidden="true">{open ? '−' : '+'}</span>
           </button>
           {open ? <div className="item-archive-category__content">
             {items.length ? <>
