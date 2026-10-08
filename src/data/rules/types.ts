@@ -145,6 +145,9 @@ export type OfficialItemEntry = OfficialCatalogBase & {
   sourceText?: string;
   usage?: OfficialItemUsage;
   variants?: OfficialItemProperty[];
+  relatedSpellSlugs?: string[];
+  relatedConditionSlugs?: string[];
+  baseItemSlugs?: string[];
 };
 
 export type OfficialRaceTraitOption = {
