@@ -10,8 +10,12 @@ import { referenceQuickAccess } from '@/data/navigation';
 const quickAccessIcons: Record<string, string> = {
   Раси: '/icons/races.webp',
   Класи: '/icons/classes.webp',
-  Предмети: '/icons/items.webp',
+  Риси: '/icons/codex/34-icon-choice-optional-rule.png',
   Закляття: '/icons/spells.webp',
+  Предмети: '/icons/items.webp',
+  Стани: '/icons/codex/32-icon-condition.png',
+  Правила: '/icons/codex/01-icon-rule-version.png',
+  Бестіарій: '/icons/codex/03-icon-creature-type.png',
 };
 
 function getQuickAccessIcon(title: string) {
@@ -41,11 +45,8 @@ export function HomePage() {
       <section className="hero home-hero cinematic-hero cinematic-hero-v2" aria-labelledby="home-title">
         <ArchiveAtmosphere />
         <div className="home-hero-vignette" aria-hidden="true" />
-        <div className="home-candle-glow" aria-hidden="true" />
-        <div className="home-hero-sigil" aria-hidden="true" />
 
         <div className="cinematic-hero__content home-hero-content-v2">
-          <div className="hero-arcane-mark" aria-hidden="true" />
           <p className="eyebrow">Ваш довідник у світі</p>
           <h1 id="home-title">Dungeons &amp; Dragons</h1>
           <p>Правила, описи та інструменти для ваших пригод</p>
@@ -98,13 +99,13 @@ export function HomePage() {
               {referenceQuickAccess.map((item) => (
                 item.isDisabled ? (
                   <button key={item.title} type="button" className="quick-access-item quick-access-item-disabled" disabled>
-                    <span className="quick-access-icon"><img src={getQuickAccessIcon(item.title)} alt={`Іконка розділу ${item.title}`} /></span>
+                    <span className="quick-access-icon"><img src={getQuickAccessIcon(item.title)} alt="" aria-hidden="true" /></span>
                     <strong>{item.title}</strong>
-                    <small>Скоро</small>
+                    <small>Незабаром</small>
                   </button>
                 ) : (
                   <Link key={item.title} to={item.path} className="quick-access-item">
-                    <span className="quick-access-icon"><img src={getQuickAccessIcon(item.title)} alt={`Іконка розділу ${item.title}`} /></span>
+                    <span className="quick-access-icon"><img src={getQuickAccessIcon(item.title)} alt="" aria-hidden="true" /></span>
                     <strong>{item.title}</strong>
                   </Link>
                 )

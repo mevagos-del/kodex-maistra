@@ -31,8 +31,12 @@ export const coreSections: SectionMeta[] = [
 export const referenceQuickAccess = [
   { title: 'Раси', path: appRoutes.races, symbol: 'Р', isDisabled: false },
   { title: 'Класи', path: appRoutes.classes, symbol: 'К', isDisabled: false },
-  { title: 'Предмети', path: appRoutes.items, symbol: 'П', isDisabled: false },
+  { title: 'Риси', path: appRoutes.feats, symbol: 'Рс', isDisabled: false },
   { title: 'Закляття', path: appRoutes.spells, symbol: 'З', isDisabled: false },
+  { title: 'Предмети', path: appRoutes.items, symbol: 'П', isDisabled: false },
+  { title: 'Стани', path: appRoutes.conditions, symbol: 'Ст', isDisabled: false },
+  { title: 'Правила', symbol: 'Пр', isDisabled: true },
+  { title: 'Бестіарій', symbol: 'Б', isDisabled: true },
 ] as const;
 
 export const toolNavigation = [
