@@ -51,14 +51,14 @@ export const CODEX_ICONS = {
 } as const;
 
 export const HOME_ICONS = {
-  races: '/icons/home/races.webp',
-  classes: '/icons/home/classes.webp',
-  feats: '/icons/home/feats.webp',
-  spells: '/icons/home/spells.webp',
-  items: '/icons/home/items.webp',
-  conditions: '/icons/home/conditions.webp',
-  rules: '/icons/home/rules.webp',
-  bestiary: '/icons/home/bestiary.webp',
+  races: '/icons/home-color-v2/races.webp',
+  classes: '/icons/home-color-v2/classes.webp',
+  feats: '/icons/home-color-v2/feats.webp',
+  spells: '/icons/home-color-v2/spells.webp',
+  items: '/icons/home-color-v2/items.webp',
+  conditions: '/icons/home-color-v2/conditions.webp',
+  rules: '/icons/home-color-v2/rules.webp',
+  bestiary: '/icons/home-color-v2/bestiary.webp',
 } as const;
 
 export const MECHANIC_ICONS = {
