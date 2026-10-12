@@ -3,9 +3,21 @@ export function registerServiceWorker() {
     return;
   }
 
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((error) => {
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    window.location.reload();
+  });
+
+  window.addEventListener('load', async () => {
+    try {
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        updateViaCache: 'none',
+      });
+      await registration.update();
+    } catch (error) {
       console.error('Не вдалося зареєструвати service worker', error);
-    });
+    }
   });
 }
