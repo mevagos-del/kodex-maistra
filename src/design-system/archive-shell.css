@@ -385,9 +385,24 @@
 .archive-shell .quick-access-grid-v2 .quick-access-item {
   min-height: 3.75rem;
   padding: 0.25rem;
+  gap: 0.125rem;
 }
-.archive-shell .quick-access-icon { width: 2.75rem; height: 2.75rem; }
+.archive-shell .quick-access-icon { width: 4rem; height: 4rem; }
+.archive-shell .quick-access-icon img {
+  filter: none;
+  transform: scale(var(--quick-access-icon-scale, 1));
+}
+.archive-shell .quick-access-grid-v2 .quick-access-item:hover .quick-access-icon,
+.archive-shell .quick-access-grid-v2 .quick-access-item:focus-visible .quick-access-icon { filter: none; }
+.archive-shell .quick-access-grid-v2 .quick-access-item-disabled .quick-access-icon {
+  opacity: 0.86;
+  filter: none;
+}
 .archive-shell .quick-access-grid-v2 .quick-access-item strong { font-size: 0.8125rem; }
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .archive-shell .quick-access-icon { width: 3.75rem; height: 3.75rem; }
+}
 
 /* Shared detail density. Content and hierarchy stay unchanged. */
 .archive-shell .detail-codex-stage--class,
@@ -551,6 +566,7 @@
   .archive-shell .hero-search input { min-height: 2.875rem; }
   .archive-shell .quick-access-grid-v2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .archive-shell .quick-access-grid-v2 .quick-access-item { min-height: 4.5rem; }
+  .archive-shell .quick-access-icon { width: 3.25rem; height: 3.25rem; }
   .archive-shell .detail-codex-stage--class,
   .archive-shell .detail-codex-stage--item,
   .archive-shell .race-detail-stage { padding: 1rem var(--archive-page-padding) 2.75rem; }

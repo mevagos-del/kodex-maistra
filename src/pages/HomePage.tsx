@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { globalSearch } from '@/features/catalog/api/catalogFilters';
 import { sectionSlugForEntity } from '@/features/catalog/api/catalogApi';
@@ -6,21 +6,25 @@ import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphe
 import { useCatalogList } from '@/features/catalog/hooks/useCatalogData';
 import type { EntityType } from '@/types/content';
 import { referenceQuickAccess } from '@/data/navigation';
-import { HOME_ICONS } from '@/features/catalog/utils/codexIcons';
+import { HOME_ICONS, HOME_ICON_SCALES } from '@/features/catalog/utils/codexIcons';
 
-const quickAccessIcons: Record<string, string> = {
-  Раси: HOME_ICONS.races,
-  Класи: HOME_ICONS.classes,
-  Риси: HOME_ICONS.feats,
-  Закляття: HOME_ICONS.spells,
-  Предмети: HOME_ICONS.items,
-  Стани: HOME_ICONS.conditions,
-  Правила: HOME_ICONS.rules,
-  Бестіарій: HOME_ICONS.bestiary,
+const quickAccessIconKeys: Record<string, keyof typeof HOME_ICONS> = {
+  Раси: 'races',
+  Класи: 'classes',
+  Риси: 'feats',
+  Закляття: 'spells',
+  Предмети: 'items',
+  Стани: 'conditions',
+  Правила: 'rules',
+  Бестіарій: 'bestiary',
 };
 
 function getQuickAccessIcon(title: string) {
-  return quickAccessIcons[title] ?? HOME_ICONS.rules;
+  const key = quickAccessIconKeys[title] ?? 'rules';
+  return {
+    src: HOME_ICONS[key],
+    style: { '--quick-access-icon-scale': HOME_ICON_SCALES[key] ?? 1 } as CSSProperties,
+  };
 }
 
 const entityLabels: Record<EntityType, string> = {
@@ -97,20 +101,21 @@ export function HomePage() {
               <h2 id="quick-access-title">Швидкий доступ</h2>
             </div>
             <div className="quick-access-grid quick-access-grid-v2">
-              {referenceQuickAccess.map((item) => (
-                item.isDisabled ? (
+              {referenceQuickAccess.map((item) => {
+                const icon = getQuickAccessIcon(item.title);
+                return item.isDisabled ? (
                   <button key={item.title} type="button" className="quick-access-item quick-access-item-disabled" disabled>
-                    <span className="quick-access-icon"><img src={getQuickAccessIcon(item.title)} alt="" aria-hidden="true" /></span>
+                    <span className="quick-access-icon"><img src={icon.src} style={icon.style} alt="" aria-hidden="true" /></span>
                     <strong>{item.title}</strong>
                     <small>Незабаром</small>
                   </button>
                 ) : (
                   <Link key={item.title} to={item.path} className="quick-access-item">
-                    <span className="quick-access-icon"><img src={getQuickAccessIcon(item.title)} alt="" aria-hidden="true" /></span>
+                    <span className="quick-access-icon"><img src={icon.src} style={icon.style} alt="" aria-hidden="true" /></span>
                     <strong>{item.title}</strong>
                   </Link>
-                )
-              ))}
+                );
+              })}
             </div>
           </section>
 
