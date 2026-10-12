@@ -12,6 +12,8 @@ export const appRoutes = {
   conditionDetail: '/conditions/:slug',
   feats: '/feats',
   featDetail: '/feats/:slug',
+  rules: '/rules',
+  ruleDetail: '/rules/:slug',
   admin: '/admin',
   login: '/login',
 } as const;
@@ -22,4 +24,5 @@ export const publicNavigation = [
   { label: 'Класи', path: appRoutes.classes },
   { label: 'Предмети', path: appRoutes.items },
   { label: 'Закляття', path: appRoutes.spells },
+  { label: 'Правила', path: appRoutes.rules },
 ];

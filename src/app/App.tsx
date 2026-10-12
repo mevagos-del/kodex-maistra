@@ -18,6 +18,8 @@ const ConditionsPage = lazy(() => import('@/pages/ConditionsPage').then((module)
 const ConditionDetailPage = lazy(() => import('@/pages/ConditionDetailPage').then((module) => ({ default: module.ConditionDetailPage })));
 const FeatsPage = lazy(() => import('@/pages/FeatsPage').then((module) => ({ default: module.FeatsPage })));
 const FeatDetailPage = lazy(() => import('@/pages/FeatDetailPage').then((module) => ({ default: module.FeatDetailPage })));
+const RulesPage = lazy(() => import('@/pages/RulesPage').then((module) => ({ default: module.RulesPage })));
+const RuleDetailPage = lazy(() => import('@/pages/RuleDetailPage').then((module) => ({ default: module.RuleDetailPage })));
 
 function RouteFallback() {
   return <div className="archive-route-fallback"><LoadingIndicator label="Відкриваємо розділ…" /></div>;
@@ -40,6 +42,8 @@ export function App() {
         <Route path={appRoutes.conditionDetail} element={<Suspense fallback={<RouteFallback />}><ConditionDetailPage /></Suspense>} />
         <Route path={appRoutes.feats} element={<Suspense fallback={<RouteFallback />}><FeatsPage /></Suspense>} />
         <Route path={appRoutes.featDetail} element={<Suspense fallback={<RouteFallback />}><FeatDetailPage /></Suspense>} />
+        <Route path={appRoutes.rules} element={<Suspense fallback={<RouteFallback />}><RulesPage /></Suspense>} />
+        <Route path={appRoutes.ruleDetail} element={<Suspense fallback={<RouteFallback />}><RuleDetailPage /></Suspense>} />
         <Route
           path={appRoutes.admin}
           element={

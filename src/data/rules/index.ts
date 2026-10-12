@@ -1,6 +1,7 @@
 export { officialClasses } from './classes';
 export { officialItems } from './items';
 export { officialRaces } from './races';
+export { officialRules } from './rules';
 export { PHB_2024_SOURCE, SRD_52_SOURCE } from './source';
 export type {
   OfficialCatalogEntry,

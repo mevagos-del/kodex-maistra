@@ -130,6 +130,18 @@ export const RULE_ICONS = {
   shortRest: '/icons/rules/short-rest.webp',
 } as const;
 
+export const RULE_REFERENCE_ICONS = {
+  ...RULE_ICONS,
+  abilityCheck: MECHANIC_ICONS.abilityCheck,
+  armorClass: MECHANIC_ICONS.armorClass,
+  criticalHit: MECHANIC_ICONS.criticalHit,
+  difficultyClass: MECHANIC_ICONS.difficultyClass,
+  healing: MECHANIC_ICONS.healing,
+  hitPoints: MECHANIC_ICONS.hitPoints,
+  speed: MECHANIC_ICONS.speed,
+  rules: HOME_ICONS.rules,
+} as const;
+
 const factIcons: Record<string, string> = {
   'Версія правил': CODEX_ICONS.ruleVersion,
   'Тип контенту': CODEX_ICONS.contentType,

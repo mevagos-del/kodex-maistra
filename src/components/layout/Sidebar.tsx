@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import type { RefObject } from 'react';
 import { useAuth } from '@/features/auth/useAuth';
+import { HOME_ICONS } from '@/features/catalog/utils/codexIcons';
 import { appRoutes } from '@/routes/appRoutes';
 
 type SidebarProps = { open: boolean; onClose: () => void; closeButtonRef: RefObject<HTMLButtonElement | null> };
@@ -11,7 +12,7 @@ const referenceItems: SidebarItem[] = [
   { label: 'Класи', icon: '/icons/codex/36-icon-classes.png', path: appRoutes.classes },
   { label: 'Предмети', icon: '/icons/codex/37-icon-items.png', path: appRoutes.items },
   { label: 'Закляття', icon: '/icons/codex/38-icon-spells.png', path: appRoutes.spells },
-  { label: 'Правила', icon: '/icons/codex/01-icon-rule-version.png', disabled: true },
+  { label: 'Правила', icon: HOME_ICONS.rules, path: appRoutes.rules },
   { label: 'Стани', icon: '/icons/codex/32-icon-condition.png', path: appRoutes.conditions },
   { label: 'Риси', icon: '/icons/codex/34-icon-choice-optional-rule.png', path: appRoutes.feats },
   { label: 'Бестіарій', icon: '/icons/codex/03-icon-creature-type.png', disabled: true },
