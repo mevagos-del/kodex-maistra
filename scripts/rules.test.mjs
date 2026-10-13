@@ -99,7 +99,10 @@ test('routes, homepage activation, sidebar and responsive pages are wired withou
   assert.match(sidebar, /label: 'Правила'.*path: appRoutes\.rules/);
   assert.match(catalog, /aria-label="Пошук правил"/);
   assert.match(catalog, /to=\{`\/rules\/\$\{entry\.slug\}`\}/);
-  assert.match(detail, /to=\{`\/rules\/\$\{target\.slug\}`\}/);
+  assert.match(detail, /id="mechanics"[\s\S]*Як працює/);
+  assert.doesNotMatch(detail, />Огляд</);
+  assert.doesNotMatch(detail, />Пов’язані правила</);
+  assert.doesNotMatch(detail, />Пов’язані сутності</);
   assert.match(css, /@media \(max-width: 600px\)/);
   assert.match(css, /overflow-x: auto/);
 });
