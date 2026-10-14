@@ -32,6 +32,10 @@ const { officialRules: rules } = loadLocalRules(resolve(rulesRoot, 'rules.ts'));
 const { officialFeats: feats } = loadLocalRules(resolve(rulesRoot, 'feats.ts'));
 const { officialItems: items } = loadLocalRules(resolve(rulesRoot, 'items'));
 const { officialConditions: conditions } = loadLocalRules(resolve(rulesRoot, 'conditions.ts'));
+const {
+  MISSING_CLASS_FEATURE_DESCRIPTION,
+  resolveClassFeatureCards,
+} = loadLocalRules(resolve('src/features/catalog/utils/classFeatureResolver.ts'));
 const { officialSpells: spells } = await loadSpells();
 
 const expectedClassSlugs = [
@@ -116,6 +120,46 @@ test('Weapon Mastery is registered on the expected 2024 classes', () => {
     .filter((entry) => entry.features.some((feature) => feature.nameUk === 'Майстерність зброї'))
     .map((entry) => entry.slug));
   assert.deepEqual(actual, expectedWeaponMastery);
+});
+
+test('repeated progression features reuse canonical content at every level', () => {
+  const fighter = classes.find((entry) => entry.slug === 'fighter');
+  assert.ok(fighter);
+  const canonicalDescription = fighter.features.find((feature) => feature.nameUk === 'Збільшення характеристик')?.sourceText;
+  assert.ok(canonicalDescription && canonicalDescription !== missingSourceText);
+
+  const canonicalCards = fighter.features.map((feature) => ({
+    title: feature.nameUk,
+    description: feature.sourceText,
+    rows: [{ label: 'Рівень', value: String(feature.level) }],
+    kind: 'base',
+  }));
+  const resolvedCards = resolveClassFeatureCards(canonicalCards, fighter.progression);
+  const expectedLevels = fighter.progression
+    .filter((row) => row.features.includes('Збільшення характеристик'))
+    .map((row) => String(row.level));
+  const resolvedAsi = resolvedCards.filter((card) => card.title === 'Збільшення характеристик');
+
+  assert.deepEqual(resolvedAsi.map((card) => card.rows.find((row) => row.label === 'Рівень')?.value), expectedLevels);
+  assert.ok(resolvedAsi.every((card) => card.description === canonicalDescription));
+  assert.ok(resolvedAsi.every((card) => card.description !== MISSING_CLASS_FEATURE_DESCRIPTION));
+});
+
+test('Warlock Pact Magic progression is complete and matches D&D 2024 levels 1-20', () => {
+  const warlock = classes.find((entry) => entry.slug === 'warlock');
+  assert.ok(warlock);
+  assert.deepEqual(warlock.progression.map((row) => row.resources?.eldritch_invocations), [1,3,3,3,5,5,6,6,7,7,7,8,8,8,9,9,9,10,10,10]);
+  assert.deepEqual(warlock.progression.map((row) => row.spellcasting?.pact_slots), [1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4]);
+  assert.deepEqual(warlock.progression.map((row) => row.spellcasting?.pact_slot_level), [1,1,2,2,3,3,4,4,5,5,5,5,5,5,5,5,5,5,5,5]);
+  assert.ok(warlock.progression.every((row) => Number.isInteger(row.spellcasting?.pact_slots)));
+  assert.ok(warlock.progression.every((row) => Number.isInteger(row.spellcasting?.pact_slot_level) && Number(row.spellcasting?.pact_slot_level) >= 1 && Number(row.spellcasting?.pact_slot_level) <= 5));
+});
+
+test('all base-class features have canonical source text after the first completion pass', () => {
+  const incomplete = classes.flatMap((entry) => entry.features
+    .filter((feature) => feature.sourceText === missingSourceText)
+    .map((feature) => `${entry.slug}:${feature.nameUk}`));
+  assert.deepEqual(incomplete, []);
 });
 
 test('class relationships from Rules, Spells and Feats resolve to real runtime classes', () => {

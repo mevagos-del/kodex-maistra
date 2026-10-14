@@ -25,7 +25,8 @@ import {
   registryIconForLabel,
   weaponMasteryIconForName,
 } from '@/features/catalog/utils/codexIcons';
-import { formatValueSafely, isRecord, isUsefulValue, referenceLevel, sourceRuleText } from '@/features/catalog/utils/detailContent';
+import { formatValueSafely, isUsefulValue, referenceLevel, sourceRuleText } from '@/features/catalog/utils/detailContent';
+import { resolveClassFeatureCards } from '@/features/catalog/utils/classFeatureResolver';
 import { parseSubclasses } from '@/features/catalog/utils/subclassData';
 import { resolveCatalogImageUrl } from '@/features/catalog/utils/catalogImages';
 import { capitalizeItemTerm, itemMasteryLabel, itemWeaponPropertyLabel } from '@/features/catalog/utils/itemTerminology';
@@ -209,27 +210,6 @@ function normalizeClassFeatures(entry: ClassEntry) {
   });
 }
 
-function progressionFeatureCards(value: unknown) {
-  const rows = Array.isArray(value)
-    ? value
-    : isRecord(value)
-      ? (['rows', 'levels', 'progression', 'items'].map((key) => value[key]).find(Array.isArray) as unknown[] | undefined) ?? []
-      : [];
-
-  return rows.flatMap((row) => {
-    if (!isRecord(row)) return [];
-    const featureText = safeText(row.features ?? row.feature);
-    if (!featureText) return [];
-    const level = safeText(row.level);
-    return featureText.split(/[,;]+/).map((title) => title.trim()).filter((title) => title && !/^(особливість підкласу|subclass feature|підкласова особливість)/i.test(title)).map((title) => ({
-      title,
-      description: 'Точний опис уміння не вказано у доступному джерелі.',
-      rows: level ? [{ label: 'Рівень', value: level }] : [],
-      kind: 'base' as const,
-    }));
-  });
-}
-
 const masteryRules: Record<string,string> = {
   Cleave:'Після влучання атакою ближнього бою можеш атакувати другу істоту в межах 5 футів від першої та у своїй досяжності. При влучанні друга ціль отримує шкоду зброї без додавання модифікатора характеристики, якщо він не від’ємний. Один раз за хід.',
   Graze:'Якщо атака цією зброєю не влучає, ціль отримує шкоду типу зброї, що дорівнює модифікатору характеристики атаки. Цю шкоду можна збільшити лише збільшенням самого модифікатора.',
@@ -303,9 +283,7 @@ function descriptionWithoutHeading(markdown: string | null, title: string, lead?
 
 function ClassDetailContent({ entry, imageUrl }: { entry: ClassEntry; imageUrl: string }) {
   const explicitFeatures = normalizeClassFeatures(entry);
-  const existingFeatureKeys = new Set(explicitFeatures.map((feature) => `${feature.title.toLowerCase()}|${referenceLevel(feature)}`));
-  const baseFeatures = [...explicitFeatures, ...progressionFeatureCards(entry.class_progression)
-    .filter((feature) => !existingFeatureKeys.has(`${feature.title.toLowerCase()}|${referenceLevel(feature)}`))];
+  const baseFeatures = resolveClassFeatureCards(explicitFeatures, entry.class_progression);
   const subclasses = parseSubclasses(entry.subclasses);
   const [searchParams, setSearchParams] = useSearchParams();
   const [highlightedFeatureAnchor, setHighlightedFeatureAnchor] = useState<string | null>(null);
