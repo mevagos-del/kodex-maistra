@@ -1,158 +1,110 @@
 # Аудит довідника класів D&D 2024
 
-Дата аудиту: 2026-10-14.
+Дата оновлення: 2026-10-14.
 
-## Обсяг і джерела
+## Підсумок
 
-- Runtime-набір: **12 базових класів** і **48 зареєстрованих підкласів**.
-- Основне джерело даних: `src/data/rules/classes/`.
-- Перевірка виконана проти поточної static-first моделі та відкритих таблиць D&D 2024 Basic Rules / SRD 5.2.x. PHB 2024 використовується там, де підклас не входить до SRD.
-- TTG.club у публічних source labels не використовується.
+- Runtime містить **12 базових класів** і **48 підкласів**, по 4 підкласи на кожен клас.
+- Усі 12 класів мають повну progression 1–20 і повні базові feature-тексти.
+- Після subclass-ітерації **48/48 підкласів повні**: identity-only записів, порожніх feature arrays і placeholder-текстів немає.
+- Усі підкласи обираються на 3 рівні та мають лише feature levels у межах 3–20.
+- Eldritch Knight і Arcane Trickster мають окрему structured spell progression рівнів 3–20.
+- TTG.club не відображається у публічних source labels. Runtime використовує короткі позначки SRD 5.2.x або Player's Handbook 2024 відповідно до запису.
 
-Позначення статусу:
+## Завершені в цій ітерації підкласи
 
-- **Повний**: progression 1–20, усі базові feature-тексти та всі чотири зареєстровані підкласи мають feature-тексти.
-- **Частковий**: каркас і progression готові, але є placeholder-тексти або підкласи без features.
+Завершено **31** підклас, які до ітерації були identity-only або містили placeholder feature cards:
 
-## Загальний результат
+- **Жрець:** Домен життя, Домен світла, Домен обману, Домен війни.
+- **Монах:** Воїн відкритої долоні, Воїн милосердя, Воїн тіні, Воїн стихій.
+- **Паладин:** Клятва відданості, Клятва предків, Клятва слави, Клятва помсти.
+- **Слідопит:** Мисливець, Повелитель звірів, Мандрівник Фейвайлду, Мисливець сутінків.
+- **Пройдисвіт:** Злодій, Містичний хитрун, Убивця, Клинок душі.
+- **Чаклун:** Драконяче чаклунство, Аберантне чаклунство, Механічне чаклунство, Чаклунство дикої магії.
+- **Чорнокнижник:** Покровитель: Демон, Покровитель: Архіфея, Покровитель: Небожитель, Покровитель: Великий Древній.
+- **Чарівник:** Аб'юратор, Віщун, Ілюзіоніст.
 
-- Усі 12 класів мають рівно 20 progression rows з рівнями 1–20 без пропусків.
-- Після першої технічної ітерації **усі 12 класів мають повні base feature-тексти**. Залишок placeholder-описів у базових класах: **0** (до ітерації: 94).
-- Повними разом із зареєстрованими підкласами залишаються **4 класи**: Варвар, Бард, Друїд, Воїн. Решта 8 класів часткові лише через незавершені підкласи.
-- Renderer повторюваних features виправлено: один canonical feature record повторно використовується на кожному потрібному рівні без копіювання тексту в static data.
-- Progression Чорнокнижника містить усі 20 значень для інвокацій, комірок Магії пакту та рівня комірок.
-- **17 підкласів повні**, **31 підклас неповний**.
-- Серед неповних підкласів 21 має лише identity без features, ще 10 мають feature-каркас із placeholder-текстом.
-
-## Аудит progression 1–20
-
-- Перевірено **240 runtime-рядків**: 12 класів по 20 рівнів. Пропущених, дубльованих або позадіапазонних рівнів немає.
-- Матриці proficiency bonus, spell slots, cantrips і prepared spells звірені з відкритими таблицями D&D 2024 Basic Rules. Повні та половинні spellcasting-матриці вже були коректними й не потребували зміни значень.
-- Виправлено загальний mapper таблиці: він тепер однаково підтримує вже пласкі рядки та рядки з вкладеними `resources` / `spellcasting`. Через це наявні structured values більше не можуть бути приховані renderer-ом.
-- Додано відсутні quick-scan поля: шкода й кількість ефектів Brutal Strike, запас Lay on Hands, фіксована кількість Weapon Mastery для Паладина / Слідопита / Пройдисвіта, кількість ефектів Cunning Strike, кількість Metamagic options, Mystic Arcanum і межа Arcane Recovery.
-- Порожніх progression-рядків немає: якщо на рівні немає нового іменованого feature, у рядку все одно змінюється щонайменше одне числове або spellcasting-значення.
-
-| Клас | Structured progression у runtime-таблиці | Що уточнено в цій ітерації |
-|---|---|---|
-| Варвар | Rage uses, Rage Damage, Weapon Mastery, Brutal Strike | Додано шкоду Brutal Strike на 9/17 рівнях і максимум ефектів на 9/17 рівнях |
-| Бард | Bardic Inspiration die, cantrips, prepared spells, slots 1–9 | Значення підтверджено без виправлень |
-| Жрець | Channel Divinity, cantrips, prepared spells, slots 1–9 | Значення підтверджено без виправлень |
-| Друїд | Wild Shape, cantrips, prepared spells, slots 1–9 | Значення підтверджено без виправлень |
-| Воїн | Second Wind, Weapon Mastery, Action Surge, attacks per action | Значення підтверджено без виправлень |
-| Монах | Martial Arts die, Focus Points, Unarmored Movement | Значення підтверджено без виправлень |
-| Паладин | Lay on Hands, Channel Divinity, Weapon Mastery, prepared spells, slots 1–5 | Додано запас Lay on Hands 5 × рівень і 2 mastery choices на всіх рівнях |
-| Слідопит | Favored Enemy, Weapon Mastery, prepared spells, slots 1–5 | Додано 2 mastery choices на всіх рівнях |
-| Пройдисвіт | Sneak Attack, Weapon Mastery, Cunning Strike | Додано 2 mastery choices та максимум 1/2 Cunning Strike effects на 5/11 рівнях |
-| Чаклун | Sorcery Points, Metamagic options, cantrips, prepared spells, slots 1–9 | Додано 2/4/6 Metamagic options на 2/10/17 рівнях |
-| Чорнокнижник | Invocations, Mystic Arcanum, cantrips, prepared spells, Pact slots, Pact slot level | Додано накопичуваний Mystic Arcanum 6–9 рівнів на 11/13/15/17 рівнях |
-| Чарівник | Arcane Recovery, cantrips, prepared spells, slots 1–9 | Додано межу сумарних рівнів комірок Arcane Recovery: ceil(class level / 2) |
-
-### Рівні без нового іменованого feature
-
-`—` у колонці «Уміння» залишено тільки на рівнях, де офіційна таблиця не надає нового іменованого feature:
-
-- Бард: 11, 13, 15, 17.
-- Жрець: 9, 11, 13, 15, 18.
-- Друїд: 9, 11, 13, 17.
-- Паладин: 13, 17.
-- Чаклун: 9, 11, 13, 15.
-- Чорнокнижник: 5, 7, 18.
-- Чарівник: 7, 9, 11, 13, 15, 17.
-
-На кожному з цих рівнів змінюються spell slots, prepared spells, invocations, Pact Magic або інше structured-значення. Для Варвара, Воїна, Монаха, Слідопита й Пройдисвіта офіційна таблиця має щонайменше одне іменоване feature на кожному рівні.
+До ітерації 21 із цих записів були identity-only, а 10 мали feature names без повного `sourceText`. Тепер кожен запис містить українську й оригінальну назви, slug, parent class, source, рівень вибору, feature levels і повні користувацькі описи механік.
 
 ## Стан за класами
 
-| Клас | Progression | Base features | Підкласи | Spellcasting | Starting Equipment | Weapon Mastery | Статус |
-|---|---:|---:|---:|---|---|---|---|
-| Варвар | 20/20 | 19/19 | 4/4 повні | Немає | 2 варіанти | Є, текст повний | **Повний** |
-| Бард | 20/20 | 12/12 | 4/4 повні | 20/20, cantrips + slots 1–9 | 2 варіанти | Немає | **Повний** |
-| Жрець | 20/20 | 11/11 | 0/4 повних | 20/20, cantrips + slots 1–9 | 2 варіанти | Немає | Частковий: підкласи |
-| Друїд | 20/20 | 13/13 | 4/4 повні | 20/20, cantrips + slots 1–9 | 2 варіанти | Немає | **Повний** |
-| Воїн | 20/20 | 18/18 | 4/4 повні | Немає; Eldritch Knight у subclass data | 3 групи | Є, текст повний | **Повний** |
-| Монах | 20/20 | 22/22 | 0/4 повних | Немає | 2 варіанти | Немає | Частковий: підкласи |
-| Паладин | 20/20 | 17/17 | 0/4 повних | 20/20, slots 1–5 | 2 варіанти | Є, текст повний | Частковий: підкласи |
-| Слідопит | 20/20 | 17/17 | 0/4 повних | 20/20, slots 1–5 | 2 варіанти | Є, текст повний | Частковий: підкласи |
-| Пройдисвіт | 20/20 | 18/18 | 0/4 повних | Немає; Arcane Trickster у subclass data | 2 варіанти | Є, текст повний | Частковий: підкласи |
-| Чаклун | 20/20 | 10/10 | 0/4 повних | 20/20, cantrips + slots 1–9 | 2 варіанти | Немає | Частковий: підкласи |
-| Чорнокнижник | 20/20 | 12/12 | 0/4 повних | 20/20, Pact Magic + invocations | 2 варіанти | Немає | Частковий: підкласи |
-| Чарівник | 20/20 | 10/10 | 1/4 повний | 20/20, cantrips + slots 1–9 | 2 варіанти | Немає | Частковий: 3 підкласи |
+| Клас | Progression | Base features | Підкласи | Статус |
+|---|---:|---:|---:|---|
+| Варвар | 20/20 | повні | 4/4 | Повний |
+| Бард | 20/20 | повні | 4/4 | Повний |
+| Жрець | 20/20 | повні | 4/4 | Повний |
+| Друїд | 20/20 | повні | 4/4 | Повний |
+| Воїн | 20/20 | повні | 4/4 | Повний |
+| Монах | 20/20 | повні | 4/4 | Повний |
+| Паладин | 20/20 | повні | 4/4 | Повний |
+| Слідопит | 20/20 | повні | 4/4 | Повний |
+| Пройдисвіт | 20/20 | повні | 4/4 | Повний |
+| Чаклун | 20/20 | повні | 4/4 | Повний |
+| Чорнокнижник | 20/20 | повні | 4/4 | Повний |
+| Чарівник | 20/20 | повні | 4/4 | Повний |
 
-## Базові features після першої ітерації
+## Spellcasting-підкласи
 
-- Закрито всі **94** попередні placeholder-записи для Монаха, Паладина, Слідопита, Пройдисвіта, Чаклуна та Чорнокнижника.
-- Усі 12 базових класів тепер не мають `Опис не вказано у доступному джерелі.` у `sourceText`.
-- Повторні появи «Збільшення характеристик», «Метамагії», «Експертизи» та інших features беруть canonical текст через renderer resolver, а не дублюють його в data.
-- Scope підкласів у цій ітерації навмисно не змінювався.
+### Eldritch Knight
 
-## Неповні підкласи
+- Заклинальна характеристика: **Інтелект**.
+- Список заклять: **Wizard** без застарілого обмеження школами з версії 2014.
+- Structured progression охоплює рівні Воїна 3–20.
+- Замовляння: 2 на рівнях 3–9, 3 на рівнях 10–20.
+- Підготовлені закляття: від 3 на рівні 3 до 13 на рівні 20.
+- Комірки: від 2 комірок 1 рівня на рівні 3 до матриці 4/3/3/1 на рівні 20.
 
-| Батьківський клас | Неповні підкласи | Стан |
-|---|---|---|
-| Жрець | Life, Light, Trickery, War | Life: 5 placeholder features; решта без features |
-| Монах | Open Hand, Mercy, Shadow, Elements | Open Hand: 4 placeholder features; решта без features |
-| Паладин | Devotion, Ancients, Glory, Vengeance | Devotion: 5 placeholder features; решта без features |
-| Слідопит | Hunter, Beast Master, Fey Wanderer, Gloom Stalker | Hunter: 5 placeholder features; решта без features |
-| Пройдисвіт | Thief, Arcane Trickster, Assassin, Soulknife | Thief: 5 placeholder features; решта без features |
-| Чаклун | Draconic, Aberrant, Clockwork, Wild Magic | Draconic: 5 placeholder features; решта без features |
-| Чорнокнижник | Fiend, Archfey, Celestial, Great Old One | Fiend: 5 placeholder features; решта без features |
-| Чарівник | Abjurer, Diviner, Illusionist | по 5 placeholder features; Evoker повний |
+### Arcane Trickster
 
-## Spellcasting
+- Заклинальна характеристика: **Інтелект**.
+- Список заклять: **Wizard** без застарілого обмеження школами з версії 2014.
+- Structured progression охоплює рівні Пройдисвіта 3–20.
+- Замовляння: 3 на рівнях 3–9, 4 на рівнях 10–20.
+- Підготовлені закляття: від 3 на рівні 3 до 13 на рівні 20.
+- Комірки: та сама third-caster матриця 3–20, до 4/3/3/1 на рівні 20.
 
-- Повні 20-рівневі full-caster таблиці з cantrips, prepared spells і slots 1–9 мають Бард, Жрець, Друїд, Чаклун і Чарівник. Автоматичні тести звіряють кожне значення кожного рівня з офіційною матрицею.
-- Паладин і Слідопит мають 20-рівневі half-caster таблиці зі slots 1–5; кожен рядок також перевіряється проти офіційної матриці.
-- Чорнокнижник має повну 20-рівневу progression: `eldritch_invocations` і `mystic_arcanum` зберігаються як class resources, а `pact_slots` і `pact_slot_level` — як spellcasting values разом із cantrips та prepared spells. Усі шість серій значень звірені для рівнів 1–20.
-- Eldritch Knight та Arcane Trickster не мають окремої структурованої subclass spell progression. Це не dead reference, але detail-page не може показати їхню магічну прогресію як таблицю.
-- Spell relationships валідні: **879** class-spell edges, усі class slugs існують.
-
-## Starting Equipment і паспорт класу
-
-- Усі 12 класів мають Hit Die, primary ability, дві saving throw proficiencies, weapon proficiencies, skill choice та щонайменше два варіанти Starting Equipment.
-- Воїн має три equipment groups; інші класи — по два.
-- Starting Equipment зберігається як готові текстові рядки, а не item slugs. UI відображає їх коректно, але автоматично перевірити кожен предмет проти Items dataset або створити внутрішні links зараз неможливо.
-- Armor, weapon, tool та skill proficiencies структуровані й не містять `null`, `undefined` або `[object Object]`.
-
-## Weapon Mastery
-
-- Feature `Майстерність зброї` зареєстрований у правильних п’яти класах: Варвар, Воїн, Паладин, Слідопит і Пройдисвіт.
-- Усі п’ять класів мають повний feature text. Для Паладина, Слідопита й Пройдисвіта текст явно обмежує Майстерність двома обраними видами зброї, якими персонаж володіє, з можливістю змінити вибір після тривалого відпочинку.
-- Жоден опис не трактує feature як автоматичне володіння всіма mastery properties.
-- Зв’язок із mastery properties предметів не структурований на рівні class schema; він існує через feature name та item-side mastery rules.
+Spell descriptions не дублюються в subclass data. Зберігаються лише правила subclass spellcasting, progression і валідні relationships до наявних spell slugs.
 
 ## Relationships
 
-| Модуль | Стан | Кількість class edges |
-|---|---|---:|
-| Rules | Усі `relatedClassSlugs` валідні | 37 |
-| Spells | Усі spell class slugs валідні | 879 |
-| Feats | Усі `classSlugs` валідні | 72 |
-| Items | Немає окремого class relationship field | 0 структурованих |
-| Conditions | Немає окремого class relationship field | 0 структурованих |
+- Для нових підкласів relationships зберігаються окремо від тексту рис і серіалізуються в runtime detail data.
+- Перевіряються `Rules`, `Spells`, `Feats`, `Items` і `Conditions`; кожен вказаний slug мусить існувати у відповідному runtime dataset.
+- Посилання на закляття, яких ще немає в runtime, не створюються. Назва закляття може залишатися частиною точної механіки риси без мертвого внутрішнього link.
+- Weapon Mastery relationship підтримується схемою, але додається лише коли підклас прямо змінює mastery mechanics; тематичні зв'язки не створюються.
+- Generic rule text не копіюється до subclass relationship data: feature містить лише власну механіку, а посилання веде до відповідного правила.
+- Після дедуплікації runtime містить **167** subclass-to-Rule, **22** subclass-to-Spell і **23** subclass-to-Condition edges. Feat та Item edges не додавалися без прямої механічної підстави.
 
-Items і Conditions можуть згадувати механіки класу текстом, але це не машинно перевірюваний relationship. Dead class references у Rules, Spells і Feats не знайдені.
+## Renderer і UI
 
-## Legacy / 2014 ризики
+- Існуючий canonical feature resolver використовується без дублювання однакового rule text на різних рівнях.
+- Repository передає `spellcasting` і `relationships` разом із subclass identity та features.
+- Class header, selector, modal, `?subclass=`, progression table, feature blocks і sticky navigation не змінювалися.
+- Усі subclass features відображаються на наявних feature cards; fallback/placeholder cards більше не потрібні.
+- Structured objects не перетворюються на видимі `null`, `undefined` або `[object Object]`.
+- Нової CSS-розмітки або mobile overflow ця ітерація не додає.
 
-- Явних маркерів `2014`, `Legacy`, `Unearthed Arcana` або `playtest` у runtime class data не знайдено.
-- Усі 48 підкласів обираються на 3 рівні, що відповідає 2024 class structure.
-- Основний залишковий ризик не legacy collision, а незаповнені PHB 2024 subclass features: placeholder не дозволяє перевірити точну механіку й може приховувати застарілий текст при майбутньому ручному доповненні.
-- Warlock progression після цієї ітерації повна й окремо зафіксована автоматичними тестами для рівнів 1–20.
+## Legacy / 2014 перевірка
 
-## UI та responsive
+- Runtime data не містить маркерів `2014`, `Legacy`, `Unearthed Arcana` або `playtest`.
+- Усі 48 підкласів використовують D&D 2024 level structure.
+- Eldritch Knight і Arcane Trickster використовують 2024 spell preparation model та відкритий Wizard spell list, а не старі school constraints.
+- Source labels не маскують PHB entries як SRD/CC-BY записи.
 
-- Detail-page не виводить raw objects; formatter приховує invalid values.
-- «Паспорт класу» та «Старт класу» не дублюють одні й ті самі rows: паспорт містить Hit Die, primary ability, saves і spellcasting flag; старт — proficiencies, skills та equipment.
-- Назви умінь закономірно повторюються між progression table та feature list: у таблиці це індекс/anchor, нижче — повний текст. Це корисна навігаційна дедуплікація, а не повтор повного опису.
-- Renderer defect для повторюваних features виправлено. Новий resolver індексує canonical картки за назвою, матеріалізує їх на кожному рівні progression і підмінює лише рядок рівня. Fighter ASI більше не створює п’ять fallback-карток.
-- Для порожнього підкласу selector працює, але progression залишає загальний рядок «Особливість підкласу», а повних subclass cards немає. Це головна видима ознака незавершеного контенту.
-- Таблиця має `min-width: 560px` і внутрішній horizontal scroll. На mobile це не створює page overflow, але потребує горизонтального прокручування самої таблиці.
-- Sidebar і navigation переходять в одну колонку на mobile; критичного responsive overflow не знайдено.
+## Автоматична перевірка
 
-## Рекомендований порядок завершення
+`scripts/classes.test.mjs` перевіряє:
 
-1. Завершити **31 неповний підклас**: спочатку 10 підкласів із feature-каркасом і placeholder-текстами, потім 21 identity-only підклас.
-2. Додати структуровану spell progression для Eldritch Knight і Arcane Trickster.
-3. Після subclass content pass повторно перевірити relationship edges до Rules, Spells, Feats, Items і Conditions.
-4. Додати item-slug mapping для Starting Equipment лише там, де відповідні предмети вже існують у runtime Items dataset.
-5. Повторити UI-аудит порожніх станів підкласів після заповнення даних; редизайн до цього не потрібен.
+- 12 класів, 48 підкласів і рівно 4 підкласи на клас;
+- унікальні subclass ID, slugs та English identities;
+- валідні parent class і feature levels;
+- відсутність identity-only, empty та placeholder subclass entries;
+- повну third-caster progression Eldritch Knight і Arcane Trickster;
+- відсутність dead Rules/Spells/Feats/Items/Conditions relationships;
+- відсутність явних 2014/playtest/raw-object leaks;
+- незмінну цілісність base progression, Warlock Pact Magic і canonical repeated-feature resolver.
+
+## Залишкові питання
+
+- Неповних підкласів після цієї ітерації немає.
+- Item та Feat relationships не додаються без прямої механічної підстави; це свідомо не вважається прогалиною.
+- Окремий UI для subclass spell progression може бути доданий майбутньою UX-ітерацією. Дані вже структуровані, але поточний дизайн Classes у цьому завданні не змінювався.

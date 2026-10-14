@@ -50,6 +50,12 @@ const expectedSpellcasters = new Set(['bard', 'cleric', 'druid', 'paladin', 'ran
 const expectedWeaponMastery = new Set(['barbarian', 'fighter', 'paladin', 'ranger', 'rogue']);
 const missingSourceText = 'Опис не вказано у доступному джерелі.';
 const classSlugs = new Set(classes.map((entry) => entry.slug));
+const subclasses = classes.flatMap((entry) => entry.subclasses);
+const ruleSlugs = new Set(rules.map((entry) => entry.slug));
+const spellSlugs = new Set(spells.map((entry) => entry.slug));
+const featSlugs = new Set(feats.map((entry) => entry.slug));
+const itemSlugs = new Set(items.map((entry) => entry.slug));
+const conditionSlugs = new Set(conditions.map((entry) => entry.slug));
 const expectedFeaturelessLevels = {
   barbarian: [], bard: [11, 13, 15, 17], cleric: [9, 11, 13, 15, 18], druid: [9, 11, 13, 17],
   fighter: [], monk: [], paladin: [13, 17], ranger: [], rogue: [], sorcerer: [9, 11, 13, 15],
@@ -108,17 +114,61 @@ for (const entry of classes) test(`${entry.slug}: complete level 1-20 progressio
 });
 
 test('all forty-eight subclasses have valid parents, identities and feature levels', () => {
-  const subclasses = classes.flatMap((entry) => entry.subclasses);
   assert.equal(subclasses.length, 48);
   assert.equal(new Set(subclasses.map((entry) => entry.id)).size, 48);
+  assert.equal(new Set(subclasses.map((entry) => entry.slug)).size, 48);
+  assert.equal(new Set(subclasses.map((entry) => entry.nameOriginal)).size, 48);
   for (const parent of classes) {
     assert.equal(parent.subclasses.length, 4, `${parent.slug}: expected four registered subclasses`);
     for (const subclass of parent.subclasses) {
       assert.equal(subclass.classSlug, parent.slug);
       assert.ok(classSlugs.has(subclass.classSlug));
       assert.equal(subclass.chosenAtLevel, 3);
+      assert.ok(subclass.nameUk.trim() && subclass.nameOriginal.trim() && subclass.slug.trim());
+      assert.ok(subclass.features.length > 0, `${subclass.slug}: identity-only subclass`);
       assert.ok(subclass.features.every((feature) => feature.level >= subclass.chosenAtLevel && feature.level <= 20));
       assert.equal(new Set(subclass.features.map((feature) => feature.id)).size, subclass.features.length);
+      assert.ok(subclass.features.every((feature) => feature.sourceText.trim() && feature.sourceText !== missingSourceText), `${subclass.slug}: placeholder subclass feature`);
+    }
+  }
+});
+
+test('Eldritch Knight and Arcane Trickster have complete D&D 2024 spell progression', () => {
+  const expectedPrepared = [3,4,4,4,5,6,6,7,8,8,9,10,10,11,11,11,12,13];
+  const expectedSlots = [
+    [2,0,0,0], [3,0,0,0], [3,0,0,0], [3,0,0,0],
+    [4,2,0,0], [4,2,0,0], [4,2,0,0], [4,3,0,0], [4,3,0,0], [4,3,0,0],
+    [4,3,2,0], [4,3,2,0], [4,3,2,0], [4,3,3,0], [4,3,3,0], [4,3,3,0],
+    [4,3,3,1], [4,3,3,1],
+  ];
+  for (const [slug, expectedCantrips] of [
+    ['eldritch-knight', [2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3]],
+    ['arcane-trickster', [3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4]],
+  ]) {
+    const subclass = subclasses.find((entry) => entry.slug === slug);
+    assert.ok(subclass?.spellcasting, `${slug}: missing structured spellcasting`);
+    assert.equal(subclass.spellcasting.ability, 'Інтелект');
+    assert.equal(subclass.spellcasting.spellList, 'wizard');
+    assert.deepEqual(subclass.spellcasting.progression.map((row) => row.level), Array.from({ length: 18 }, (_, index) => index + 3));
+    assert.deepEqual(subclass.spellcasting.progression.map((row) => row.cantrips), expectedCantrips);
+    assert.deepEqual(subclass.spellcasting.progression.map((row) => row.preparedSpells), expectedPrepared);
+    assert.deepEqual(subclass.spellcasting.progression.map((row) => row.slots), expectedSlots);
+  }
+});
+
+test('subclass mechanical relationships resolve to existing runtime entities', () => {
+  const registries = {
+    ruleSlugs,
+    spellSlugs,
+    featSlugs,
+    itemSlugs,
+    conditionSlugs,
+  };
+  for (const subclass of subclasses) {
+    for (const [key, registry] of Object.entries(registries)) {
+      for (const slug of subclass.relationships?.[key] ?? []) {
+        assert.ok(registry.has(slug), `${subclass.slug}: dead ${key} relationship ${slug}`);
+      }
     }
   }
 });
@@ -301,11 +351,19 @@ test('no obvious legacy, raw object or invalid placeholder leaks exist', () => {
   }
 });
 
+test('all subclass data is complete and user-facing', () => {
+  const incomplete = subclasses.flatMap((subclass) => subclass.features
+    .filter((feature) => !feature.sourceText.trim() || feature.sourceText === missingSourceText)
+    .map((feature) => `${subclass.slug}:${feature.nameUk}`));
+  assert.deepEqual(incomplete, []);
+  assert.doesNotMatch(JSON.stringify(subclasses), /опис не вказано|placeholder|todo|tbd|\[object Object\]|undefined|null/i);
+});
+
 const missingBaseFeatures = classes.reduce((total, entry) => total + entry.features.filter((feature) => feature.sourceText === missingSourceText).length, 0);
-const incompleteSubclasses = classes.flatMap((entry) => entry.subclasses).filter((subclass) => subclass.features.length === 0 || subclass.features.some((feature) => feature.sourceText === missingSourceText));
+const incompleteSubclasses = subclasses.filter((subclass) => subclass.features.length === 0 || subclass.features.some((feature) => feature.sourceText === missingSourceText));
 console.log(JSON.stringify({
   classes: classes.length,
-  subclasses: classes.flatMap((entry) => entry.subclasses).length,
+  subclasses: subclasses.length,
   completeProgressions: classes.filter((entry) => entry.progression.length === 20).length,
   missingBaseFeatures,
   incompleteSubclasses: incompleteSubclasses.length,
@@ -315,5 +373,12 @@ console.log(JSON.stringify({
     feats: feats.reduce((total, entry) => total + entry.classSlugs.length, 0),
     items: 0,
     conditions: 0,
+  },
+  subclassRelationships: {
+    rules: subclasses.reduce((total, entry) => total + (entry.relationships?.ruleSlugs?.length ?? 0), 0),
+    spells: subclasses.reduce((total, entry) => total + (entry.relationships?.spellSlugs?.length ?? 0), 0),
+    feats: subclasses.reduce((total, entry) => total + (entry.relationships?.featSlugs?.length ?? 0), 0),
+    items: subclasses.reduce((total, entry) => total + (entry.relationships?.itemSlugs?.length ?? 0), 0),
+    conditions: subclasses.reduce((total, entry) => total + (entry.relationships?.conditionSlugs?.length ?? 0), 0),
   },
 }));

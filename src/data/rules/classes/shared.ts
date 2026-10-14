@@ -40,6 +40,7 @@ export function createSubclass(
   source: OfficialRuleSource,
   descriptions: Record<string, string> = {},
   options: Record<string, OfficialFeatureOption[]> = {},
+  metadata: Pick<OfficialSubclass, 'spellcasting' | 'relationships'> = {},
 ): OfficialSubclass {
   return {
     id: `${classSlug}-${slugValue}`,
@@ -49,6 +50,7 @@ export function createSubclass(
     nameOriginal,
     chosenAtLevel: 3,
     source,
+    ...metadata,
     features: levels.map(([level, featureNameUk, featureNameOriginal]) => ({
       id: `${classSlug}-${slugValue}-${slug(featureNameOriginal)}`,
       nameUk: featureNameUk,

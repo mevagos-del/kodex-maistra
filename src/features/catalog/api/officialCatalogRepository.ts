@@ -143,6 +143,8 @@ function classToCatalogEntry(entry: OfficialClassEntry): ClassEntry {
       choose_level: subclass.chosenAtLevel,
       source: sourceSummary(subclass.source),
       features: subclass.features.map(featureRecord),
+      spellcasting: subclass.spellcasting,
+      relationships: subclass.relationships,
     })),
     spellcasting: entry.hasSpellcasting ? { ability: entry.primaryAbility } : {},
     has_spellcasting: entry.hasSpellcasting,

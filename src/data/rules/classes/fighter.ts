@@ -1,6 +1,7 @@
 import { PHB_2024_SOURCE, SRD_52_SOURCE } from '../source';
 import type { OfficialClassEntry, OfficialFeatureOption, OfficialProgressionRow } from '../types';
 import { createSubclass, featuresFromProgression } from './shared';
+import { eldritchKnightSpellcasting } from './subclasses2024';
 
 const baseProgression: OfficialProgressionRow[] = [
   { level: 1, proficiencyBonus: '+2', features: ['Бойовий стиль', 'Друге дихання', 'Майстерність зброї'], resources: { second_wind: 2, weapon_mastery: 3 } },
@@ -190,7 +191,10 @@ export const fighter: OfficialClassEntry = {
   subclasses: [
     createSubclass('fighter', 'champion', 'Чемпіон', 'Champion', [[3, 'Покращений критичний удар', 'Improved Critical'], [3, 'Видатний атлет', 'Remarkable Athlete'], [7, 'Додатковий бойовий стиль', 'Additional Fighting Style'], [10, 'Героїчний воїн', 'Heroic Warrior'], [15, 'Вищий критичний удар', 'Superior Critical'], [18, 'Уцілілий', 'Survivor']], SRD_52_SOURCE, championDescriptions),
     createSubclass('fighter', 'battle-master', 'Майстер битви', 'Battle Master', [[3, 'Бойова перевага', 'Combat Superiority'], [3, 'Учень війни', 'Student of War'], [7, 'Пізнай свого ворога', 'Know Your Enemy'], [10, 'Покращена бойова перевага', 'Improved Combat Superiority'], [15, 'Невтомний', 'Relentless'], [18, 'Неперевершена бойова перевага', 'Ultimate Combat Superiority']], PHB_2024_SOURCE, battleMasterDescriptions, battleMasterOptions),
-    createSubclass('fighter', 'eldritch-knight', 'Містичний лицар', 'Eldritch Knight', [[3, 'Накладання заклять', 'Spellcasting'], [3, 'Бойовий зв’язок', 'War Bond'], [7, 'Бойова магія', 'War Magic'], [10, 'Містичний удар', 'Eldritch Strike'], [15, 'Містичний ривок', 'Arcane Charge'], [18, 'Покращена бойова магія', 'Improved War Magic']], PHB_2024_SOURCE, eldritchKnightDescriptions),
+    createSubclass('fighter', 'eldritch-knight', 'Містичний лицар', 'Eldritch Knight', [[3, 'Накладання заклять', 'Spellcasting'], [3, 'Бойовий зв’язок', 'War Bond'], [7, 'Бойова магія', 'War Magic'], [10, 'Містичний удар', 'Eldritch Strike'], [15, 'Містичний ривок', 'Arcane Charge'], [18, 'Покращена бойова магія', 'Improved War Magic']], PHB_2024_SOURCE, eldritchKnightDescriptions, {}, {
+      spellcasting: eldritchKnightSpellcasting,
+      relationships: { ruleSlugs: ['spellcasting', 'spell-components', 'saving-throws', 'concentration'] },
+    }),
     createSubclass('fighter', 'psi-warrior', 'Псі-воїн', 'Psi Warrior', [[3, 'Псіонічна сила', 'Psionic Power'], [7, 'Телекінетичний адепт', 'Telekinetic Adept'], [10, 'Захищений розум', 'Guarded Mind'], [15, 'Оплот сили', 'Bulwark of Force'], [18, 'Майстер телекінезу', 'Telekinetic Master']], PHB_2024_SOURCE, psiWarriorDescriptions, psiWarriorOptions),
   ],
   source: SRD_52_SOURCE,

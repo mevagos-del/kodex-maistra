@@ -71,6 +71,27 @@ export type OfficialSubclass = {
   chosenAtLevel: number;
   features: OfficialFeature[];
   source: OfficialRuleSource;
+  spellcasting?: {
+    ability: string;
+    spellList: string;
+    focus: string;
+    cantripNotes: string;
+    preparationNotes: string;
+    progression: Array<{
+      level: number;
+      cantrips: number;
+      preparedSpells: number;
+      slots: [number | 0, number | 0, number | 0, number | 0];
+    }>;
+  };
+  relationships?: {
+    ruleSlugs?: string[];
+    spellSlugs?: string[];
+    featSlugs?: string[];
+    itemSlugs?: string[];
+    conditionSlugs?: string[];
+    weaponMastery?: OfficialWeaponMastery[];
+  };
 };
 
 export type OfficialClassEntry = OfficialCatalogBase & {

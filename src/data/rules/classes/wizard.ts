@@ -1,6 +1,7 @@
-import { PHB_2024_SOURCE, SRD_52_SOURCE } from '../source';
+import { SRD_52_SOURCE } from '../source';
 import type { OfficialClassEntry, OfficialProgressionRow } from '../types';
 import { createSubclass, featuresFromProgression } from './shared';
+import { wizardSubclasses2024 } from './subclasses2024';
 
 const slotRows = [
   [2, '—', '—', '—', '—', '—', '—', '—', '—'], [3, '—', '—', '—', '—', '—', '—', '—', '—'],
@@ -87,9 +88,7 @@ export const wizard: OfficialClassEntry = {
   ],
   subclasses: [
     createSubclass('wizard', 'evoker', 'Евокатор', 'Evoker', [[3, 'Знавець евокації', 'Evocation Savant'], [3, 'Потужне замовляння', 'Potent Cantrip'], [6, 'Формування заклять', 'Sculpt Spells'], [10, 'Посилена евокація', 'Empowered Evocation'], [14, 'Перенапруження', 'Overchannel']], SRD_52_SOURCE, evokerDescriptions),
-    createSubclass('wizard', 'abjurer', 'Аб’юратор', 'Abjurer', [[3, 'Знавець аб’юрації', 'Abjuration Savant'], [3, 'Магічний захист', 'Arcane Ward'], [6, 'Проєктований захист', 'Projected Ward'], [10, 'Руйнівник заклять', 'Spell Breaker'], [14, 'Стійкість до заклять', 'Spell Resistance']], PHB_2024_SOURCE),
-    createSubclass('wizard', 'diviner', 'Віщун', 'Diviner', [[3, 'Знавець віщування', 'Divination Savant'], [3, 'Передвістя', 'Portent'], [6, 'Майстерне віщування', 'Expert Divination'], [10, 'Третє око', 'The Third Eye'], [14, 'Велике передвістя', 'Greater Portent']], PHB_2024_SOURCE),
-    createSubclass('wizard', 'illusionist', 'Ілюзіоніст', 'Illusionist', [[3, 'Знавець ілюзій', 'Illusion Savant'], [3, 'Покращені ілюзії', 'Improved Illusions'], [6, 'Фантазмальні істоти', 'Phantasmal Creatures'], [10, 'Ілюзорне я', 'Illusory Self'], [14, 'Ілюзорна реальність', 'Illusory Reality']], PHB_2024_SOURCE),
+    ...wizardSubclasses2024,
   ],
   source: SRD_52_SOURCE,
 };
