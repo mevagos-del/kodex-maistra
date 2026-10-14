@@ -15,7 +15,7 @@ const referenceItems: SidebarItem[] = [
   { label: 'Правила', icon: HOME_ICONS.rules, path: appRoutes.rules },
   { label: 'Стани', icon: '/icons/codex/32-icon-condition.png', path: appRoutes.conditions },
   { label: 'Риси', icon: '/icons/codex/34-icon-choice-optional-rule.png', path: appRoutes.feats },
-  { label: 'Бестіарій', icon: '/icons/codex/03-icon-creature-type.png', disabled: true },
+  { label: 'Бестіарій', icon: '/icons/codex/03-icon-creature-type.png', path: appRoutes.bestiary },
 ];
 
 const toolItems: SidebarItem[] = [

@@ -14,6 +14,8 @@ export const appRoutes = {
   featDetail: '/feats/:slug',
   rules: '/rules',
   ruleDetail: '/rules/:slug',
+  bestiary: '/bestiary',
+  bestiaryDetail: '/bestiary/:slug',
   admin: '/admin',
   login: '/login',
 } as const;
@@ -25,4 +27,5 @@ export const publicNavigation = [
   { label: 'Предмети', path: appRoutes.items },
   { label: 'Закляття', path: appRoutes.spells },
   { label: 'Правила', path: appRoutes.rules },
+  { label: 'Бестіарій', path: appRoutes.bestiary },
 ];

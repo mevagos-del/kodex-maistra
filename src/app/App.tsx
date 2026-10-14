@@ -20,6 +20,8 @@ const FeatsPage = lazy(() => import('@/pages/FeatsPage').then((module) => ({ def
 const FeatDetailPage = lazy(() => import('@/pages/FeatDetailPage').then((module) => ({ default: module.FeatDetailPage })));
 const RulesPage = lazy(() => import('@/pages/RulesPage').then((module) => ({ default: module.RulesPage })));
 const RuleDetailPage = lazy(() => import('@/pages/RuleDetailPage').then((module) => ({ default: module.RuleDetailPage })));
+const BestiaryPage = lazy(() => import('@/pages/BestiaryPage').then((module) => ({ default: module.BestiaryPage })));
+const BestiaryDetailPage = lazy(() => import('@/pages/BestiaryDetailPage').then((module) => ({ default: module.BestiaryDetailPage })));
 
 function RouteFallback() {
   return <div className="archive-route-fallback"><LoadingIndicator label="Відкриваємо розділ…" /></div>;
@@ -44,6 +46,8 @@ export function App() {
         <Route path={appRoutes.featDetail} element={<Suspense fallback={<RouteFallback />}><FeatDetailPage /></Suspense>} />
         <Route path={appRoutes.rules} element={<Suspense fallback={<RouteFallback />}><RulesPage /></Suspense>} />
         <Route path={appRoutes.ruleDetail} element={<Suspense fallback={<RouteFallback />}><RuleDetailPage /></Suspense>} />
+        <Route path={appRoutes.bestiary} element={<Suspense fallback={<RouteFallback />}><BestiaryPage /></Suspense>} />
+        <Route path={appRoutes.bestiaryDetail} element={<Suspense fallback={<RouteFallback />}><BestiaryDetailPage /></Suspense>} />
         <Route
           path={appRoutes.admin}
           element={

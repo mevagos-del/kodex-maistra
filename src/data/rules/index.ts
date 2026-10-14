@@ -1,4 +1,5 @@
 export { officialClasses } from './classes';
+export { officialBestiary } from './bestiary';
 export { officialItems } from './items';
 export { officialRaces } from './races';
 export { officialRules } from './rules';
@@ -8,6 +9,10 @@ export type {
   OfficialCatalogBase,
   OfficialEntityType,
   OfficialClassEntry,
+  OfficialMonsterEntry,
+  OfficialMonsterAction,
+  OfficialMonsterRuleBlock,
+  OfficialMonsterSpellcasting,
   OfficialProgressionRow,
   OfficialFeature,
   OfficialItemEntry,

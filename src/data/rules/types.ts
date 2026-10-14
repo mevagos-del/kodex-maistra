@@ -213,4 +213,79 @@ export type OfficialRaceEntry = OfficialCatalogBase & {
   variants: OfficialRaceVariant[];
 };
 
+export type OfficialMonsterAbility = {
+  score: number;
+  modifier: string;
+  save: string;
+};
+
+export type OfficialMonsterRuleBlock = {
+  id: string;
+  nameUk: string;
+  nameOriginal?: string;
+  sourceText: string;
+};
+
+export type OfficialMonsterAction = Omit<OfficialMonsterRuleBlock, 'sourceText'> & {
+  sourceText?: string;
+  attackType?: 'ближня' | 'далекобійна' | 'ближня або далекобійна';
+  attackBonus?: string;
+  reach?: string;
+  range?: string;
+  target?: string;
+  damage?: string;
+  damageType?: string;
+};
+
+export type OfficialMonsterSpellcasting = {
+  ability: string;
+  saveDc?: string;
+  attackBonus?: string;
+  notes?: string;
+  groups: Array<{
+    label: string;
+    spells: Array<{ slug: string; nameUk: string }>;
+  }>;
+};
+
+export type OfficialMonsterEntry = OfficialCatalogBase & {
+  entity: 'monster';
+  size: string;
+  creatureType: string;
+  subtype?: string;
+  alignment?: string;
+  armorClass: string;
+  hitPoints: string;
+  hitDice: string;
+  speed: string[];
+  abilities: Record<'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma', OfficialMonsterAbility>;
+  skills?: Record<string, string>;
+  vulnerabilities?: string[];
+  resistances?: string[];
+  immunities?: string[];
+  conditionImmunities?: string[];
+  senses?: string[];
+  passivePerception?: number;
+  languages?: string[];
+  challengeRating: string;
+  experiencePoints: number;
+  proficiencyBonus: string;
+  traits?: OfficialMonsterRuleBlock[];
+  actions: OfficialMonsterAction[];
+  bonusActions?: OfficialMonsterAction[];
+  reactions?: OfficialMonsterAction[];
+  legendaryActions?: OfficialMonsterAction[];
+  legendaryActionUses?: string;
+  lairActions?: OfficialMonsterAction[];
+  spellcasting?: OfficialMonsterSpellcasting;
+  environment?: string[];
+  description?: string;
+  relationships?: {
+    spellSlugs?: string[];
+    conditionSlugs?: string[];
+    itemSlugs?: string[];
+  };
+  sourcePage: number;
+};
+
 export type OfficialCatalogEntry = OfficialRaceEntry | OfficialClassEntry | OfficialItemEntry;

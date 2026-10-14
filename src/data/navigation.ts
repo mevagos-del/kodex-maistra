@@ -36,7 +36,7 @@ export const referenceQuickAccess = [
   { title: 'Предмети', path: appRoutes.items, symbol: 'П', isDisabled: false },
   { title: 'Стани', path: appRoutes.conditions, symbol: 'Ст', isDisabled: false },
   { title: 'Правила', path: appRoutes.rules, symbol: 'Пр', isDisabled: false },
-  { title: 'Бестіарій', symbol: 'Б', isDisabled: true },
+  { title: 'Бестіарій', path: appRoutes.bestiary, symbol: 'Б', isDisabled: false },
 ] as const;
 
 export const toolNavigation = [
