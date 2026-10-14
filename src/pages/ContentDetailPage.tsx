@@ -7,7 +7,6 @@ import { DetailLayout } from '@/features/catalog/components/DetailLayout';
 import { DetailSidebar } from '@/features/catalog/components/DetailSidebar';
 import { EmptyState } from '@/features/catalog/components/EmptyState';
 import { ClassStartSection } from '@/features/catalog/components/ClassStartSection';
-import { ClassSpellsSection } from '@/features/catalog/components/ClassSpellsSection';
 import { MechanicInfoGrid } from '@/features/catalog/components/MechanicInfoGrid';
 import { ProgressionTable } from '@/features/catalog/components/ProgressionTable';
 import { QuickScanSection } from '@/features/catalog/components/QuickScanSection';
@@ -328,13 +327,11 @@ function ClassDetailContent({ entry, imageUrl }: { entry: ClassEntry; imageUrl: 
     { href: '#class-start', label: 'Старт класу', number: 2 },
     ...(subclasses.length ? [{ href: '#class-subclasses', label: 'Підклас', number: 3 }] : []),
     { href: '#class-progression', label: 'Таблиця прогресії', number: subclasses.length ? 4 : 3 },
-    ...(entry.has_spellcasting ? [{ href: '#class-spells', label: 'Закляття', number: subclasses.length ? 5 : 4 }] : []),
-    { href: '#class-features', label: 'Уміння класу', number: (subclasses.length ? 5 : 4) + (entry.has_spellcasting ? 1 : 0) },
+    { href: '#class-features', label: 'Уміння класу', number: subclasses.length ? 5 : 4 },
   ];
   const offset = subclasses.length ? 1 : 0;
   const progressionNumber = 3 + offset;
-  const spellsNumber = progressionNumber + 1;
-  const featuresNumber = progressionNumber + (entry.has_spellcasting ? 2 : 1);
+  const featuresNumber = progressionNumber + 1;
 
   return (
     <DetailLayout variant="class" sidebar={<DetailSidebar variant="class" imageUrl={imageUrl} imageAlt={entry.title_ua} hideImage={!imageUrl} hideImageOnError label="Клас" title={entry.title_ua} originalTitle={entry.title_original} description={entry.short_description} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} />}>
@@ -343,9 +340,17 @@ function ClassDetailContent({ entry, imageUrl }: { entry: ClassEntry; imageUrl: 
         <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="class" />
       </section>
       <ClassStartSection id="class-start" number={2} armor={entry.armor_proficiencies} weapons={entry.weapon_proficiencies} tools={entry.tool_proficiencies} skills={entry.skill_choices} equipment={entry.starting_equipment} />
-      {subclasses.length ? <SubclassSelector value={entry.subclasses} id="class-subclasses" number={3} selectedIndex={selectedSubclassIndex} onSelectedIndexChange={selectSubclass} /> : null}
+      {subclasses.length ? (
+        <SubclassSelector
+          value={entry.subclasses}
+          id="class-subclasses"
+          number={3}
+          selectedIndex={selectedSubclassIndex}
+          onSelectedIndexChange={selectSubclass}
+          spellShortcut={entry.has_spellcasting ? { classSlug: entry.slug, className: entry.title_ua } : undefined}
+        />
+      ) : null}
       <ProgressionTable id="class-progression" number={progressionNumber} value={entry.class_progression} features={features} onFeatureNavigate={navigateToFeature} />
-      {entry.has_spellcasting ? <ClassSpellsSection entry={entry} id="class-spells" number={spellsNumber} /> : null}
       <div className="detail-selection-content" key={selectedSubclass?.slug ?? 'base'}>
         <QuickScanSection id="class-features" number={featuresNumber} title="Уміння класу" cards={features} iconForCard={classFeatureIconForTitle} emptyMessage="Уміння класу не вказано у доступному джерелі." groupByLevel highlightedAnchor={highlightedFeatureAnchor} />
       </div>

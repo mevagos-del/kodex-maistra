@@ -42,11 +42,7 @@ const {
   normalizeClassProgressionRows,
   progressionValueChanged,
 } = loadLocalRules(resolve('src/features/catalog/utils/classProgression.ts'));
-const {
-  classSpellFilterHref,
-  classSpellProgression,
-  classSpellProgressionColumns,
-} = loadLocalRules(resolve('src/features/catalog/utils/classSpellcasting.ts'));
+const { classSpellFilterHref } = loadLocalRules(resolve('src/features/catalog/utils/classSpellcasting.ts'));
 const {
   filterSpells,
   officialSpells: spells,
@@ -238,43 +234,36 @@ test('spellcasting flags and progression rows are internally consistent', () => 
   }
 });
 
-test('class spell sections resolve only for the eight base spellcasting classes', () => {
-  const visibleSections = new Set(classes
-    .filter((entry) => entry.hasSpellcasting && classSpellProgressionColumns(classSpellProgression(entry.progression, entry.slug)).length > 2)
+test('class spell shortcuts resolve only for the eight base spellcasting classes', () => {
+  const shortcutClasses = new Set(classes
+    .filter((entry) => entry.hasSpellcasting && spells.some((spell) => spell.classes.includes(entry.slug)))
     .map((entry) => entry.slug));
-  assert.deepEqual(visibleSections, expectedSpellcasters);
-  assert.ok(classes.filter((entry) => !entry.hasSpellcasting).every((entry) => !visibleSections.has(entry.slug)));
+  assert.deepEqual(shortcutClasses, expectedSpellcasters);
+  assert.ok(classes.filter((entry) => !entry.hasSpellcasting).every((entry) => !shortcutClasses.has(entry.slug)));
 });
 
-test('class spell list links produce working class and level filters', () => {
+test('class spell shortcuts produce working class filters without a duplicated level selector', () => {
   for (const classSlug of expectedSpellcasters) {
     const related = spells.filter((spell) => spell.classes.includes(classSlug));
     assert.ok(related.length > 0, `${classSlug}: empty spell relationship`);
     assert.equal(new Set(related.map((spell) => spell.slug)).size, related.length, `${classSlug}: duplicate spell link`);
-    for (const level of new Set(related.map((spell) => spell.level))) {
-      const href = classSpellFilterHref(classSlug, level);
-      const params = new URLSearchParams(href.split('?')[1]);
-      const filters = spellFiltersFromSearchParams(params);
-      assert.equal(filters.class, classSlug);
-      assert.equal(filters.level, String(level));
-      const filtered = filterSpells(spells, filters);
-      assert.ok(filtered.length > 0, `${classSlug} level ${level}: empty linked filter`);
-      assert.ok(filtered.every((spell) => spell.classes.includes(classSlug) && spell.level === level));
-    }
+    const href = classSpellFilterHref(classSlug);
+    const params = new URLSearchParams(href.split('?')[1]);
+    const filters = spellFiltersFromSearchParams(params);
+    assert.equal(href, `/spells?class=${classSlug}`);
+    assert.equal(filters.class, classSlug);
+    assert.equal(filters.level, '');
+    const filtered = filterSpells(spells, filters);
+    assert.equal(filtered.length, related.length, `${classSlug}: linked filter count`);
+    assert.ok(filtered.every((spell) => spell.classes.includes(classSlug)));
   }
 });
 
-test('Warlock spell progression exposes Pact Magic and Mystic Arcanum milestones', () => {
-  const warlock = classes.find((entry) => entry.slug === 'warlock');
-  assert.ok(warlock);
-  const rows = classSpellProgression(warlock.progression, warlock.slug);
-  const columns = classSpellProgressionColumns(rows);
-  assert.deepEqual(columns, ['level', 'cantrips', 'prepared_spells', 'pact_slots', 'pact_slot_level', 'eldritch_invocations', 'mystic_arcanum', 'milestone']);
-  assert.match(rows[0].milestone, /Комірка пакту → 1 рівень/);
-  assert.match(rows[10].milestone, /Містичний аркан 6 рівня/);
-  assert.match(rows[12].milestone, /Містичний аркан 7 рівня/);
-  assert.match(rows[14].milestone, /Містичний аркан 8 рівня/);
-  assert.match(rows[16].milestone, /Містичний аркан 9 рівня/);
+test('class detail no longer renders a separate spell section', () => {
+  const source = readFileSync(resolve('src/pages/ContentDetailPage.tsx'), 'utf8');
+  assert.doesNotMatch(source, /ClassSpellsSection/);
+  assert.doesNotMatch(source, /class-spells/);
+  assert.match(source, /spellShortcut=\{entry\.has_spellcasting/);
 });
 
 test('all official spellcasting progressions match the D&D 2024 level 1-20 tables', () => {
