@@ -1,12 +1,12 @@
 import type { ReferenceCard } from '../api/detailReference';
 import { CODEX_ICONS } from '../utils/codexIcons';
 import { createReferenceAnchors, formatLabelUk, formatValueSafely, referenceLevel } from '../utils/detailContent';
-import { normalizeClassProgressionRows } from '../utils/classProgression';
+import { classProgressionVisibleKeys, normalizeClassProgressionRows } from '../utils/classProgression';
 
 type ProgressionTableProps = { id: string; number: number; value: unknown; features: ReferenceCard[]; onFeatureNavigate?: (anchor: string) => void };
 
 const labels: Record<string, string> = {
-  level: 'Рівень', bonus: 'Бонус майстерності', proficiency_bonus: 'Бонус майстерності',
+  level: 'Рівень', bonus: 'Бонус майстерності', proficiencyBonus: 'Бонус майстерності', proficiency_bonus: 'Бонус майстерності',
   features: 'Уміння', feature: 'Уміння', resources: 'Ресурси', slots: 'Комірки заклять',
   spell_slots: 'Комірки заклять', known_spells: 'Відомі закляття', spells_known: 'Відомі закляття',
   subclass: 'Підклас', extra_attack: 'Додаткова атака',
@@ -62,19 +62,7 @@ export function ProgressionTable({ id, number, value, features, onFeatureNavigat
     if (normalizedLevel) featureNamesByLevel.set(normalizedLevel, [...(featureNamesByLevel.get(normalizedLevel) ?? []), feature.title]);
   }
 
-  const excludedKeys = new Set(['name', 'title', 'description', 'text', 'note', 'mechanical_effect', 'effect', 'usage', 'action_type', 'recovery', 'limitation']);
-  const keys = Array.from(new Set(sourceRows.flatMap((row) => Object.keys(row))))
-    .filter((key) => !excludedKeys.has(key))
-    .filter((key) => sourceRows.some((row) => safeText(row[key])))
-    .sort((a, b) => {
-      const order = ['level', 'bonus', 'proficiency_bonus', 'features', 'feature'];
-      const ai = order.indexOf(a);
-      const bi = order.indexOf(b);
-      return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
-    });
-  const bonusKey = keys.includes('proficiency_bonus') ? 'proficiency_bonus' : 'bonus';
-  const extraKeys = keys.filter((key) => !['level', 'bonus', 'proficiency_bonus', 'features', 'feature', 'resources'].includes(key));
-  const visibleKeys = ['level', bonusKey, 'features', 'resources', ...extraKeys];
+  const visibleKeys = classProgressionVisibleKeys(sourceRows);
   const featureAnchors = createReferenceAnchors(features);
   const featureByAnchor = new Map(featureAnchors.map((entry) => [entry.id, entry.card]));
   const anchorForFeature = (name: string, level: string) => {

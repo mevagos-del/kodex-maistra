@@ -37,6 +37,8 @@ const {
   resolveClassFeatureCards,
 } = loadLocalRules(resolve('src/features/catalog/utils/classFeatureResolver.ts'));
 const {
+  classProgressionVisibleKeys,
+  isClassProgressionStateKey,
   normalizeClassProgressionRows,
   progressionValueChanged,
 } = loadLocalRules(resolve('src/features/catalog/utils/classProgression.ts'));
@@ -92,6 +94,14 @@ function allFeatureText(entry) {
     ...entry.features.flatMap((feature) => [feature.nameUk, feature.nameOriginal, feature.sourceText]),
     ...entry.subclasses.flatMap((subclass) => subclass.features.flatMap((feature) => [feature.nameUk, feature.nameOriginal, feature.sourceText])),
   ].filter(Boolean);
+}
+
+function flattenedProgressionRow(row) {
+  return { ...row, ...(row.resources ?? {}), ...(row.spellcasting ?? {}) };
+}
+
+function hasRenderedStateValue(value) {
+  return value !== null && value !== undefined && String(value).trim() !== '' && !/^[—–-]$/.test(String(value).trim());
 }
 
 test('runtime contains exactly the twelve unique D&D 2024 base classes', () => {
@@ -309,6 +319,79 @@ test('progression normalizer exposes every nested resource and spellcasting valu
   }
 });
 
+test('state progression values carry forward while level events remain sparse', () => {
+  const normalized = normalizeClassProgressionRows([
+    { level: 1, features: ['Початкова риса'], subclass: 'Шлях', one_time_event: 'Відкрито', resources: { class_resource: 2 } },
+    { level: 2, features: [], resources: { class_resource: '—' } },
+    { level: 3, features: ['Нова риса'], resources: {} },
+  ]);
+
+  assert.equal(normalized[1].class_resource, 2);
+  assert.equal(normalized[2].class_resource, 2);
+  assert.deepEqual(normalized[1].features, []);
+  assert.deepEqual(normalized[2].features, ['Нова риса']);
+  assert.equal('feature' in normalized[1], false);
+  assert.equal('subclass' in normalized[1], false);
+  assert.equal('one_time_event' in normalized[1], false);
+
+  const unrelated = normalizeClassProgressionRows([{ level: 1, features: [] }]);
+  assert.equal('class_resource' in unrelated[0], false);
+});
+
+test('all rendered class state cells remain populated after their first activation', () => {
+  for (const entry of classes) {
+    const normalized = normalizeClassProgressionRows(entry.progression);
+    const stateKeys = new Set(normalized.flatMap((row) => Object.keys(row).filter(isClassProgressionStateKey)));
+    for (const key of stateKeys) {
+      let activated = false;
+      for (const row of normalized) {
+        if (hasRenderedStateValue(row[key])) activated = true;
+        if (activated) assert.ok(hasRenderedStateValue(row[key]), `${entry.slug} level ${row.level}: empty rendered state ${key}`);
+      }
+    }
+  }
+});
+
+test('Bard featureless levels retain every active state column', () => {
+  const bard = classes.find((entry) => entry.slug === 'bard');
+  assert.ok(bard);
+  const normalized = normalizeClassProgressionRows(bard.progression);
+  for (const level of expectedFeaturelessLevels.bard) {
+    const row = normalized[level - 1];
+    assert.deepEqual(row.features, []);
+    for (const key of ['bardic_die', 'cantrips', 'prepared_spells', 'slot_1']) {
+      assert.ok(hasRenderedStateValue(row[key]), `bard level ${level}: missing ${key}`);
+    }
+  }
+});
+
+test('all 12 x 20 rendered progression rows expose only valid visible cells', () => {
+  for (const entry of classes) {
+    const rows = normalizeClassProgressionRows(entry.progression);
+    const visibleKeys = classProgressionVisibleKeys(rows);
+    assert.equal(rows.length, 20);
+    assert.equal(new Set(visibleKeys).size, visibleKeys.length, `${entry.slug}: duplicate visible column`);
+    assert.equal(visibleKeys.includes('resources'), false, `${entry.slug}: phantom resources column`);
+    assert.equal(visibleKeys[0], 'level');
+    assert.ok(['bonus', 'proficiencyBonus', 'proficiency_bonus'].includes(visibleKeys[1]));
+    assert.equal(visibleKeys[2], 'features');
+
+    const activatedStateKeys = new Set();
+    for (const row of rows) {
+      for (const key of visibleKeys) {
+        const value = row[key];
+        assert.doesNotMatch(String(value ?? ''), /\[object Object\]|undefined|null/i, `${entry.slug} level ${row.level}: invalid ${key}`);
+        if (key === 'features') continue;
+        if (isClassProgressionStateKey(key)) {
+          if (hasRenderedStateValue(value)) activatedStateKeys.add(key);
+          if (!activatedStateKeys.has(key)) continue;
+        }
+        assert.ok(hasRenderedStateValue(value), `${entry.slug} level ${row.level}: empty visible cell ${key}`);
+      }
+    }
+  }
+});
+
 test('Weapon Mastery is registered on the expected 2024 classes', () => {
   const actual = new Set(classes
     .filter((entry) => entry.features.some((feature) => feature.nameUk === 'Майстерність зброї'))
@@ -385,12 +468,29 @@ test('all subclass data is complete and user-facing', () => {
 
 const missingBaseFeatures = classes.reduce((total, entry) => total + entry.features.filter((feature) => feature.sourceText === missingSourceText).length, 0);
 const incompleteSubclasses = subclasses.filter((subclass) => subclass.features.length === 0 || subclass.features.some((feature) => feature.sourceText === missingSourceText));
+const correctedStateCells = classes.reduce((total, entry) => {
+  const normalized = normalizeClassProgressionRows(entry.progression);
+  return total + normalized.reduce((rowTotal, row, index) => {
+    const raw = flattenedProgressionRow(entry.progression[index]);
+    return rowTotal + Object.keys(row).filter((key) => (
+      isClassProgressionStateKey(key)
+      && !hasRenderedStateValue(raw[key])
+      && hasRenderedStateValue(row[key])
+    )).length;
+  }, 0);
+}, 0);
+const visibleProgressionCells = classes.reduce((total, entry) => {
+  const rows = normalizeClassProgressionRows(entry.progression);
+  return total + rows.length * classProgressionVisibleKeys(rows).length;
+}, 0);
 console.log(JSON.stringify({
   classes: classes.length,
   subclasses: subclasses.length,
   completeProgressions: classes.filter((entry) => entry.progression.length === 20).length,
   missingBaseFeatures,
   incompleteSubclasses: incompleteSubclasses.length,
+  correctedStateCells,
+  visibleProgressionCells,
   relationships: {
     rules: rules.reduce((total, entry) => total + entry.relatedClassSlugs.length, 0),
     spells: spells.reduce((total, entry) => total + entry.classes.length, 0),

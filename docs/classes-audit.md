@@ -112,6 +112,45 @@ Spell descriptions не дублюються в subclass data. Зберігаю�
 
 Classes можна вважати завершеним reference module у поточному scope: 12/12 progression, 48/48 підкласів, 0 placeholder features, валідні spellcasting progressions і перевірені exact-item links. Відомі обмеження стосуються лише назв спорядження без окремої identity у Items dataset та майбутнього окремого UI для subclass spell progression; вони не створюють мертвих посилань або втрати правил.
 
+## Фінальний аудит progression state rendering
+
+### Причина проблеми
+
+- Попередня перевірка підтверджувала наявність 20 source rows і nested values, але не відтворювала остаточний набір колонок renderer.
+- `ProgressionTable` безумовно додавав колонку `resources` після того, як normalizer уже розгорнув її дочірні поля. У результаті всі **240 клітинок** цієї фантомної колонки (12 класів × 20 рівнів) показували `—`.
+- Normalizer не мав формалізованої різниці між state та event values. Поточні static tables уже містять повні state values у кожному рядку, тому source-data gaps не знайдено, але sparse catalog input міг би знову створити помилкові проміжні `—`.
+
+### State semantics
+
+Carry-forward застосовується окремо в межах однієї class table і лише після першого фактичного значення для:
+
+- bonus/proficiency bonus;
+- rage uses/damage, Bardic Inspiration die, Channel Divinity, Wild Shape;
+- Weapon Mastery, Second Wind, Action Surge, Extra Attack;
+- Martial Arts die, Focus Points, unarmored movement;
+- Lay on Hands, Favored Enemy, Sneak Attack, Cunning Strike;
+- Sorcery Points, Metamagic options;
+- Eldritch Invocations, Pact slots, Pact slot level, Mystic Arcanum;
+- cantrips, prepared/known spells і spell-slot columns 1–9;
+- Brutal Strike values, Arcane Recovery та інші зареєстровані class resource/die fields.
+
+`—` до першого відкриття ресурсу залишається коректним і не замінюється майбутнім значенням.
+
+### Event semantics
+
+- `features` / `feature`, subclass feature gains, ASI/feat events та інші одноразові level events не переносяться вперед.
+- У колонці `Уміння` коректно лишаються `—` на офіційних featureless levels, якщо на цьому рівні змінюється лише numeric progression.
+- Для Барда це рівні 11, 13, 15 і 17; regression test окремо підтверджує, що Bardic Die, cantrips, prepared spells і spell slots на цих рівнях залишаються видимими.
+
+### Cell-by-cell verification
+
+- Visible-column resolver винесено з React component у спільний testable helper; він однаково підтримує nested `proficiencyBonus` і catalog-facing `proficiency_bonus`.
+- Фантомна колонка `Ресурси` видалена. Її дочірні resource columns лишаються окремими й мають точні українські headers.
+- Перевірено **12 класів × 20 рівнів × усі видимі колонки = 2 700 клітинок**.
+- Source static data не потребували підстановок: `correctedStateCells = 0`. Carry-forward є системним захистом для sparse input, а не виправленням офіційних чисел.
+- Підтверджено: після першої активації state field не стає порожнім; event fields лишаються sparse; значення не переносяться між різними fields або різними class tables; `null`, `undefined` і `[object Object]` відсутні.
+- Офіційні progression arrays для spellcasting, Pact Magic і class-specific resources звіряються окремими assertions з D&D 2024 Basic Rules / SRD 5.2.x tables.
+
 ## Renderer і UI
 
 - Існуючий canonical feature resolver використовується без дублювання однакового rule text на різних рівнях.
