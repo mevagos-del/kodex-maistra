@@ -126,7 +126,14 @@ function classToCatalogEntry(entry: OfficialClassEntry): ClassEntry {
     weapon_proficiencies: entry.weaponProficiencies,
     tool_proficiencies: entry.toolProficiencies,
     skill_choices: entry.skillChoices,
-    starting_equipment: entry.startingEquipment.map((group) => ({ title: group.title, options: group.items })),
+    starting_equipment: entry.startingEquipment.map((group) => ({
+      title: group.title,
+      options: group.items,
+      item_links: group.itemLinks,
+    })),
+    relationships: {
+      item_slugs: [...new Set(entry.startingEquipment.flatMap((group) => group.itemLinks?.map((link) => link.slug) ?? []))],
+    },
     class_features: entry.features.map(featureRecord),
     class_progression: entry.progression.map((row) => ({
       level: row.level,

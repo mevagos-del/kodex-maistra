@@ -94,7 +94,7 @@ function mainInfoBlocks(entry: CatalogEntry) {
     addInfo(blocks, 'Кістка хітів', entry.hit_die);
     addInfo(blocks, 'Основна характеристика', entry.primary_ability);
     addInfo(blocks, 'Ряткидки', entry.saving_throws.join(', '));
-    blocks.push({ label: 'Заклинання', value: booleanLabel(entry.has_spellcasting) });
+    if (entry.has_spellcasting) blocks.push({ label: 'Заклинання', value: booleanLabel(true) });
   }
 
   if (entry.entityType === 'item') {

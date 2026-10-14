@@ -9,6 +9,7 @@
 - Після subclass-ітерації **48/48 підкласів повні**: identity-only записів, порожніх feature arrays і placeholder-текстів немає.
 - Усі підкласи обираються на 3 рівні та мають лише feature levels у межах 3–20.
 - Eldritch Knight і Arcane Trickster мають окрему structured spell progression рівнів 3–20.
+- Starting Equipment усіх 12 класів має перевірені зв'язки з Items: **66 клікабельних розміщень**, що утворюють **65 унікальних class-to-item relationships**.
 - TTG.club не відображається у публічних source labels. Runtime використовує короткі позначки SRD 5.2.x або Player's Handbook 2024 відповідно до запису.
 
 ## Завершені в цій ітерації підкласи
@@ -73,6 +74,43 @@ Spell descriptions не дублюються в subclass data. Зберігаю�
 - Weapon Mastery relationship підтримується схемою, але додається лише коли підклас прямо змінює mastery mechanics; тематичні зв'язки не створюються.
 - Generic rule text не копіюється до subclass relationship data: feature містить лише власну механіку, а посилання веде до відповідного правила.
 - Після дедуплікації runtime містить **167** subclass-to-Rule, **22** subclass-to-Spell і **23** subclass-to-Condition edges. Feat та Item edges не додавалися без прямої механічної підстави.
+
+## Фінальний технічний pass
+
+### Starting Equipment → Items
+
+- Для всіх 12 класів додано `itemLinks` лише там, де назва однозначно відповідає наявному item slug.
+- Runtime repository передає посилання всередині відповідної equipment group та окремо формує deduplicated `relationships.item_slugs`.
+- Перевірено **66** видимих link placements і **65** унікальних class-to-item edges. Різниця спричинена набором дослідника підземель, який входить до двох альтернатив спорядження Воїна.
+- Назви `Клепаний шкіряний обладунок` / `Клепана шкіряна броня` нормалізовано до наявної української identity `Шипований шкіряний обладунок`; `скімітари` — до `ятаган`; `магічний фокус` — до `арканний фокус`; `набір науковця` — до `набір ученого`.
+- Навмисно не пов'язані: грошові альтернативи; `20 стріл` (dataset містить лише загальну категорію боєприпасів); `обраний інструмент` Монаха; `книга окультних знань` Чорнокнижника; `книга заклять` Чарівника. Для них немає точного item slug або запис є категорією/вибором.
+- UI показує тільки назву спорядження як посилання. Шкода, КЗ, вага, ціна, рідкість та інші механіки предметів не дублюються на сторінці класу.
+
+### Passport і дедуплікація
+
+- Passport містить Кістку хітів, Основну характеристику, Ряткидки та позначку Заклинань лише для spellcasting classes.
+- Некастери більше не отримують малоінформативний блок `Заклинання — Ні`; source metadata не показується великою карткою.
+- Progression table лишається коротким покажчиком рівнів, feature names і structured progression values; повний rule text відображається тільки в feature section.
+- Repeated features продовжують використовувати canonical resolver, тому повтори ASI та інших рис не створюють fallback descriptions.
+
+### Subclass та runtime UI
+
+- Перевірено 48 підкласів: selector/modal, `?subclass=`, parent classes, feature levels, повні feature texts і relationships валідні.
+- Identity-only, placeholder, fallback та empty subclass sections відсутні.
+- `Старт класу` зберігає наявну композицію: володіння, вибір навичок і варіанти спорядження; додані лише доступні inline links з видимим keyboard focus.
+- Progression table використовує власний горизонтальний scroll container на вузьких екранах; нові links не змінюють ширину layout і не створюють page-level overflow.
+- Автоматичний аудит не знаходить `null`, `undefined`, `[object Object]`, dead relationships або 2014/playtest markers у runtime class data.
+
+### Фінальний стан relationships
+
+- Base reverse relationships: **37** Rule-to-Class, **879** Spell-to-Class, **72** Feat-to-Class і **65** унікальних Class-to-Item edges.
+- Subclass relationships: **167** до Rules, **22** до Spells і **23** до Conditions.
+- Weapon Mastery зареєстровано рівно для Варвара, Воїна, Паладина, Слідопита та Пройдисвіта; це не трактується як автоматичне володіння всіма mastery properties.
+- Feat/Item/Condition edges не створюються за тематичною схожістю: лише точні механічні зв'язки.
+
+### Висновок
+
+Classes можна вважати завершеним reference module у поточному scope: 12/12 progression, 48/48 підкласів, 0 placeholder features, валідні spellcasting progressions і перевірені exact-item links. Відомі обмеження стосуються лише назв спорядження без окремої identity у Items dataset та майбутнього окремого UI для subclass spell progression; вони не створюють мертвих посилань або втрати правил.
 
 ## Renderer і UI
 

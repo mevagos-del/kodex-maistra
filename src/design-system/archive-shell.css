@@ -985,6 +985,23 @@
   list-style: none;
 }
 
+.archive-shell .class-start-equipment__link {
+  color: #e0b974;
+  text-decoration-color: rgb(198 139 58 / 48%);
+  text-underline-offset: 0.16em;
+}
+
+.archive-shell .class-start-equipment__link:hover {
+  color: #efd39a;
+  text-decoration-color: currentColor;
+}
+
+.archive-shell .class-start-equipment__link:focus-visible {
+  border-radius: 0.125rem;
+  outline: 2px solid rgb(224 170 83 / 72%);
+  outline-offset: 2px;
+}
+
 /* Keep the selected subclass close to its action and supporting metadata. */
 .archive-shell .detail-v2-shell--class .detail-option-current {
   grid-template-columns: 2.25rem minmax(0, 1fr);

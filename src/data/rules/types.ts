@@ -60,6 +60,10 @@ export type OfficialProgressionRow = {
 export type OfficialEquipmentGroup = {
   title: string;
   items: string[];
+  itemLinks?: Array<{
+    slug: string;
+    match: string;
+  }>;
 };
 
 export type OfficialSubclass = {

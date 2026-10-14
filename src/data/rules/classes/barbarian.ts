@@ -185,7 +185,15 @@ export const barbarian: OfficialClassEntry = {
   progression,
   features: featuresFromProgression('barbarian', progression, descriptions, originalNames),
   startingEquipment: [
-    { title: 'Варіант A', items: ['Сокира, 4 ручні сокири, набір мандрівника та 15 зм'] },
+    {
+      title: 'Варіант A',
+      items: ['Велика сокира, 4 ручні сокири, набір мандрівника та 15 зм'],
+      itemLinks: [
+        { slug: 'greataxe', match: 'Велика сокира' },
+        { slug: 'handaxe', match: 'ручні сокири' },
+        { slug: 'explorers-pack', match: 'набір мандрівника' },
+      ],
+    },
     { title: 'Варіант B', items: ['75 зм'] },
   ],
   subclasses: [

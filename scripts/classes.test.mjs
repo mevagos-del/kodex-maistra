@@ -56,6 +56,10 @@ const spellSlugs = new Set(spells.map((entry) => entry.slug));
 const featSlugs = new Set(feats.map((entry) => entry.slug));
 const itemSlugs = new Set(items.map((entry) => entry.slug));
 const conditionSlugs = new Set(conditions.map((entry) => entry.slug));
+const itemLinkPlacements = classes.flatMap((entry) => entry.startingEquipment.flatMap((group) =>
+  (group.itemLinks ?? []).map((link) => ({ classSlug: entry.slug, groupTitle: group.title, ...link })),
+));
+const classItemRelationships = new Set(itemLinkPlacements.map((link) => `${link.classSlug}:${link.slug}`));
 const expectedFeaturelessLevels = {
   barbarian: [], bard: [11, 13, 15, 17], cleric: [9, 11, 13, 15, 18], druid: [9, 11, 13, 17],
   fighter: [], monk: [], paladin: [13, 17], ranger: [], rogue: [], sorcerer: [9, 11, 13, 15],
@@ -183,6 +187,26 @@ test('class passport, proficiencies and starting equipment are structurally usab
     assert.ok(entry.skillChoices.from.length > 0);
     assert.ok(entry.startingEquipment.length >= 2);
     assert.ok(entry.startingEquipment.every((group) => group.title.trim() && group.items.length > 0 && group.items.every((item) => item.trim())));
+  }
+});
+
+test('starting equipment item relationships are exact, resolvable and deduplicated', () => {
+  assert.equal(itemLinkPlacements.length, 66);
+  assert.equal(classItemRelationships.size, 65);
+
+  for (const entry of classes) {
+    assert.ok(entry.startingEquipment.some((group) => (group.itemLinks?.length ?? 0) > 0), `${entry.slug}: no linked starting equipment`);
+    for (const group of entry.startingEquipment) {
+      const links = group.itemLinks ?? [];
+      assert.equal(new Set(links.map((link) => link.slug)).size, links.length, `${entry.slug}/${group.title}: duplicate item slug`);
+      assert.equal(new Set(links.map((link) => link.match.toLocaleLowerCase('uk-UA'))).size, links.length, `${entry.slug}/${group.title}: duplicate item match`);
+      const visibleText = group.items.join(' ').toLocaleLowerCase('uk-UA');
+      for (const link of links) {
+        assert.ok(itemSlugs.has(link.slug), `${entry.slug}: dead starting equipment item ${link.slug}`);
+        assert.ok(link.match.trim(), `${entry.slug}: empty item match for ${link.slug}`);
+        assert.ok(visibleText.includes(link.match.toLocaleLowerCase('uk-UA')), `${entry.slug}/${group.title}: match not present for ${link.slug}`);
+      }
+    }
   }
 });
 
@@ -371,7 +395,7 @@ console.log(JSON.stringify({
     rules: rules.reduce((total, entry) => total + entry.relatedClassSlugs.length, 0),
     spells: spells.reduce((total, entry) => total + entry.classes.length, 0),
     feats: feats.reduce((total, entry) => total + entry.classSlugs.length, 0),
-    items: 0,
+    items: classItemRelationships.size,
     conditions: 0,
   },
   subclassRelationships: {

@@ -184,8 +184,29 @@ export const fighter: OfficialClassEntry = {
     'Бойовий стиль': fightingStyleOptions,
   }),
   startingEquipment: [
-    { title: 'Варіант A', items: ['Кольчуга, дворучний меч, ціп, 8 дротиків, набір дослідника підземель та 4 зм'] },
-    { title: 'Варіант B', items: ['Клепана шкіряна броня, скімітар, короткий меч, довгий лук, 20 стріл, сагайдак, набір дослідника підземель та 11 зм'] },
+    {
+      title: 'Варіант A',
+      items: ['Кольчуга, дворучний меч, ціп, 8 дротиків, набір дослідника підземель та 4 зм'],
+      itemLinks: [
+        { slug: 'chain-mail', match: 'Кольчуга' },
+        { slug: 'greatsword', match: 'дворучний меч' },
+        { slug: 'flail', match: 'ціп' },
+        { slug: 'javelin', match: 'дротиків' },
+        { slug: 'dungeoneers-pack', match: 'набір дослідника підземель' },
+      ],
+    },
+    {
+      title: 'Варіант B',
+      items: ['Шипований шкіряний обладунок, ятаган, короткий меч, довгий лук, 20 стріл, сагайдак, набір дослідника підземель та 11 зм'],
+      itemLinks: [
+        { slug: 'studded-leather-armor', match: 'Шипований шкіряний обладунок' },
+        { slug: 'scimitar', match: 'ятаган' },
+        { slug: 'shortsword', match: 'короткий меч' },
+        { slug: 'longbow', match: 'довгий лук' },
+        { slug: 'quiver', match: 'сагайдак' },
+        { slug: 'dungeoneers-pack', match: 'набір дослідника підземель' },
+      ],
+    },
     { title: 'Варіант C', items: ['155 зм'] },
   ],
   subclasses: [

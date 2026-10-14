@@ -64,6 +64,9 @@ export type ClassEntry = CatalogBase & {
   class_progression: unknown;
   subclasses: unknown;
   spellcasting: unknown;
+  relationships: {
+    item_slugs: string[];
+  };
   has_spellcasting: boolean;
 };
 

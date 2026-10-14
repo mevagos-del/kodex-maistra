@@ -1,4 +1,5 @@
 import { CODEX_ICONS } from '../utils/codexIcons';
+import { Link } from 'react-router-dom';
 
 type ClassStartSectionProps = {
   id: string;
@@ -10,7 +11,8 @@ type ClassStartSectionProps = {
   equipment: unknown;
 };
 
-type EquipmentGroup = { title: string; items: string[] };
+type EquipmentLink = { slug: string; match: string };
+type EquipmentGroup = { title: string; items: string[]; itemLinks: EquipmentLink[] };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -43,6 +45,16 @@ function groupTitle(key: string) {
   return /[а-яіїєґ]/i.test(key) ? key.replace(/_/g, ' ') : 'Група спорядження';
 }
 
+function parseEquipmentLinks(value: unknown): EquipmentLink[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((entry): EquipmentLink[] => {
+    if (!isRecord(entry)) return [];
+    const slug = text(entry.slug);
+    const match = text(entry.match);
+    return slug && match ? [{ slug, match }] : [];
+  });
+}
+
 function parseEquipmentGroups(value: unknown): EquipmentGroup[] {
   const values = Array.isArray(value)
     ? value
@@ -59,7 +71,7 @@ function parseEquipmentGroups(value: unknown): EquipmentGroup[] {
   return values.flatMap((entry, index): EquipmentGroup[] => {
     if (!isRecord(entry)) {
       const item = text(entry);
-      return item ? [{ title: 'Спорядження', items: [item] }] : [];
+      return item ? [{ title: 'Спорядження', items: [item], itemLinks: [] }] : [];
     }
 
     const choiceCount = text(entry.choose ?? entry.count);
@@ -69,17 +81,52 @@ function parseEquipmentGroups(value: unknown): EquipmentGroup[] {
       return [{
         title: text(entry.title ?? entry.label) ?? `Варіант ${index + 1}`,
         items: options.map((option) => choiceCount ? `Обери ${choiceCount}: ${option}` : option),
+        itemLinks: parseEquipmentLinks(entry.item_links ?? entry.itemLinks),
       }];
     }
 
     const item = text(entry.value ?? entry);
-    return item ? [{ title: text(entry.group ?? entry.category) ?? 'Спорядження', items: [item] }] : [];
+    return item ? [{
+      title: text(entry.group ?? entry.category) ?? 'Спорядження',
+      items: [item],
+      itemLinks: parseEquipmentLinks(entry.item_links ?? entry.itemLinks),
+    }] : [];
   }).reduce<EquipmentGroup[]>((groups, group) => {
     const existing = groups.find((candidate) => candidate.title === group.title);
-    if (existing) existing.items.push(...group.items);
+    if (existing) {
+      existing.items.push(...group.items);
+      existing.itemLinks.push(...group.itemLinks);
+    }
     else groups.push({ ...group });
     return groups;
   }, []);
+}
+
+function LinkedEquipmentText({ value, links }: { value: string; links: EquipmentLink[] }) {
+  const matches = links
+    .map((link) => {
+      const start = value.toLocaleLowerCase('uk-UA').indexOf(link.match.toLocaleLowerCase('uk-UA'));
+      return start >= 0 ? { ...link, start, end: start + link.match.length } : null;
+    })
+    .filter((entry): entry is EquipmentLink & { start: number; end: number } => Boolean(entry))
+    .sort((left, right) => left.start - right.start || right.end - left.end)
+    .filter((entry, index, entries) => index === 0 || entry.start >= entries[index - 1].end);
+
+  if (matches.length === 0) return value;
+
+  const content: React.ReactNode[] = [];
+  let cursor = 0;
+  for (const match of matches) {
+    if (match.start > cursor) content.push(value.slice(cursor, match.start));
+    content.push(
+      <Link className="class-start-equipment__link" to={`/items/${match.slug}`} key={`${match.slug}-${match.start}`}>
+        {value.slice(match.start, match.end)}
+      </Link>,
+    );
+    cursor = match.end;
+  }
+  if (cursor < value.length) content.push(value.slice(cursor));
+  return <>{content}</>;
 }
 
 function parseSkillChoice(value: unknown) {
@@ -141,7 +188,9 @@ export function ClassStartSection({ id, number, armor, weapons, tools, skills, e
           {equipmentGroups.length > 0 ? equipmentGroups.map((group) => (
             <div className="class-start-equipment__group" key={group.title}>
               <h3>{group.title}</h3>
-              <ul>{group.items.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}</ul>
+              <ul>{group.items.map((item, index) => (
+                <li key={`${item}-${index}`}><LinkedEquipmentText value={item} links={group.itemLinks} /></li>
+              ))}</ul>
             </div>
           )) : <p className="codex-empty-note">Початкове спорядження не вказано.</p>}
         </div>

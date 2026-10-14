@@ -83,7 +83,17 @@ export const wizard: OfficialClassEntry = {
   progression,
   features: featuresFromProgression('wizard', progression, descriptions, originalNames),
   startingEquipment: [
-    { title: 'Варіант A', items: ['2 кинджали, магічний фокус (бойовий посох), мантія, книга заклять, набір науковця та 5 зм'] },
+    {
+      title: 'Варіант A',
+      items: ['2 кинджали, арканний фокус (бойовий посох), мантія, книга заклять, набір ученого та 5 зм'],
+      itemLinks: [
+        { slug: 'dagger', match: 'кинджали' },
+        { slug: 'arcane-focus', match: 'арканний фокус' },
+        { slug: 'quarterstaff', match: 'бойовий посох' },
+        { slug: 'robe', match: 'мантія' },
+        { slug: 'scholars-pack', match: 'набір ученого' },
+      ],
+    },
     { title: 'Варіант B', items: ['55 зм'] },
   ],
   subclasses: [
