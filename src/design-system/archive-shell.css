@@ -1002,6 +1002,103 @@
   outline-offset: 2px;
 }
 
+.archive-shell .class-spells-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 0 0 1rem;
+  border-block: 1px solid rgb(198 139 58 / 22%);
+}
+
+.archive-shell .class-spells-summary > div {
+  min-width: 0;
+  padding: 0.625rem 0.75rem;
+}
+
+.archive-shell .class-spells-summary > div + div { border-inline-start: 1px solid rgb(198 139 58 / 18%); }
+.archive-shell .class-spells-summary dt { color: var(--archive-muted); font-size: 0.6875rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.archive-shell .class-spells-summary dd { margin: 0.2rem 0 0; color: var(--archive-text); font-weight: 700; }
+
+.archive-shell .class-spells-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid rgb(198 139 58 / 24%);
+  border-radius: 0.5rem;
+  scrollbar-width: thin;
+}
+
+.archive-shell .class-spells-table {
+  width: 100%;
+  min-width: 48rem;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.archive-shell .class-spells-table th,
+.archive-shell .class-spells-table td {
+  padding: 0.42rem 0.55rem;
+  border-block-end: 1px solid rgb(198 139 58 / 14%);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.archive-shell .class-spells-table th {
+  color: #d9b06b;
+  background: rgb(7 10 14 / 96%);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.archive-shell .class-spells-table__milestone { min-width: 12rem; color: #d9b06b; text-align: start !important; }
+
+.archive-shell .class-spell-list { margin-top: 1rem; }
+.archive-shell .class-spell-list__heading { display: flex; align-items: end; justify-content: space-between; gap: 1rem; }
+.archive-shell .class-spell-list__heading h3 { margin: 0; color: #e2c181; font-family: var(--archive-font-heading); font-size: 1rem; }
+.archive-shell .class-spell-list__heading p { margin: 0.2rem 0 0; color: var(--archive-muted); font-size: 0.78rem; }
+.archive-shell .class-spell-list__heading label { display: grid; gap: 0.25rem; color: var(--archive-muted); font-size: 0.72rem; }
+.archive-shell .class-spell-list__heading select { min-width: 9rem; padding: 0.4rem 0.55rem; color: var(--archive-text); background: #090d12; border: 1px solid rgb(198 139 58 / 38%); border-radius: 0.35rem; }
+
+.archive-shell .class-spell-list__links {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.archive-shell .class-spell-list__links a {
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+  color: var(--archive-text);
+  background: rgb(6 9 13 / 72%);
+  border: 1px solid rgb(198 139 58 / 22%);
+  border-radius: 0.4rem;
+  text-decoration: none;
+}
+
+.archive-shell .class-spell-list__links a:hover { border-color: rgb(214 168 92 / 52%); }
+.archive-shell .class-spell-list__links a:focus-visible,
+.archive-shell .class-spell-list__heading select:focus-visible,
+.archive-shell .class-spells-table-wrap:focus-visible { outline: 2px solid rgb(224 170 83 / 72%); outline-offset: 2px; }
+.archive-shell .class-spell-list__links strong,
+.archive-shell .class-spell-list__links span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.archive-shell .class-spell-list__links span { margin-top: 0.15rem; color: var(--archive-muted); font-size: 0.72rem; }
+.archive-shell .class-spell-list__all { display: inline-block; margin-top: 0.75rem; color: #dfb66d; text-underline-offset: 0.18em; }
+
+@media (max-width: 900px) {
+  .archive-shell .class-spells-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .archive-shell .class-spells-summary > div:nth-child(3) { border-inline-start: 0; border-block-start: 1px solid rgb(198 139 58 / 18%); }
+  .archive-shell .class-spells-summary > div:nth-child(4) { border-block-start: 1px solid rgb(198 139 58 / 18%); }
+  .archive-shell .class-spell-list__links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .archive-shell .class-spell-list__heading { align-items: stretch; flex-direction: column; }
+  .archive-shell .class-spell-list__heading select { width: 100%; }
+  .archive-shell .class-spell-list__links { grid-template-columns: 1fr; }
+}
+
 /* Keep the selected subclass close to its action and supporting metadata. */
 .archive-shell .detail-v2-shell--class .detail-option-current {
   grid-template-columns: 2.25rem minmax(0, 1fr);

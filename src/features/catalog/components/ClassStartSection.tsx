@@ -1,4 +1,5 @@
 import { CODEX_ICONS } from '../utils/codexIcons';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 
 type ClassStartSectionProps = {
@@ -114,7 +115,7 @@ function LinkedEquipmentText({ value, links }: { value: string; links: Equipment
 
   if (matches.length === 0) return value;
 
-  const content: React.ReactNode[] = [];
+  const content: ReactNode[] = [];
   let cursor = 0;
   for (const match of matches) {
     if (match.start > cursor) content.push(value.slice(cursor, match.start));

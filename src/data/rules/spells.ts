@@ -405,6 +405,17 @@ export function spellMitigationRows(spell: SpellEntry): SpellFact[] {
 
 export const spellLevelLabel = (level: number) => level === 0 ? 'Замовляння' : `${level} рівень`;
 export type SpellFilters = { search: string; level: string; school: string; class: string; concentration: string; ritual: string };
+export const emptySpellFilters = (): SpellFilters => ({ search: '', level: '', school: '', class: '', concentration: '', ritual: '' });
+export function spellFiltersFromSearchParams(params: URLSearchParams): SpellFilters {
+  const filters = emptySpellFilters();
+  for (const key of Object.keys(filters) as Array<keyof SpellFilters>) filters[key] = params.get(key) ?? '';
+  return filters;
+}
+export function spellFiltersToSearchParams(filters: SpellFilters) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) if (value) params.set(key, value);
+  return params;
+}
 export function filterSpells(entries: SpellEntry[], filters: SpellFilters) {
   const query = filters.search.trim().toLocaleLowerCase('uk');
   return entries.filter((spell) =>

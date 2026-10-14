@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { filterSpells, officialSpells, spellClasses, spellLevelLabel, type SpellFilters } from '@/data/rules/spells';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { filterSpells, officialSpells, spellClasses, spellFiltersFromSearchParams, spellFiltersToSearchParams, spellLevelLabel, type SpellFilters } from '@/data/rules/spells';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import './spells.css';
 
@@ -15,9 +15,16 @@ function initialView(): View {
 }
 export function SpellsPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [view, setView] = useState<View>(initialView);
-  const [filters, setFilters] = useState<SpellFilters>({ search: '', level: '', school: '', class: '', concentration: '', ritual: '' });
+  const [filters, setFilters] = useState<SpellFilters>(() => spellFiltersFromSearchParams(searchParams));
   const [sort, setSort] = useState<{ key: 'name' | 'level'; descending: boolean }>({ key: 'name', descending: false });
+  const query = searchParams.toString();
+  useEffect(() => setFilters(spellFiltersFromSearchParams(new URLSearchParams(query))), [query]);
+  function updateFilters(next: SpellFilters) {
+    setFilters(next);
+    setSearchParams(spellFiltersToSearchParams(next), { replace: true });
+  }
   const entries = filterSpells(officialSpells, filters).sort((a, b) => {
     const names = a.nameUk.localeCompare(b.nameUk, 'uk');
     return (sort.key === 'level' ? a.level - b.level || names : names) * (sort.descending ? -1 : 1);
@@ -30,7 +37,7 @@ export function SpellsPage() {
     setSort({ key, descending: sort.key === key && !sort.descending });
   }
   function select(key: Exclude<keyof SpellFilters, 'search'>, label: string, options: [string, string][]) {
-    return <label>{label}<select value={filters[key]} onChange={(event) => setFilters({ ...filters, [key]: event.target.value })}>
+    return <label>{label}<select value={filters[key]} onChange={(event) => updateFilters({ ...filters, [key]: event.target.value })}>
       <option value="">Усі</option>{options.map(([value, text]) => <option key={value} value={value}>{text}</option>)}
     </select></label>;
   }
@@ -39,7 +46,7 @@ export function SpellsPage() {
     <header className="catalog-archive-header">
       <div className="catalog-archive-header__copy"><p>Довідник</p><div className="catalog-archive-header__title-row"><h1>Закляття</h1><span aria-live="polite">Знайдено: {entries.length}</span></div>
         <p className="catalog-archive-header__summary">Параметри, компоненти та точні правила заклять D&D 2024.</p></div>
-      <div role="search" className="catalog-archive-search"><input type="search" aria-label="Пошук заклять" placeholder="Пошук українською або англійською…" value={filters.search} onChange={(event) => setFilters({ ...filters, search: event.target.value })} /></div>
+      <div role="search" className="catalog-archive-search"><input type="search" aria-label="Пошук заклять" placeholder="Пошук українською або англійською…" value={filters.search} onChange={(event) => updateFilters({ ...filters, search: event.target.value })} /></div>
     </header>
     <div className="spells-controls">
       <div className="spells-filters">
