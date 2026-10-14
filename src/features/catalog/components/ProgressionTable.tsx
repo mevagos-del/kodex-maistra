@@ -1,6 +1,7 @@
 import type { ReferenceCard } from '../api/detailReference';
 import { CODEX_ICONS } from '../utils/codexIcons';
-import { createReferenceAnchors, formatLabelUk, formatValueSafely, isRecord, referenceLevel } from '../utils/detailContent';
+import { createReferenceAnchors, formatLabelUk, formatValueSafely, referenceLevel } from '../utils/detailContent';
+import { normalizeClassProgressionRows } from '../utils/classProgression';
 
 type ProgressionTableProps = { id: string; number: number; value: unknown; features: ReferenceCard[]; onFeatureNavigate?: (anchor: string) => void };
 
@@ -16,6 +17,9 @@ const labels: Record<string, string> = {
   martial_arts_die: 'Кістка бойових мистецтв', focus_points: 'Очки фокусу', unarmored_movement: 'Рух без обладунків',
   favored_enemy: 'Обраний ворог', sneak_attack: 'Прихована атака', sorcery_points: 'Очки чаклунства',
   eldritch_invocations: 'Інвокації', pact_slots: 'Комірки пакту', pact_slot_level: 'Рівень комірок пакту',
+  lay_on_hands: 'Накладання рук', metamagic_options: 'Метамагія', mystic_arcanum: 'Містичний аркан',
+  brutal_strike_damage: 'Шкода жорстокого удару', brutal_strike_effects: 'Ефекти жорстокого удару',
+  cunning_strike_effects: 'Ефекти хитрого удару', arcane_recovery_levels: 'Відновлення магії',
   slot_1: '1 рів.', slot_2: '2 рів.', slot_3: '3 рів.', slot_4: '4 рів.', slot_5: '5 рів.',
   slot_6: '6 рів.', slot_7: '7 рів.', slot_8: '8 рів.', slot_9: '9 рів.',
   class_resource: 'Ресурс класу', resource_die: 'Кістка ресурсу',
@@ -38,23 +42,13 @@ function safeText(value: unknown): string {
   return formatValueSafely(value) ?? '';
 }
 
-function rowsFrom(value: unknown) {
-  if (Array.isArray(value)) return value.filter(isRecord);
-  if (isRecord(value)) {
-    for (const key of ['rows', 'levels', 'progression', 'items']) {
-      if (Array.isArray(value[key])) return (value[key] as unknown[]).filter(isRecord);
-    }
-  }
-  return [];
-}
-
 function numericLevel(value: unknown) {
   const match = safeText(value).match(/\d+/);
   return match ? Number(match[0]) : null;
 }
 
 export function ProgressionTable({ id, number, value, features, onFeatureNavigate }: ProgressionTableProps) {
-  const sourceRows = rowsFrom(value);
+  const sourceRows = normalizeClassProgressionRows(value);
   const rowsByLevel = new Map<number, Record<string, unknown>>();
   for (const row of sourceRows) {
     const level = numericLevel(row.level);

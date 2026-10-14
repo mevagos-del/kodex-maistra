@@ -24,6 +24,43 @@
 - **17 підкласів повні**, **31 підклас неповний**.
 - Серед неповних підкласів 21 має лише identity без features, ще 10 мають feature-каркас із placeholder-текстом.
 
+## Аудит progression 1–20
+
+- Перевірено **240 runtime-рядків**: 12 класів по 20 рівнів. Пропущених, дубльованих або позадіапазонних рівнів немає.
+- Матриці proficiency bonus, spell slots, cantrips і prepared spells звірені з відкритими таблицями D&D 2024 Basic Rules. Повні та половинні spellcasting-матриці вже були коректними й не потребували зміни значень.
+- Виправлено загальний mapper таблиці: він тепер однаково підтримує вже пласкі рядки та рядки з вкладеними `resources` / `spellcasting`. Через це наявні structured values більше не можуть бути приховані renderer-ом.
+- Додано відсутні quick-scan поля: шкода й кількість ефектів Brutal Strike, запас Lay on Hands, фіксована кількість Weapon Mastery для Паладина / Слідопита / Пройдисвіта, кількість ефектів Cunning Strike, кількість Metamagic options, Mystic Arcanum і межа Arcane Recovery.
+- Порожніх progression-рядків немає: якщо на рівні немає нового іменованого feature, у рядку все одно змінюється щонайменше одне числове або spellcasting-значення.
+
+| Клас | Structured progression у runtime-таблиці | Що уточнено в цій ітерації |
+|---|---|---|
+| Варвар | Rage uses, Rage Damage, Weapon Mastery, Brutal Strike | Додано шкоду Brutal Strike на 9/17 рівнях і максимум ефектів на 9/17 рівнях |
+| Бард | Bardic Inspiration die, cantrips, prepared spells, slots 1–9 | Значення підтверджено без виправлень |
+| Жрець | Channel Divinity, cantrips, prepared spells, slots 1–9 | Значення підтверджено без виправлень |
+| Друїд | Wild Shape, cantrips, prepared spells, slots 1–9 | Значення підтверджено без виправлень |
+| Воїн | Second Wind, Weapon Mastery, Action Surge, attacks per action | Значення підтверджено без виправлень |
+| Монах | Martial Arts die, Focus Points, Unarmored Movement | Значення підтверджено без виправлень |
+| Паладин | Lay on Hands, Channel Divinity, Weapon Mastery, prepared spells, slots 1–5 | Додано запас Lay on Hands 5 × рівень і 2 mastery choices на всіх рівнях |
+| Слідопит | Favored Enemy, Weapon Mastery, prepared spells, slots 1–5 | Додано 2 mastery choices на всіх рівнях |
+| Пройдисвіт | Sneak Attack, Weapon Mastery, Cunning Strike | Додано 2 mastery choices та максимум 1/2 Cunning Strike effects на 5/11 рівнях |
+| Чаклун | Sorcery Points, Metamagic options, cantrips, prepared spells, slots 1–9 | Додано 2/4/6 Metamagic options на 2/10/17 рівнях |
+| Чорнокнижник | Invocations, Mystic Arcanum, cantrips, prepared spells, Pact slots, Pact slot level | Додано накопичуваний Mystic Arcanum 6–9 рівнів на 11/13/15/17 рівнях |
+| Чарівник | Arcane Recovery, cantrips, prepared spells, slots 1–9 | Додано межу сумарних рівнів комірок Arcane Recovery: ceil(class level / 2) |
+
+### Рівні без нового іменованого feature
+
+`—` у колонці «Уміння» залишено тільки на рівнях, де офіційна таблиця не надає нового іменованого feature:
+
+- Бард: 11, 13, 15, 17.
+- Жрець: 9, 11, 13, 15, 18.
+- Друїд: 9, 11, 13, 17.
+- Паладин: 13, 17.
+- Чаклун: 9, 11, 13, 15.
+- Чорнокнижник: 5, 7, 18.
+- Чарівник: 7, 9, 11, 13, 15, 17.
+
+На кожному з цих рівнів змінюються spell slots, prepared spells, invocations, Pact Magic або інше structured-значення. Для Варвара, Воїна, Монаха, Слідопита й Пройдисвіта офіційна таблиця має щонайменше одне іменоване feature на кожному рівні.
+
 ## Стан за класами
 
 | Клас | Progression | Base features | Підкласи | Spellcasting | Starting Equipment | Weapon Mastery | Статус |
@@ -63,9 +100,9 @@
 
 ## Spellcasting
 
-- Повні 20-рівневі full-caster таблиці з cantrips, prepared spells і slots 1–9 мають Бард, Жрець, Друїд, Чаклун і Чарівник.
-- Паладин і Слідопит мають 20-рівневі half-caster таблиці зі slots 1–5.
-- Чорнокнижник має повну 20-рівневу progression: `eldritch_invocations` зберігається як class resource, а `pact_slots` і `pact_slot_level` — як spellcasting values разом із cantrips та prepared spells. Значення звірені з D&D 2024 Basic Rules.
+- Повні 20-рівневі full-caster таблиці з cantrips, prepared spells і slots 1–9 мають Бард, Жрець, Друїд, Чаклун і Чарівник. Автоматичні тести звіряють кожне значення кожного рівня з офіційною матрицею.
+- Паладин і Слідопит мають 20-рівневі half-caster таблиці зі slots 1–5; кожен рядок також перевіряється проти офіційної матриці.
+- Чорнокнижник має повну 20-рівневу progression: `eldritch_invocations` і `mystic_arcanum` зберігаються як class resources, а `pact_slots` і `pact_slot_level` — як spellcasting values разом із cantrips та prepared spells. Усі шість серій значень звірені для рівнів 1–20.
 - Eldritch Knight та Arcane Trickster не мають окремої структурованої subclass spell progression. Це не dead reference, але detail-page не може показати їхню магічну прогресію як таблицю.
 - Spell relationships валідні: **879** class-spell edges, усі class slugs існують.
 

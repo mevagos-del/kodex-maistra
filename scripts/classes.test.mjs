@@ -36,6 +36,10 @@ const {
   MISSING_CLASS_FEATURE_DESCRIPTION,
   resolveClassFeatureCards,
 } = loadLocalRules(resolve('src/features/catalog/utils/classFeatureResolver.ts'));
+const {
+  normalizeClassProgressionRows,
+  progressionValueChanged,
+} = loadLocalRules(resolve('src/features/catalog/utils/classProgression.ts'));
 const { officialSpells: spells } = await loadSpells();
 
 const expectedClassSlugs = [
@@ -46,6 +50,32 @@ const expectedSpellcasters = new Set(['bard', 'cleric', 'druid', 'paladin', 'ran
 const expectedWeaponMastery = new Set(['barbarian', 'fighter', 'paladin', 'ranger', 'rogue']);
 const missingSourceText = 'Опис не вказано у доступному джерелі.';
 const classSlugs = new Set(classes.map((entry) => entry.slug));
+const expectedFeaturelessLevels = {
+  barbarian: [], bard: [11, 13, 15, 17], cleric: [9, 11, 13, 15, 18], druid: [9, 11, 13, 17],
+  fighter: [], monk: [], paladin: [13, 17], ranger: [], rogue: [], sorcerer: [9, 11, 13, 15],
+  warlock: [5, 7, 18], wizard: [7, 9, 11, 13, 15, 17],
+};
+const fullSlots = [
+  [2],[3],[4,2],[4,3],[4,3,2],[4,3,3],[4,3,3,1],[4,3,3,2],[4,3,3,3,1],[4,3,3,3,2],
+  [4,3,3,3,2,1],[4,3,3,3,2,1],[4,3,3,3,2,1,1],[4,3,3,3,2,1,1],[4,3,3,3,2,1,1,1],
+  [4,3,3,3,2,1,1,1],[4,3,3,3,2,1,1,1,1],[4,3,3,3,3,1,1,1,1],
+  [4,3,3,3,3,2,1,1,1],[4,3,3,3,3,2,2,1,1],
+];
+const halfSlots = [
+  [2],[2],[3],[3],[4,2],[4,2],[4,3],[4,3],[4,3,2],[4,3,2],[4,3,3],[4,3,3],
+  [4,3,3,1],[4,3,3,1],[4,3,3,2],[4,3,3,2],[4,3,3,3,1],[4,3,3,3,1],
+  [4,3,3,3,2],[4,3,3,3,2],
+];
+
+function progressionValues(slug, section, key, fallback = '—') {
+  const entry = classes.find((candidate) => candidate.slug === slug);
+  assert.ok(entry, `Missing class ${slug}`);
+  return entry.progression.map((row) => row[section]?.[key] ?? fallback);
+}
+
+function expectedSlotRows(source, count) {
+  return source.map((slots) => Array.from({ length: count }, (_, index) => slots[index] ?? '—'));
+}
 
 function allFeatureText(entry) {
   return [
@@ -115,6 +145,96 @@ test('spellcasting flags and progression rows are internally consistent', () => 
   }
 });
 
+test('all official spellcasting progressions match the D&D 2024 level 1-20 tables', () => {
+  const fullCasterData = {
+    bard: { cantrips: [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4], prepared: [4,5,6,7,9,10,11,12,14,15,16,16,17,17,18,18,19,20,21,22] },
+    cleric: { cantrips: [3,3,3,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5], prepared: [4,5,6,7,9,10,11,12,14,15,16,16,17,17,18,18,19,20,21,22] },
+    druid: { cantrips: [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4], prepared: [4,5,6,7,9,10,11,12,14,15,16,16,17,17,18,18,19,20,21,22] },
+    sorcerer: { cantrips: [4,4,4,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6,6,6], prepared: [2,4,6,7,9,10,11,12,14,15,16,16,17,17,18,18,19,20,21,22] },
+    wizard: { cantrips: [3,3,3,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5], prepared: [4,5,6,7,9,10,11,12,14,15,16,16,17,18,19,21,22,23,24,25] },
+  };
+  for (const [slug, expected] of Object.entries(fullCasterData)) {
+    assert.deepEqual(progressionValues(slug, 'spellcasting', 'cantrips'), expected.cantrips, `${slug}: cantrips`);
+    assert.deepEqual(progressionValues(slug, 'spellcasting', 'prepared_spells'), expected.prepared, `${slug}: prepared spells`);
+    const actualSlots = Array.from({ length: 20 }, (_, levelIndex) => Array.from(
+      { length: 9 },
+      (_, slotIndex) => progressionValues(slug, 'spellcasting', `slot_${slotIndex + 1}`)[levelIndex],
+    ));
+    assert.deepEqual(actualSlots, expectedSlotRows(fullSlots, 9), `${slug}: spell slots`);
+  }
+
+  const halfPrepared = [2,3,4,5,6,6,7,7,9,9,10,10,11,11,12,12,14,14,15,15];
+  for (const slug of ['paladin', 'ranger']) {
+    assert.deepEqual(progressionValues(slug, 'spellcasting', 'prepared_spells'), halfPrepared, `${slug}: prepared spells`);
+    const actualSlots = Array.from({ length: 20 }, (_, levelIndex) => Array.from(
+      { length: 5 },
+      (_, slotIndex) => progressionValues(slug, 'spellcasting', `slot_${slotIndex + 1}`)[levelIndex],
+    ));
+    assert.deepEqual(actualSlots, expectedSlotRows(halfSlots, 5), `${slug}: spell slots`);
+  }
+});
+
+test('class-specific resource progressions match the verified D&D 2024 values', () => {
+  assert.deepEqual(progressionValues('barbarian', 'resources', 'rages'), [2,2,3,3,3,4,4,4,4,4,4,5,5,5,5,5,6,6,6,6]);
+  assert.deepEqual(progressionValues('barbarian', 'resources', 'rage_damage'), ['+2','+2','+2','+2','+2','+2','+2','+2','+3','+3','+3','+3','+3','+3','+3','+4','+4','+4','+4','+4']);
+  assert.deepEqual(progressionValues('barbarian', 'resources', 'weapon_mastery'), [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4]);
+  assert.deepEqual(progressionValues('barbarian', 'resources', 'brutal_strike_damage'), ['—','—','—','—','—','—','—','—','1к10','1к10','1к10','1к10','1к10','1к10','1к10','1к10','2к10','2к10','2к10','2к10']);
+  assert.deepEqual(progressionValues('barbarian', 'resources', 'brutal_strike_effects'), ['—','—','—','—','—','—','—','—',1,1,1,1,1,1,1,1,2,2,2,2]);
+
+  assert.deepEqual(progressionValues('bard', 'resources', 'bardic_die'), ['к6','к6','к6','к6','к8','к8','к8','к8','к8','к10','к10','к10','к10','к10','к12','к12','к12','к12','к12','к12']);
+  assert.deepEqual(progressionValues('cleric', 'resources', 'channel_divinity'), ['—',2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4]);
+  assert.deepEqual(progressionValues('druid', 'resources', 'wild_shape'), ['—',2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4]);
+
+  assert.deepEqual(progressionValues('fighter', 'resources', 'second_wind'), [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4]);
+  assert.deepEqual(progressionValues('fighter', 'resources', 'weapon_mastery'), [3,3,3,4,4,4,4,4,4,5,5,5,5,5,5,6,6,6,6,6]);
+  assert.deepEqual(progressionValues('fighter', 'resources', 'action_surge'), ['—',1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2]);
+  assert.deepEqual(progressionValues('fighter', 'resources', 'extra_attack'), ['—','—','—','—','2 атаки','2 атаки','2 атаки','2 атаки','2 атаки','2 атаки','3 атаки','3 атаки','3 атаки','3 атаки','3 атаки','3 атаки','3 атаки','3 атаки','3 атаки','4 атаки']);
+
+  assert.deepEqual(progressionValues('monk', 'resources', 'martial_arts_die'), ['к6','к6','к6','к6','к8','к8','к8','к8','к8','к8','к10','к10','к10','к10','к10','к10','к12','к12','к12','к12']);
+  assert.deepEqual(progressionValues('monk', 'resources', 'focus_points'), ['—',2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]);
+  assert.deepEqual(progressionValues('monk', 'resources', 'unarmored_movement'), ['—','+10 фт','+10 фт','+10 фт','+10 фт','+15 фт','+15 фт','+15 фт','+15 фт','+20 фт','+20 фт','+20 фт','+20 фт','+25 фт','+25 фт','+25 фт','+25 фт','+30 фт','+30 фт','+30 фт']);
+
+  assert.deepEqual(progressionValues('paladin', 'resources', 'lay_on_hands'), Array.from({ length: 20 }, (_, index) => (index + 1) * 5));
+  assert.deepEqual(progressionValues('paladin', 'resources', 'channel_divinity'), ['—','—',2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3]);
+  assert.deepEqual(progressionValues('paladin', 'resources', 'weapon_mastery'), Array(20).fill(2));
+  assert.deepEqual(progressionValues('ranger', 'resources', 'favored_enemy'), [2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6]);
+  assert.deepEqual(progressionValues('ranger', 'resources', 'weapon_mastery'), Array(20).fill(2));
+  assert.deepEqual(progressionValues('rogue', 'resources', 'sneak_attack'), ['1к6','1к6','2к6','2к6','3к6','3к6','4к6','4к6','5к6','5к6','6к6','6к6','7к6','7к6','8к6','8к6','9к6','9к6','10к6','10к6']);
+  assert.deepEqual(progressionValues('rogue', 'resources', 'weapon_mastery'), Array(20).fill(2));
+  assert.deepEqual(progressionValues('rogue', 'resources', 'cunning_strike_effects'), ['—','—','—','—',1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2]);
+  assert.deepEqual(progressionValues('sorcerer', 'resources', 'sorcery_points'), ['—',2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]);
+  assert.deepEqual(progressionValues('sorcerer', 'resources', 'metamagic_options'), ['—',2,2,2,2,2,2,2,2,4,4,4,4,4,4,4,6,6,6,6]);
+  assert.deepEqual(progressionValues('wizard', 'resources', 'arcane_recovery_levels'), [1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10]);
+});
+
+test('featureless official levels still expose a real progression change', () => {
+  for (const entry of classes) {
+    const actualFeatureless = entry.progression.filter((row) => row.features.length === 0).map((row) => row.level);
+    assert.deepEqual(actualFeatureless, expectedFeaturelessLevels[entry.slug], `${entry.slug}: unexpected featureless levels`);
+    for (const level of actualFeatureless) {
+      const current = entry.progression[level - 1];
+      const previous = entry.progression[level - 2];
+      assert.ok(progressionValueChanged(current, previous), `${entry.slug} level ${level}: no feature and no numeric progression change`);
+    }
+  }
+});
+
+test('progression normalizer exposes every nested resource and spellcasting value as a table column', () => {
+  for (const entry of classes) {
+    const normalized = normalizeClassProgressionRows(entry.progression);
+    assert.equal(normalized.length, 20);
+    for (let index = 0; index < entry.progression.length; index += 1) {
+      const source = entry.progression[index];
+      const expectedKeys = [...Object.keys(source.resources ?? {}), ...Object.keys(source.spellcasting ?? {})];
+      for (const key of expectedKeys) {
+        assert.equal(normalized[index][key], source.resources?.[key] ?? source.spellcasting?.[key], `${entry.slug} level ${source.level}: hidden ${key}`);
+      }
+      assert.equal('resources' in normalized[index], false);
+      assert.equal('spellcasting' in normalized[index], false);
+    }
+  }
+});
+
 test('Weapon Mastery is registered on the expected 2024 classes', () => {
   const actual = new Set(classes
     .filter((entry) => entry.features.some((feature) => feature.nameUk === 'Майстерність зброї'))
@@ -149,6 +269,9 @@ test('Warlock Pact Magic progression is complete and matches D&D 2024 levels 1-2
   const warlock = classes.find((entry) => entry.slug === 'warlock');
   assert.ok(warlock);
   assert.deepEqual(warlock.progression.map((row) => row.resources?.eldritch_invocations), [1,3,3,3,5,5,6,6,7,7,7,8,8,8,9,9,9,10,10,10]);
+  assert.deepEqual(warlock.progression.map((row) => row.resources?.mystic_arcanum), ['—','—','—','—','—','—','—','—','—','—','6 рів.','6 рів.','6–7 рів.','6–7 рів.','6–8 рів.','6–8 рів.','6–9 рів.','6–9 рів.','6–9 рів.','6–9 рів.']);
+  assert.deepEqual(warlock.progression.map((row) => row.spellcasting?.cantrips), [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4]);
+  assert.deepEqual(warlock.progression.map((row) => row.spellcasting?.prepared_spells), [2,3,4,5,6,7,8,9,10,10,11,11,12,12,13,13,14,14,15,15]);
   assert.deepEqual(warlock.progression.map((row) => row.spellcasting?.pact_slots), [1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,4,4,4,4]);
   assert.deepEqual(warlock.progression.map((row) => row.spellcasting?.pact_slot_level), [1,1,2,2,3,3,4,4,5,5,5,5,5,5,5,5,5,5,5,5]);
   assert.ok(warlock.progression.every((row) => Number.isInteger(row.spellcasting?.pact_slots)));

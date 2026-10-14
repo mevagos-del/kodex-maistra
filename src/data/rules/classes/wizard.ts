@@ -57,6 +57,7 @@ const progression: OfficialProgressionRow[] = slotRows.map((slots, index) => ({
   level: index + 1,
   proficiencyBonus: index < 4 ? '+2' : index < 8 ? '+3' : index < 12 ? '+4' : index < 16 ? '+5' : '+6',
   features: featureNames[index],
+  resources: { arcane_recovery_levels: Math.ceil((index + 1) / 2) },
   spellcasting: {
     cantrips: cantrips[index],
     prepared_spells: prepared[index],

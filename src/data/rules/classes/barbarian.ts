@@ -2,7 +2,7 @@ import { PHB_2024_SOURCE, SRD_52_SOURCE } from '../source';
 import type { OfficialClassEntry, OfficialFeatureOption, OfficialProgressionRow } from '../types';
 import { createSubclass, featuresFromProgression } from './shared';
 
-const progression: OfficialProgressionRow[] = [
+const baseProgression: OfficialProgressionRow[] = [
   { level: 1, proficiencyBonus: '+2', features: ['Лють', 'Захист без обладунків', 'Майстерність зброї'], resources: { rages: 2, rage_damage: '+2', weapon_mastery: 2 } },
   { level: 2, proficiencyBonus: '+2', features: ['Відчуття небезпеки', 'Безрозсудна атака'], resources: { rages: 2, rage_damage: '+2', weapon_mastery: 2 } },
   { level: 3, proficiencyBonus: '+2', features: ['Підклас варвара', 'Первісне знання'], resources: { rages: 3, rage_damage: '+2', weapon_mastery: 2 } },
@@ -24,6 +24,15 @@ const progression: OfficialProgressionRow[] = [
   { level: 19, proficiencyBonus: '+6', features: ['Епічний дар'], resources: { rages: 6, rage_damage: '+4', weapon_mastery: 4 } },
   { level: 20, proficiencyBonus: '+6', features: ['Первісний чемпіон'], resources: { rages: 6, rage_damage: '+4', weapon_mastery: 4 } },
 ];
+
+const progression: OfficialProgressionRow[] = baseProgression.map((row) => ({
+  ...row,
+  resources: {
+    ...row.resources,
+    brutal_strike_damage: row.level < 9 ? '—' : row.level < 17 ? '1к10' : '2к10',
+    brutal_strike_effects: row.level < 9 ? '—' : row.level < 17 ? 1 : 2,
+  },
+}));
 
 const descriptions: Record<string, string> = {
   'Лють': 'Бонусною дією входиш у Лють, якщо не носиш важких обладунків. Кількість використань указана в таблиці прогресії; після короткого відпочинку відновлюєш одне використання, а після тривалого — всі. Під час Люті маєш Стійкість до дробильної, колотої та рубальної шкоди, Перевагу на перевірки й ряткидки Сили та додаєш Шкоду люті до атак, що використовують Силу.',
