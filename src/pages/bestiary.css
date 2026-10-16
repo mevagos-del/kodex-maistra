@@ -2,7 +2,7 @@
 .bestiary-list { width: min(100%, 1080px); display: grid; margin-inline: auto; }
 .bestiary-record { display: grid; grid-template-columns: 42px minmax(10rem, 1fr) minmax(12rem, 1.2fr) 58px 14px; gap: 12px; align-items: center; min-height: 70px; padding: 10px 8px; border-bottom: 1px solid var(--archive-border); border-radius: var(--archive-radius); color: var(--archive-text); text-decoration: none; transition: background-color var(--archive-fast), border-color var(--archive-fast); }
 .bestiary-record:hover { border-color: var(--archive-border-strong); background: rgb(213 168 94 / 4%); }
-.bestiary-record:focus-visible, .bestiary-detail a:focus-visible { outline: 2px solid var(--archive-gold); outline-offset: 3px; }
+.bestiary-record:focus-visible, .bestiary-detail a:focus-visible, .bestiary-detail button:focus-visible { outline: 2px solid var(--archive-gold); outline-offset: 3px; }
 .bestiary-record__icon { width: 42px; height: 42px; display: grid; place-items: center; }
 .bestiary-record__icon img { width: 34px; height: 34px; object-fit: contain; }
 .bestiary-record__identity { display: grid; min-width: 0; }
@@ -40,6 +40,15 @@
 .bestiary-detail__combat-summary dt, .bestiary-detail__secondary dt, .bestiary-spells dt { color: var(--archive-muted); font-size: .72rem; }
 .bestiary-detail__combat-summary dd { margin: 4px 0 0; color: var(--archive-text-strong); font-size: 1.08rem; font-weight: 750; line-height: 1.35; }
 .bestiary-detail__combat-summary dd small { color: var(--archive-muted); font-size: .74rem; font-weight: 500; }
+.bestiary-hp-control { display: grid; justify-items: start; gap: 3px; }
+.bestiary-hp-control__rolled { animation: bestiary-hp-result var(--archive-fast); }
+.bestiary-hp-control__formula { display: inline-flex; align-items: center; gap: 5px; color: var(--archive-muted); font-size: .74rem; font-weight: 500; }
+.bestiary-hp-control__formula button { width: 24px; height: 24px; display: grid; place-items: center; padding: 3px; border: 1px solid var(--archive-border); border-radius: 4px; background: transparent; cursor: pointer; }
+.bestiary-hp-control__formula button:hover { border-color: var(--archive-border-strong); background: rgb(213 168 94 / 7%); }
+.bestiary-hp-control__formula img { width: 15px; height: 15px; display: block; object-fit: contain; }
+.bestiary-hp-control__standard { color: var(--archive-muted); font-size: .68rem; font-weight: 500; }
+.bestiary-hp-control__standard button { margin-inline-start: 5px; padding: 0; border: 0; color: var(--archive-gold); background: transparent; cursor: pointer; font: inherit; text-decoration: underline; text-decoration-color: rgb(213 168 94 / 42%); text-underline-offset: .16em; }
+.bestiary-hp-control__standard button:hover { color: var(--archive-gold-bright); text-decoration-color: currentColor; }
 
 .bestiary-detail__abilities { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); margin-top: 14px; overflow: hidden; border-block: 1px solid var(--archive-border); background: rgb(5 8 12 / 34%); }
 .bestiary-detail__abilities > div { min-width: 0; display: grid; justify-items: center; gap: 2px; padding: 10px 4px; }
@@ -65,6 +74,8 @@
 .bestiary-action .bestiary-action__facts { color: var(--archive-gold); font-size: .78rem; line-height: 1.5; }
 .bestiary-action .bestiary-action__damage strong { color: var(--archive-text-strong); }
 .bestiary-action .bestiary-action__effect { color: var(--archive-text-soft); }
+.bestiary-inline-reference { color: var(--archive-gold); text-decoration-color: rgb(213 168 94 / 42%); text-underline-offset: .16em; }
+.bestiary-inline-reference:hover { color: var(--archive-gold-bright); text-decoration-color: currentColor; }
 .bestiary-section__note { margin: 0 0 12px; color: var(--archive-muted); line-height: 1.55; }
 .bestiary-spells { margin: 0; }
 .bestiary-spells > div { display: grid; grid-template-columns: minmax(8rem, 11rem) minmax(0, 1fr); gap: 12px; padding: 7px 0; }
@@ -116,4 +127,12 @@
   .bestiary-detail__abilities > div:nth-child(n + 3) { border-block-start: 1px solid rgb(184 132 61 / 18%); }
 }
 
-@media (prefers-reduced-motion: reduce) { .bestiary-record { transition: none; } }
+@keyframes bestiary-hp-result {
+  from { opacity: .45; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bestiary-record { transition: none; }
+  .bestiary-hp-control__rolled { animation: none; }
+}

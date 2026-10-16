@@ -1,34 +1,66 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { bestiaryBySlug } from '@/data/rules/bestiary';
 import { officialConditions } from '@/data/rules/conditions';
 import { officialItems } from '@/data/rules/items';
 import type { OfficialMonsterAction, OfficialMonsterRuleBlock } from '@/data/rules/types';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
+import { MECHANIC_ICONS } from '@/features/catalog/utils/codexIcons';
+import { extractDamageFormula, formatAttackMetadata, formatDamageText, parseDiceFormula, rollDiceFormula } from '@/features/catalog/utils/bestiaryMechanics';
+import { segmentBestiaryReferences, type BestiaryInlineReference } from '@/features/catalog/utils/bestiaryReferences';
 import './bestiary.css';
 
 const abilityLabels = {
   strength: 'СИЛ', dexterity: 'СПР', constitution: 'СТАТ', intelligence: 'ІНТ', wisdom: 'МДР', charisma: 'ХАР',
 } as const;
 
-function RuleList({ entries }: { entries: OfficialMonsterRuleBlock[] }) {
-  return <div className="bestiary-detail__rule-list">{entries.map(entry => <p key={entry.id}><strong>{entry.nameUk}.</strong> {entry.sourceText}</p>)}</div>;
+const conditionAliases: Record<string, string[]> = {
+  charmed: ['Зачарований', 'Зачарована', 'Зачаровану', 'Зачарованої'],
+  grappled: ['Схоплений', 'Схоплена', 'Схоплену', 'Схопленої'],
+  incapacitated: ['Недієздатний', 'Недієздатна', 'Недієздатну'],
+  prone: ['Збитий з ніг', 'Збита з ніг'],
+};
+
+function InlineReferences({ text, references }: { text: string; references: BestiaryInlineReference[] }) {
+  return <>{segmentBestiaryReferences(text, references).map((segment, index) => segment.href
+    ? <Link className="bestiary-inline-reference" to={segment.href} key={`${segment.slug}-${index}`}>{segment.text}</Link>
+    : <span key={`text-${index}`}>{segment.text}</span>)}</>;
 }
 
-function ActionList({ entries }: { entries: OfficialMonsterAction[] }) {
+function HitPointsControl({ average, formula }: { average: string; formula: string }) {
+  const parsed = parseDiceFormula(formula);
+  const [rolled, setRolled] = useState<number | null>(null);
+  if (!parsed) return <dd>{average} <small>({formula})</small></dd>;
+
+  const roll = () => {
+    const result = rollDiceFormula(formula);
+    if (result) setRolled(result.total);
+  };
+
+  return <dd className="bestiary-hp-control">
+    <span className={rolled === null ? undefined : 'bestiary-hp-control__rolled'} key={rolled ?? 'standard'} aria-live="polite">{rolled ?? average}</span>
+    <span className="bestiary-hp-control__formula">
+      {parsed.canonical}
+      <button type="button" onClick={roll} aria-label={rolled === null ? 'Кинути хіти' : 'Кинути хіти ще раз'} title={rolled === null ? 'Кинути хіти' : 'Кинути ще раз'}>
+        <img src={MECHANIC_ICONS.attackRoll} alt="" />
+      </button>
+    </span>
+    {rolled !== null ? <span className="bestiary-hp-control__standard">Стандартне: {average} <button type="button" onClick={() => setRolled(null)}>Повернути</button></span> : null}
+  </dd>;
+}
+
+function RuleList({ entries, references }: { entries: OfficialMonsterRuleBlock[]; references: BestiaryInlineReference[] }) {
+  return <div className="bestiary-detail__rule-list">{entries.map(entry => <p key={entry.id}><strong>{entry.nameUk}.</strong> <InlineReferences text={entry.sourceText} references={references} /></p>)}</div>;
+}
+
+function ActionList({ entries, references }: { entries: OfficialMonsterAction[]; references: BestiaryInlineReference[] }) {
   return <div className="bestiary-action-list">{entries.map(entry => {
-    const attackFacts = [
-      entry.attackType ? `${entry.attackType} атака` : null,
-      entry.attackBonus ? `до атаки ${entry.attackBonus}` : null,
-      entry.reach ? `досяжність ${entry.reach}` : null,
-      entry.range ? `дальність ${entry.range}` : null,
-      entry.target,
-    ].filter(Boolean);
+    const attackMetadata = formatAttackMetadata(entry);
     return <article className="bestiary-action" key={entry.id}>
-      <h3>{entry.nameUk}</h3>
-      {attackFacts.length ? <p className="bestiary-action__facts">{attackFacts.join(' · ')}</p> : null}
-      {entry.damage ? <p className="bestiary-action__damage"><strong>Влучання:</strong> {entry.damage} {entry.damageType ? `${entry.damageType} шкоди` : 'шкоди'}</p> : null}
-      {entry.sourceText ? <p className="bestiary-action__effect">{entry.sourceText}</p> : null}
+      <h3><InlineReferences text={entry.nameUk} references={references} /></h3>
+      {attackMetadata ? <p className="bestiary-action__facts"><InlineReferences text={attackMetadata} references={references} /></p> : null}
+      {entry.damage ? <p className="bestiary-action__damage"><strong>Влучання:</strong> {extractDamageFormula(entry.damage)} {entry.damageType ? `${entry.damageType} шкоди` : 'шкоди'}</p> : null}
+      {entry.sourceText ? <p className="bestiary-action__effect"><InlineReferences text={formatDamageText(entry.sourceText)} references={references} /></p> : null}
     </article>;
   })}</div>;
 }
@@ -71,6 +103,18 @@ export function BestiaryDetailPage() {
 
   const relatedConditions = (entry.relationships?.conditionSlugs ?? []).map(conditionSlug => officialConditions.find(condition => condition.slug === conditionSlug)).filter(Boolean);
   const relatedItems = (entry.relationships?.itemSlugs ?? []).map(itemSlug => officialItems.find(item => item.slug === itemSlug)).filter(Boolean);
+  const relatedSpellSlugs = new Set(entry.relationships?.spellSlugs ?? []);
+  const relatedSpells = Array.from(new Map((entry.spellcasting?.groups.flatMap(group => group.spells) ?? [])
+    .filter(spell => relatedSpellSlugs.has(spell.slug))
+    .map(spell => [spell.slug, spell])).values());
+  const inlineReferences: BestiaryInlineReference[] = [
+    ...relatedConditions.map(condition => ({
+      slug: condition!.slug,
+      href: `/conditions/${condition!.slug}`,
+      labels: Array.from(new Set([condition!.nameUk, ...(conditionAliases[condition!.slug] ?? [])])),
+    })),
+    ...relatedSpells.map(spell => ({ slug: spell.slug, href: `/spells/${spell.slug}`, labels: [spell.nameUk] })),
+  ];
 
   return <main className="bestiary-detail">
     <ArchiveAtmosphere />
@@ -85,20 +129,20 @@ export function BestiaryDetailPage() {
     <div className="bestiary-detail__layout">
       <div className="bestiary-detail__main">
         <section id="statistics" className="bestiary-section bestiary-detail__statistics"><h2>Статистика</h2>
-          <dl className="bestiary-detail__combat-summary"><div><dt>Клас захисту</dt><dd>{entry.armorClass}</dd></div><div><dt>Хіти</dt><dd>{entry.hitPoints} <small>({entry.hitDice})</small></dd></div><div><dt>Швидкість</dt><dd>{entry.speed.join(', ')}</dd></div></dl>
+          <dl className="bestiary-detail__combat-summary"><div><dt>Клас захисту</dt><dd>{entry.armorClass}</dd></div><div><dt>Хіти</dt><HitPointsControl average={entry.hitPoints} formula={entry.hitDice} key={entry.slug} /></div><div><dt>Швидкість</dt><dd>{entry.speed.join(', ')}</dd></div></dl>
           <div className="bestiary-detail__abilities">{Object.entries(entry.abilities).map(([key, value]) => <div key={key}><strong>{abilityLabels[key as keyof typeof abilityLabels]}</strong><span>{value.score}</span><small>{value.modifier}</small></div>)}</div>
           <dl className="bestiary-detail__secondary">{secondaryFacts.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
         </section>
 
-        {entry.traits?.length ? <section id="traits" className="bestiary-section"><h2>Риси</h2><RuleList entries={entry.traits} /></section> : null}
-        {entry.actions.length ? <section id="actions" className="bestiary-section bestiary-detail__actions"><h2>Дії</h2><ActionList entries={entry.actions} /></section> : null}
-        {entry.bonusActions?.length ? <section id="bonus-actions" className="bestiary-section bestiary-detail__actions"><h2>Бонусні дії</h2><ActionList entries={entry.bonusActions} /></section> : null}
-        {entry.reactions?.length ? <section id="reactions" className="bestiary-section bestiary-detail__actions"><h2>Реакції</h2><ActionList entries={entry.reactions} /></section> : null}
-        {entry.legendaryActions?.length ? <section id="legendary-actions" className="bestiary-section bestiary-detail__actions"><h2>Легендарні дії</h2>{entry.legendaryActionUses ? <p className="bestiary-section__note">{entry.legendaryActionUses}</p> : null}<ActionList entries={entry.legendaryActions} /></section> : null}
-        {entry.lairActions?.length ? <section id="lair-actions" className="bestiary-section bestiary-detail__actions"><h2>Дії лігва</h2><ActionList entries={entry.lairActions} /></section> : null}
+        {entry.traits?.length ? <section id="traits" className="bestiary-section"><h2>Риси</h2><RuleList entries={entry.traits} references={inlineReferences} /></section> : null}
+        {entry.actions.length ? <section id="actions" className="bestiary-section bestiary-detail__actions"><h2>Дії</h2><ActionList entries={entry.actions} references={inlineReferences} /></section> : null}
+        {entry.bonusActions?.length ? <section id="bonus-actions" className="bestiary-section bestiary-detail__actions"><h2>Бонусні дії</h2><ActionList entries={entry.bonusActions} references={inlineReferences} /></section> : null}
+        {entry.reactions?.length ? <section id="reactions" className="bestiary-section bestiary-detail__actions"><h2>Реакції</h2><ActionList entries={entry.reactions} references={inlineReferences} /></section> : null}
+        {entry.legendaryActions?.length ? <section id="legendary-actions" className="bestiary-section bestiary-detail__actions"><h2>Легендарні дії</h2>{entry.legendaryActionUses ? <p className="bestiary-section__note">{entry.legendaryActionUses}</p> : null}<ActionList entries={entry.legendaryActions} references={inlineReferences} /></section> : null}
+        {entry.lairActions?.length ? <section id="lair-actions" className="bestiary-section bestiary-detail__actions"><h2>Дії лігва</h2><ActionList entries={entry.lairActions} references={inlineReferences} /></section> : null}
         {entry.spellcasting ? <section id="spellcasting" className="bestiary-section"><h2>Закляття</h2>
           <p className="bestiary-section__note">Заклинальна характеристика: {entry.spellcasting.ability}{entry.spellcasting.saveDc ? ` · СК ряткидка ${entry.spellcasting.saveDc}` : ''}{entry.spellcasting.attackBonus ? ` · до атаки ${entry.spellcasting.attackBonus}` : ''}</p>
-          {entry.spellcasting.notes ? <p>{entry.spellcasting.notes}</p> : null}
+          {entry.spellcasting.notes ? <p><InlineReferences text={entry.spellcasting.notes} references={inlineReferences} /></p> : null}
           <dl className="bestiary-spells">{entry.spellcasting.groups.map(group => <div key={group.label}><dt>{group.label}</dt><dd>{group.spells.map((spell, index) => <span key={spell.slug}>{index ? ', ' : ''}<Link to={`/spells/${spell.slug}`}>{spell.nameUk}</Link></span>)}</dd></div>)}</dl>
         </section> : null}
       </div>
