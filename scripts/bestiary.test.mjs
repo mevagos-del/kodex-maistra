@@ -27,10 +27,45 @@ const { officialSpells: spells } = await loadSpells();
 const { extractDamageFormula, formatAttackMetadata, formatDamageText, parseDiceFormula, rollDiceFormula, splitBestiaryDescription, splitBestiarySpeed } = loadLocalRules(resolve('src/features/catalog/utils/bestiaryMechanics.ts'));
 const { segmentBestiaryReferences } = loadLocalRules(resolve('src/features/catalog/utils/bestiaryReferences.ts'));
 const { BESTIARY_ICONS } = loadLocalRules(resolve('src/features/catalog/utils/codexIcons.ts'));
+const bestiaryManifest = JSON.parse(readFileSync(resolve('docs/bestiary-manifest.json'), 'utf8'));
 const spellSlugs = new Set(spells.map(entry => entry.slug));
 const conditionSlugs = new Set(conditions.map(entry => entry.slug));
 const itemSlugs = new Set(items.map(entry => entry.slug));
 const abilityKeys = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
+const validChallengeRating = /^(?:0|1\/8|1\/4|1\/2|[1-9]|[12]\d|30)$/;
+
+test('SRD 5.2.1 manifest contains all 330 canonical stat blocks', () => {
+  assert.equal(bestiaryManifest.source.id, 'srd-5-2-1');
+  assert.equal(bestiaryManifest.source.edition, 'D&D 2024');
+  assert.equal(bestiaryManifest.statBlockCount, 330);
+  assert.equal(bestiaryManifest.monsters.length, 330);
+  assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.slug)).size, 330);
+  assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.nameOriginal)).size, 330);
+  assert.deepEqual(bestiaryManifest.coverage, { complete: 0, partial: 5, missing: 325 });
+  assert.ok(bestiaryManifest.monsters.every(entry => entry.source === 'SRD 5.2.1'));
+  assert.ok(bestiaryManifest.monsters.every(entry => Number.isInteger(entry.sourcePage) && entry.sourcePage >= 258 && entry.sourcePage <= 364));
+  assert.ok(bestiaryManifest.monsters.every(entry => entry.slug && entry.nameOriginal && entry.size && entry.creatureType && entry.identityLine));
+  assert.ok(bestiaryManifest.monsters.every(entry => validChallengeRating.test(entry.challengeRating)));
+  const typeCounts = Object.fromEntries([...new Set(bestiaryManifest.monsters.map(entry => entry.creatureType))]
+    .sort()
+    .map(type => [type, bestiaryManifest.monsters.filter(entry => entry.creatureType === type).length]));
+  assert.deepEqual(typeCounts, {
+    Aberration: 9, Beast: 90, Celestial: 13, Construct: 10, Dragon: 45, Elemental: 17, Fey: 15,
+    Fiend: 29, Giant: 10, Humanoid: 26, Monstrosity: 37, Ooze: 4, Plant: 6, Undead: 19,
+  });
+});
+
+test('runtime Bestiary identities map to Partial manifest entries', () => {
+  const manifestBySlug = new Map(bestiaryManifest.monsters.map(entry => [entry.slug, entry]));
+  for (const entry of entries) {
+    const manifestEntry = manifestBySlug.get(entry.slug);
+    assert.ok(manifestEntry, `${entry.slug}: missing from canonical manifest`);
+    assert.equal(manifestEntry.nameOriginal, entry.nameOriginal);
+    assert.equal(manifestEntry.coverageStatus, 'Partial');
+  }
+  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Partial').length, entries.length);
+  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 325);
+});
 
 test('first bestiary dataset has unique official identities and valid sources', () => {
   assert.equal(entries.length, 5);
@@ -40,8 +75,8 @@ test('first bestiary dataset has unique official identities and valid sources', 
   assert.ok(entries.every(entry => entry.source?.id === 'srd-5-2-1' && entry.sourcePage > 0));
 });
 
-for (const entry of entries) test(`${entry.slug}: complete stat block and valid action groups`, () => {
-  assert.match(entry.challengeRating, /^(?:0|1\/8|1\/4|1\/2|[1-9]|[12]\d|30)$/);
+for (const entry of entries) test(`${entry.slug}: required runtime fields and valid action groups`, () => {
+  assert.match(entry.challengeRating, validChallengeRating);
   assert.ok(entry.experiencePoints >= 0);
   assert.deepEqual(Object.keys(entry.abilities), abilityKeys);
   assert.ok(Object.values(entry.abilities).every(value => Number.isInteger(value.score) && value.modifier && value.save));
@@ -180,7 +215,7 @@ test('detail sidebar renders optional artwork, paragraph lore, relationships and
 
 test('dataset and bestiary pages do not leak raw invalid values', () => {
   const serialized = JSON.stringify(entries);
-  assert.doesNotMatch(serialized, /\[object Object\]|undefined|null/i);
+  assert.doesNotMatch(serialized, /\[object Object\]|undefined|null|placeholder|опис не вказано/i);
   const detailSource = readFileSync(resolve('src/pages/BestiaryDetailPage.tsx'), 'utf8');
   assert.match(detailSource, /entry\.bonusActions\?\.length/);
   assert.match(detailSource, /entry\.legendaryActions\?\.length/);
