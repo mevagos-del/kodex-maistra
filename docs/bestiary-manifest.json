@@ -11,9 +11,9 @@
   },
   "statBlockCount": 330,
   "coverage": {
-    "complete": 5,
+    "complete": 94,
     "partial": 0,
-    "missing": 325
+    "missing": 236
   },
   "monsters": [
     {
@@ -2610,7 +2610,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 344,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ankylosaurus",
@@ -2621,7 +2621,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 344,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ape",
@@ -2632,7 +2632,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 344,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "archelon",
@@ -2643,7 +2643,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 344,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "baboon",
@@ -2654,7 +2654,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 345,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "badger",
@@ -2665,7 +2665,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 345,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "bat",
@@ -2676,7 +2676,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 345,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "black-bear",
@@ -2687,7 +2687,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 345,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "blood-hawk",
@@ -2698,7 +2698,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 345,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "boar",
@@ -2709,7 +2709,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 346,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "brown-bear",
@@ -2720,7 +2720,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 346,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "camel",
@@ -2731,7 +2731,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 346,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "cat",
@@ -2742,7 +2742,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 346,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "constrictor-snake",
@@ -2753,7 +2753,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 346,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "crab",
@@ -2764,7 +2764,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 347,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "crocodile",
@@ -2775,7 +2775,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 347,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "deer",
@@ -2786,7 +2786,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 347,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "dire-wolf",
@@ -2797,7 +2797,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 347,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "draft-horse",
@@ -2808,7 +2808,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 347,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "eagle",
@@ -2819,7 +2819,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 348,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "elephant",
@@ -2830,7 +2830,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 348,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "elk",
@@ -2841,7 +2841,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 348,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "flying-snake",
@@ -2863,7 +2863,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 348,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-ape",
@@ -2874,7 +2874,7 @@
       "challengeRating": "7",
       "source": "SRD 5.2.1",
       "sourcePage": 349,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-badger",
@@ -2885,7 +2885,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 349,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-bat",
@@ -2896,7 +2896,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 349,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-boar",
@@ -2907,7 +2907,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 349,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-centipede",
@@ -2918,7 +2918,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 349,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-constrictor-snake",
@@ -2929,7 +2929,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 350,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-crab",
@@ -2940,7 +2940,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 350,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-crocodile",
@@ -2951,7 +2951,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 350,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-eagle",
@@ -2984,7 +2984,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 351,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-frog",
@@ -2995,7 +2995,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 351,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-goat",
@@ -3006,7 +3006,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 351,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-hyena",
@@ -3017,7 +3017,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 352,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-lizard",
@@ -3028,7 +3028,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 352,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-octopus",
@@ -3039,7 +3039,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 352,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-owl",
@@ -3061,7 +3061,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 353,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-scorpion",
@@ -3072,7 +3072,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 353,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-seahorse",
@@ -3083,7 +3083,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 353,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-shark",
@@ -3094,7 +3094,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 353,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-spider",
@@ -3105,7 +3105,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 353,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-toad",
@@ -3116,7 +3116,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 354,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-venomous-snake",
@@ -3127,7 +3127,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 354,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-vulture",
@@ -3149,7 +3149,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 354,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-weasel",
@@ -3160,7 +3160,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 355,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-wolf-spider",
@@ -3171,7 +3171,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 355,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "goat",
@@ -3182,7 +3182,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 355,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "hawk",
@@ -3193,7 +3193,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 355,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "hippopotamus",
@@ -3204,7 +3204,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 355,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "hunter-shark",
@@ -3215,7 +3215,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 356,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "hyena",
@@ -3226,7 +3226,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 356,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "jackal",
@@ -3237,7 +3237,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 356,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "killer-whale",
@@ -3248,7 +3248,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 356,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "lion",
@@ -3259,7 +3259,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 356,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "lizard",
@@ -3270,7 +3270,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 357,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "mammoth",
@@ -3281,7 +3281,7 @@
       "challengeRating": "6",
       "source": "SRD 5.2.1",
       "sourcePage": 357,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "mastiff",
@@ -3292,7 +3292,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 357,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "mule",
@@ -3303,7 +3303,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 357,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "octopus",
@@ -3314,7 +3314,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 357,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "owl",
@@ -3325,7 +3325,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 358,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "panther",
@@ -3336,7 +3336,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 358,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "piranha",
@@ -3347,7 +3347,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 358,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "plesiosaurus",
@@ -3358,7 +3358,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 358,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "polar-bear",
@@ -3369,7 +3369,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 359,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "pony",
@@ -3380,7 +3380,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 359,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "pteranodon",
@@ -3391,7 +3391,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 359,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "rat",
@@ -3402,7 +3402,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 359,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "raven",
@@ -3413,7 +3413,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 359,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "reef-shark",
@@ -3424,7 +3424,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 360,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "rhinoceros",
@@ -3435,7 +3435,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 360,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "riding-horse",
@@ -3446,7 +3446,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 360,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "saber-toothed-tiger",
@@ -3457,7 +3457,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 360,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "scorpion",
@@ -3468,7 +3468,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 360,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "seahorse",
@@ -3479,7 +3479,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 361,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "spider",
@@ -3490,7 +3490,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 361,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "swarm-of-bats",
@@ -3501,7 +3501,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 361,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "swarm-of-insects",
@@ -3512,7 +3512,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 361,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "swarm-of-piranhas",
@@ -3523,7 +3523,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 362,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "swarm-of-rats",
@@ -3534,7 +3534,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 362,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "swarm-of-ravens",
@@ -3545,7 +3545,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 362,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "swarm-of-venomous-snakes",
@@ -3556,7 +3556,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 362,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "tiger",
@@ -3567,7 +3567,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 363,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "triceratops",
@@ -3578,7 +3578,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 363,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "tyrannosaurus-rex",
@@ -3589,7 +3589,7 @@
       "challengeRating": "8",
       "source": "SRD 5.2.1",
       "sourcePage": 363,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "venomous-snake",
@@ -3600,7 +3600,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 363,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "vulture",
@@ -3611,7 +3611,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 363,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "warhorse",
@@ -3622,7 +3622,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 364,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "weasel",
@@ -3633,7 +3633,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 364,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "wolf",

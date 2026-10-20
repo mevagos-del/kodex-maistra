@@ -50,7 +50,7 @@ test('SRD 5.2.1 manifest contains all 330 canonical stat blocks', () => {
   assert.equal(bestiaryManifest.monsters.length, 330);
   assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.slug)).size, 330);
   assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.nameOriginal)).size, 330);
-  assert.deepEqual(bestiaryManifest.coverage, { complete: 5, partial: 0, missing: 325 });
+  assert.deepEqual(bestiaryManifest.coverage, { complete: 94, partial: 0, missing: 236 });
   assert.ok(bestiaryManifest.monsters.every(entry => entry.source === 'SRD 5.2.1'));
   assert.ok(bestiaryManifest.monsters.every(entry => Number.isInteger(entry.sourcePage) && entry.sourcePage >= 258 && entry.sourcePage <= 364));
   assert.ok(bestiaryManifest.monsters.every(entry => entry.slug && entry.nameOriginal && entry.size && entry.creatureType && entry.identityLine));
@@ -74,11 +74,11 @@ test('runtime Bestiary identities map to Complete manifest entries', () => {
   }
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Complete').length, entries.length);
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Partial').length, 0);
-  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 325);
+  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 236);
 });
 
-test('first bestiary dataset has unique official identities and valid sources', () => {
-  assert.equal(entries.length, 5);
+test('first Bestiary import batch has unique official identities and valid sources', () => {
+  assert.equal(entries.length, 94);
   assert.equal(new Set(entries.map(entry => entry.slug)).size, entries.length);
   assert.equal(new Set(entries.map(entry => entry.nameOriginal)).size, entries.length);
   assert.ok(entries.every(entry => entry.entity === 'monster' && entry.status === 'official'));
@@ -99,11 +99,45 @@ for (const entry of entries) test(`${entry.slug}: required runtime fields and va
 });
 
 test('conditional renderer branches are represented by real data only', () => {
-  assert.deepEqual(entries.filter(entry => entry.bonusActions?.length).map(entry => entry.slug), ['goblin-boss', 'mage']);
-  assert.deepEqual(entries.filter(entry => entry.reactions?.length).map(entry => entry.slug), ['goblin-boss', 'mage']);
+  assert.deepEqual(entries.filter(entry => entry.bonusActions?.length).map(entry => entry.slug), [
+    'goblin-boss', 'mage', 'elephant', 'giant-ape', 'giant-hyena', 'giant-seahorse', 'mammoth', 'panther',
+    'saber-toothed-tiger', 'tiger',
+  ]);
+  assert.deepEqual(entries.filter(entry => entry.reactions?.length).map(entry => entry.slug), [
+    'goblin-boss', 'mage', 'giant-octopus', 'octopus',
+  ]);
   assert.deepEqual(entries.filter(entry => entry.legendaryActions?.length).map(entry => entry.slug), ['aboleth']);
   assert.deepEqual(entries.filter(entry => entry.spellcasting).map(entry => entry.slug), ['mage']);
   assert.ok(entries.every(entry => !entry.lairActions?.length));
+});
+
+test('all 90 canonical SRD Beasts are complete after importing the first batch', () => {
+  const manifestBeasts = bestiaryManifest.monsters.filter(entry => entry.creatureType === 'Beast');
+  const runtimeBeasts = entries.filter(entry => entry.creatureType === 'Звір');
+  assert.equal(manifestBeasts.length, 90);
+  assert.equal(runtimeBeasts.length, 90);
+  assert.ok(manifestBeasts.every(entry => entry.coverageStatus === 'Complete'));
+  assert.deepEqual(new Set(runtimeBeasts.map(entry => entry.slug)), new Set(manifestBeasts.map(entry => entry.slug)));
+  assert.ok(runtimeBeasts.every(entry => entry.actions.length > 0));
+  assert.ok(runtimeBeasts.every(entry => entry.sourcePage >= 344 && entry.sourcePage <= 364));
+});
+
+test('representative imported Beasts match exact SRD 5.2.1 core statistics', () => {
+  const expected = {
+    allosaurus: ['13', '51', '6к10 + 18', ['60 фт'], '+1', 11, '2', 450, '+2', 344],
+    'giant-ape': ['12', '168', '16к12 + 64', ['40 фт', 'лазіння 40 фт'], '+5', 15, '7', 2900, '+3', 349],
+    'giant-spider': ['14', '26', '4к10 + 4', ['30 фт', 'лазіння 30 фт'], '+3', 13, '1', 200, '+2', 353],
+    'giant-octopus': ['11', '45', '7к10 + 7', ['10 фт', 'плавання 60 фт'], '+1', 11, '1', 200, '+2', 352],
+    mammoth: ['13', '126', '11к12 + 55', ['50 фт'], '+2', 12, '6', 2300, '+3', 357],
+    'tyrannosaurus-rex': ['13', '136', '13к12 + 52', ['50 фт'], '+3', 13, '8', 3900, '+3', 363],
+  };
+  for (const [slug, values] of Object.entries(expected)) {
+    const entry = bySlug[slug];
+    assert.deepEqual([
+      entry.armorClass, entry.hitPoints, entry.hitDice, entry.speed, entry.initiative.modifier, entry.initiative.score,
+      entry.challengeRating, entry.experiencePoints, entry.proficiencyBonus, entry.sourcePage,
+    ], values, `${slug}: core statistics`);
+  }
 });
 
 test('five initial creatures match exact SRD 5.2.1 core statistics', () => {
@@ -200,10 +234,49 @@ test('Aboleth saves, limits and legendary actions preserve exact mechanics', () 
   assert.ok(aboleth.legendaryActions.every(action => action.legendaryActionCost === 1));
 });
 
-test('no production Recharge fields are invented for the five source blocks', () => {
+test('Recharge and limited-use mechanics are preserved only where stated by the source', () => {
   const blocks = entries.flatMap(entry => [entry.traits ?? [], entry.actions, entry.bonusActions ?? [], entry.reactions ?? [], entry.legendaryActions ?? []].flat());
-  assert.ok(blocks.every(block => block.recharge === undefined));
+  assert.deepEqual(blocks.filter(block => block.recharge).map(block => [block.id, block.recharge]), [
+    ['ape-rock', { kind: 'roll', die: 6, minimum: 6 }],
+    ['giant-ape-boulder-toss', { kind: 'roll', die: 6, minimum: 6 }],
+    ['giant-spider-web', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['swarm-of-ravens-cacophony', { kind: 'roll', die: 6, minimum: 6 }],
+  ]);
+  assert.deepEqual(blocks.filter(block => block.limitedUse).map(block => block.id), [
+    'mage-misty-step', 'mage-protective-magic', 'aboleth-legendary-resistance', 'aboleth-dominate-mind',
+    'giant-hyena-rampage', 'giant-octopus-ink-cloud', 'octopus-ink-cloud',
+  ]);
   assert.equal(formatMonsterRecharge(fixtures.rechargeableAction.recharge), 'Відновлення: 5–6');
+});
+
+test('complex Beast mechanics preserve saves, damage, conditions and action placement', () => {
+  const giantApeBoulder = bySlug['giant-ape'].actions.find(action => action.id === 'giant-ape-boulder-toss');
+  assert.deepEqual(giantApeBoulder.recharge, { kind: 'roll', die: 6, minimum: 6 });
+  assert.deepEqual(giantApeBoulder.savingThrow, {
+    ability: 'dexterity', dc: 17, onFailure: 'Ціль отримує повну шкоду та стан Збитий з ніг.', onSuccess: 'Ціль отримує половину шкоди.',
+  });
+  assert.equal(giantApeBoulder.damageInstances[0].formula, '7к6');
+
+  const web = bySlug['giant-spider'].actions.find(action => action.id === 'giant-spider-web');
+  assert.deepEqual(web.recharge, { kind: 'roll', die: 6, minimum: 5, maximum: 6 });
+  assert.deepEqual([web.savingThrow.ability, web.savingThrow.dc], ['dexterity', 13]);
+  assert.match(web.sourceText, /КЗ 10/u);
+  assert.match(web.sourceText, /5 хітів/u);
+
+  assert.deepEqual(bySlug['giant-frog'].relationships.conditionSlugs, ['blinded', 'grappled', 'prone', 'restrained']);
+  assert.equal(bySlug['giant-frog'].actions.find(action => action.id === 'giant-frog-swallow').damageInstances[0].formula, '2к4');
+  assert.equal(bySlug['giant-toad'].actions.find(action => action.id === 'giant-toad-swallow').damageInstances[0].formula, '3к6');
+
+  const tyrannosaurus = bySlug['tyrannosaurus-rex'];
+  assert.deepEqual(tyrannosaurus.actions.map(action => action.nameUk), ['Мультиатака', 'Укус', 'Хвіст']);
+  const tyrannosaurusBite = tyrannosaurus.actions.find(action => action.id === 'tyrannosaurus-rex-bite');
+  assert.match(tyrannosaurusBite.sourceText, /СК 17/u);
+  assert.match(tyrannosaurusBite.sourceText, /не може бути ціллю атаки Хвостом/u);
+  assert.match(tyrannosaurus.actions.find(action => action.id === 'tyrannosaurus-rex-tail').sourceText, /Величезний або менший/u);
+
+  assert.deepEqual(bySlug['giant-octopus'].reactions[0].limitedUse, { uses: 1, period: 'day' });
+  assert.deepEqual(bySlug['swarm-of-ravens'].actions.map(action => action.nameUk), ['Дзьоби', 'Какофонія']);
+  assert.deepEqual(bySlug['swarm-of-ravens'].actions[1].recharge, { kind: 'roll', die: 6, minimum: 6 });
 });
 
 test('spell, condition, item and rule relationships resolve without dead links', () => {
