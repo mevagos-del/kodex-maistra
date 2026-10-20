@@ -57,6 +57,17 @@ export function formatDamageText(value: string) {
   });
 }
 
+export function splitBestiarySpeed(values: string[]) {
+  const [base = '', ...additional] = values;
+  const match = base.match(/^\s*(\d+)\s*фт\.?\s*$/iu);
+  return {
+    base,
+    value: match?.[1] ?? base,
+    unit: match ? 'фт.' : '',
+    additional,
+  };
+}
+
 const attackTypeLabels: Record<string, string> = {
   'ближня': 'Ближня атака зброєю',
   'далекобійна': 'Дальня атака зброєю',

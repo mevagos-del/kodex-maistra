@@ -34,20 +34,28 @@
 .bestiary-section { scroll-margin-top: 112px; padding: 18px 20px; border: 1px solid var(--archive-border); border-radius: var(--archive-radius-panel); background: linear-gradient(180deg, rgb(17 22 28 / 86%), rgb(11 15 20 / 88%)); }
 .bestiary-section > h2, .bestiary-detail__lore > h2, .bestiary-related > h2 { margin: 0 0 13px; color: var(--archive-gold-bright); font: 700 var(--archive-title-section)/1.2 var(--heading-font); }
 
-.bestiary-detail__combat-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding-block: 4px 13px; border-bottom: 1px solid var(--archive-border); }
-.bestiary-detail__combat-summary > div { min-width: 0; padding: 7px 13px; }
+.bestiary-detail__combat-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; margin: 0; padding-block: 4px 13px; border-bottom: 1px solid var(--archive-border); }
+.bestiary-detail__combat-summary > div { min-width: 0; display: grid; align-content: start; justify-items: center; padding: 7px 13px; text-align: center; }
 .bestiary-detail__combat-summary > div + div { border-inline-start: 1px solid rgb(184 132 61 / 20%); }
 .bestiary-detail__combat-summary dt, .bestiary-detail__secondary dt, .bestiary-spells dt { color: var(--archive-muted); font-size: .72rem; }
-.bestiary-detail__combat-summary dd { margin: 4px 0 0; color: var(--archive-text-strong); font-size: 1.08rem; font-weight: 750; line-height: 1.35; }
-.bestiary-detail__combat-summary dd small { color: var(--archive-muted); font-size: .74rem; font-weight: 500; }
-.bestiary-hp-control { display: grid; justify-items: start; gap: 3px; }
+.bestiary-combat-stat__body { min-width: 0; display: grid; justify-items: center; gap: 3px; margin: 5px 0 0; color: var(--archive-text-strong); }
+.bestiary-combat-stat__icon { position: relative; width: clamp(3.5rem, 6vw, 4.5rem); height: clamp(3.5rem, 6vw, 4.5rem); display: grid; place-items: center; }
+.bestiary-combat-stat__icon img { width: 100%; height: 100%; display: block; object-fit: contain; }
+.bestiary-combat-stat__icon > strong { position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(1rem, 1.7vw, 1.3rem); font-weight: 850; line-height: 1; }
+.bestiary-combat-stat__icon--ac > strong { padding-top: 7%; color: var(--archive-bg-deep); }
+.bestiary-combat-stat__icon--hp > strong { padding-top: 8%; color: var(--archive-text-strong); text-shadow: 0 1px 2px rgb(0 0 0 / 70%); }
+.bestiary-combat-stat__formula { color: var(--archive-muted); font-size: .74rem; font-weight: 550; line-height: 1.3; }
+.bestiary-combat-stat__speed { display: flex; align-items: center; justify-content: center; gap: 3px; }
+.bestiary-combat-stat__speed-value { display: grid; justify-items: start; margin-inline-start: -7px; }
+.bestiary-combat-stat__speed-value strong { color: var(--archive-text-strong); font-size: clamp(1rem, 1.7vw, 1.3rem); line-height: 1; }
+.bestiary-combat-stat__speed-value small { color: var(--archive-muted); font-size: .7rem; font-weight: 550; }
+.bestiary-combat-stat__additional { max-width: 15rem; color: var(--archive-muted); font-size: .68rem; line-height: 1.35; overflow-wrap: anywhere; }
+.bestiary-hp-control { gap: 3px; }
+.bestiary-hp-control__roll { padding: 0; border: 0; background: transparent; cursor: pointer; }
+.bestiary-hp-control__roll:hover img { opacity: .88; }
 .bestiary-hp-control__rolled { animation: bestiary-hp-result var(--archive-fast); }
-.bestiary-hp-control__formula { display: inline-flex; align-items: center; gap: 5px; color: var(--archive-muted); font-size: .74rem; font-weight: 500; }
-.bestiary-hp-control__formula button { width: 24px; height: 24px; display: grid; place-items: center; padding: 3px; border: 1px solid var(--archive-border); border-radius: 4px; background: transparent; cursor: pointer; }
-.bestiary-hp-control__formula button:hover { border-color: var(--archive-border-strong); background: rgb(213 168 94 / 7%); }
-.bestiary-hp-control__formula img { width: 15px; height: 15px; display: block; object-fit: contain; }
-.bestiary-hp-control__standard { color: var(--archive-muted); font-size: .68rem; font-weight: 500; }
-.bestiary-hp-control__standard button { margin-inline-start: 5px; padding: 0; border: 0; color: var(--archive-gold); background: transparent; cursor: pointer; font: inherit; text-decoration: underline; text-decoration-color: rgb(213 168 94 / 42%); text-underline-offset: .16em; }
+.bestiary-hp-control__standard { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 5px; color: var(--archive-muted); font-size: .68rem; font-weight: 500; line-height: 1.35; }
+.bestiary-hp-control__standard button { padding: 0; border: 0; color: var(--archive-gold); background: transparent; cursor: pointer; font: inherit; text-decoration: underline; text-decoration-color: rgb(213 168 94 / 42%); text-underline-offset: .16em; }
 .bestiary-hp-control__standard button:hover { color: var(--archive-gold-bright); text-decoration-color: currentColor; }
 
 .bestiary-detail__abilities { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); margin-top: 14px; overflow: hidden; border-block: 1px solid var(--archive-border); background: rgb(5 8 12 / 34%); }
@@ -109,9 +117,9 @@
   .bestiary-detail__header { padding-bottom: 14px; }
   .bestiary-detail__heading h1 { font-size: clamp(2rem, 11vw, 2.75rem); }
   .bestiary-section { padding: 16px 14px; }
-  .bestiary-detail__combat-summary { grid-template-columns: minmax(0, 1fr); }
+  .bestiary-detail__combat-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .bestiary-detail__combat-summary > div { padding-inline: 4px; }
-  .bestiary-detail__combat-summary > div + div { border-block-start: 1px solid rgb(184 132 61 / 16%); border-inline-start: 0; }
+  .bestiary-detail__combat-summary > div + div { border-inline-start: 1px solid rgb(184 132 61 / 16%); }
   .bestiary-detail__abilities { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .bestiary-detail__abilities > div:nth-child(4) { border-inline-start: 0; }
   .bestiary-detail__abilities > div:nth-child(n + 4) { border-block-start: 1px solid rgb(184 132 61 / 18%); }

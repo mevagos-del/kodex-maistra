@@ -66,6 +66,12 @@ export const HOME_ICON_SCALES: Partial<Record<keyof typeof HOME_ICONS, number>> 
   bestiary: 1.06,
 };
 
+export const BESTIARY_ICONS = {
+  armorClass: '/icons/bestiary/ac.webp',
+  hitPoints: '/icons/bestiary/hp.webp',
+  speed: '/icons/bestiary/speed.webp',
+} as const;
+
 export const MECHANIC_ICONS = {
   abilityCheck: '/icons/mechanics/ability-check.webp',
   armorClass: '/icons/mechanics/armor-class.webp',

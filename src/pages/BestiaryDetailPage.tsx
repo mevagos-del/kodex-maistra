@@ -5,8 +5,8 @@ import { officialConditions } from '@/data/rules/conditions';
 import { officialItems } from '@/data/rules/items';
 import type { OfficialMonsterAction, OfficialMonsterRuleBlock } from '@/data/rules/types';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
-import { MECHANIC_ICONS } from '@/features/catalog/utils/codexIcons';
-import { extractDamageFormula, formatAttackMetadata, formatDamageText, parseDiceFormula, rollDiceFormula } from '@/features/catalog/utils/bestiaryMechanics';
+import { BESTIARY_ICONS } from '@/features/catalog/utils/codexIcons';
+import { extractDamageFormula, formatAttackMetadata, formatDamageText, parseDiceFormula, rollDiceFormula, splitBestiarySpeed } from '@/features/catalog/utils/bestiaryMechanics';
 import { segmentBestiaryReferences, type BestiaryInlineReference } from '@/features/catalog/utils/bestiaryReferences';
 import './bestiary.css';
 
@@ -30,22 +30,26 @@ function InlineReferences({ text, references }: { text: string; references: Best
 function HitPointsControl({ average, formula }: { average: string; formula: string }) {
   const parsed = parseDiceFormula(formula);
   const [rolled, setRolled] = useState<number | null>(null);
-  if (!parsed) return <dd>{average} <small>({formula})</small></dd>;
+  if (!parsed) return <dd className="bestiary-combat-stat__body">
+    <span className="bestiary-combat-stat__icon bestiary-combat-stat__icon--hp">
+      <img src={BESTIARY_ICONS.hitPoints} alt="" />
+      <strong>{average}</strong>
+    </span>
+    <span className="bestiary-combat-stat__formula">{formula}</span>
+  </dd>;
 
   const roll = () => {
     const result = rollDiceFormula(formula);
     if (result) setRolled(result.total);
   };
 
-  return <dd className="bestiary-hp-control">
-    <span className={rolled === null ? undefined : 'bestiary-hp-control__rolled'} key={rolled ?? 'standard'} aria-live="polite">{rolled ?? average}</span>
-    <span className="bestiary-hp-control__formula">
-      {parsed.canonical}
-      <button type="button" onClick={roll} aria-label={rolled === null ? 'Кинути хіти' : 'Кинути хіти ще раз'} title={rolled === null ? 'Кинути хіти' : 'Кинути ще раз'}>
-        <img src={MECHANIC_ICONS.attackRoll} alt="" />
-      </button>
-    </span>
-    {rolled !== null ? <span className="bestiary-hp-control__standard">Стандартне: {average} <button type="button" onClick={() => setRolled(null)}>Повернути</button></span> : null}
+  return <dd className="bestiary-combat-stat__body bestiary-hp-control">
+    <button className="bestiary-combat-stat__icon bestiary-combat-stat__icon--hp bestiary-hp-control__roll" type="button" onClick={roll} aria-label={rolled === null ? 'Кинути хіти' : 'Кинути хіти ще раз'} title={rolled === null ? 'Кинути хіти' : 'Кинути ще раз'}>
+      <img src={BESTIARY_ICONS.hitPoints} alt="" />
+      <strong className={rolled === null ? undefined : 'bestiary-hp-control__rolled'} key={rolled ?? 'standard'} aria-live="polite">{rolled ?? average}</strong>
+    </button>
+    <span className="bestiary-combat-stat__formula">{parsed.canonical}</span>
+    {rolled !== null ? <span className="bestiary-hp-control__standard">Стандартне: {average} <button type="button" onClick={() => setRolled(null)}>Повернути стандартне</button></span> : null}
   </dd>;
 }
 
@@ -115,6 +119,7 @@ export function BestiaryDetailPage() {
     })),
     ...relatedSpells.map(spell => ({ slug: spell.slug, href: `/spells/${spell.slug}`, labels: [spell.nameUk] })),
   ];
+  const speed = splitBestiarySpeed(entry.speed);
 
   return <main className="bestiary-detail">
     <ArchiveAtmosphere />
@@ -129,7 +134,11 @@ export function BestiaryDetailPage() {
     <div className="bestiary-detail__layout">
       <div className="bestiary-detail__main">
         <section id="statistics" className="bestiary-section bestiary-detail__statistics"><h2>Статистика</h2>
-          <dl className="bestiary-detail__combat-summary"><div><dt>Клас захисту</dt><dd>{entry.armorClass}</dd></div><div><dt>Хіти</dt><HitPointsControl average={entry.hitPoints} formula={entry.hitDice} key={entry.slug} /></div><div><dt>Швидкість</dt><dd>{entry.speed.join(', ')}</dd></div></dl>
+          <dl className="bestiary-detail__combat-summary">
+            <div className="bestiary-combat-stat"><dt>Клас захисту</dt><dd className="bestiary-combat-stat__body"><span className="bestiary-combat-stat__icon bestiary-combat-stat__icon--ac"><img src={BESTIARY_ICONS.armorClass} alt="" /><strong>{entry.armorClass}</strong></span></dd></div>
+            <div className="bestiary-combat-stat"><dt>Хіти</dt><HitPointsControl average={entry.hitPoints} formula={entry.hitDice} key={entry.slug} /></div>
+            <div className="bestiary-combat-stat"><dt>Швидкість</dt><dd className="bestiary-combat-stat__body"><span className="bestiary-combat-stat__speed"><span className="bestiary-combat-stat__icon bestiary-combat-stat__icon--speed"><img src={BESTIARY_ICONS.speed} alt="" /></span><span className="bestiary-combat-stat__speed-value"><strong>{speed.value}</strong>{speed.unit ? <small>{speed.unit}</small> : null}</span></span>{speed.additional.length ? <span className="bestiary-combat-stat__additional">{speed.additional.join(' · ')}</span> : null}</dd></div>
+          </dl>
           <div className="bestiary-detail__abilities">{Object.entries(entry.abilities).map(([key, value]) => <div key={key}><strong>{abilityLabels[key as keyof typeof abilityLabels]}</strong><span>{value.score}</span><small>{value.modifier}</small></div>)}</div>
           <dl className="bestiary-detail__secondary">{secondaryFacts.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
         </section>

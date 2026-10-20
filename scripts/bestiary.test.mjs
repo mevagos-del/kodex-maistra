@@ -24,8 +24,9 @@ const { officialBestiary: entries } = loadLocalRules(resolve(rulesRoot, 'bestiar
 const { officialConditions: conditions } = loadLocalRules(resolve(rulesRoot, 'conditions.ts'));
 const { officialItems: items } = loadLocalRules(resolve(rulesRoot, 'items'));
 const { officialSpells: spells } = await loadSpells();
-const { extractDamageFormula, formatAttackMetadata, formatDamageText, parseDiceFormula, rollDiceFormula } = loadLocalRules(resolve('src/features/catalog/utils/bestiaryMechanics.ts'));
+const { extractDamageFormula, formatAttackMetadata, formatDamageText, parseDiceFormula, rollDiceFormula, splitBestiarySpeed } = loadLocalRules(resolve('src/features/catalog/utils/bestiaryMechanics.ts'));
 const { segmentBestiaryReferences } = loadLocalRules(resolve('src/features/catalog/utils/bestiaryReferences.ts'));
+const { BESTIARY_ICONS } = loadLocalRules(resolve('src/features/catalog/utils/codexIcons.ts'));
 const spellSlugs = new Set(spells.map(entry => entry.slug));
 const conditionSlugs = new Set(conditions.map(entry => entry.slug));
 const itemSlugs = new Set(items.map(entry => entry.slug));
@@ -120,6 +121,39 @@ test('hit dice rolls stay within formula bounds and never mutate canonical HP', 
   const bandit = entries.find(entry => entry.slug === 'bandit');
   assert.equal(bandit.hitPoints, '11');
   assert.equal(bandit.hitDice, '2к8 + 2');
+});
+
+test('combat summary icons resolve and renderer keeps canonical stat values', () => {
+  assert.deepEqual(BESTIARY_ICONS, {
+    armorClass: '/icons/bestiary/ac.webp',
+    hitPoints: '/icons/bestiary/hp.webp',
+    speed: '/icons/bestiary/speed.webp',
+  });
+  for (const assetPath of Object.values(BESTIARY_ICONS)) {
+    const absolutePath = resolve('public', assetPath.replace(/^\//u, ''));
+    assert.ok(existsSync(absolutePath), `Missing Bestiary icon: ${assetPath}`);
+    const bytes = readFileSync(absolutePath);
+    assert.equal(bytes.subarray(0, 4).toString('ascii'), 'RIFF');
+    assert.equal(bytes.subarray(8, 12).toString('ascii'), 'WEBP');
+  }
+
+  const detailSource = readFileSync(resolve('src/pages/BestiaryDetailPage.tsx'), 'utf8');
+  assert.match(detailSource, /BESTIARY_ICONS\.armorClass/);
+  assert.match(detailSource, /<strong>\{entry\.armorClass\}<\/strong>/);
+  assert.match(detailSource, /average=\{entry\.hitPoints\}/);
+  assert.match(detailSource, /setRolled\(null\)/);
+  assert.match(detailSource, /Повернути стандартне/);
+});
+
+test('speed summary keeps base and additional movement types', () => {
+  const wolfSpeed = splitBestiarySpeed(entries.find(entry => entry.slug === 'wolf').speed);
+  assert.deepEqual(wolfSpeed, { base: '40 фт', value: '40', unit: 'фт.', additional: [] });
+
+  const aboleth = entries.find(entry => entry.slug === 'aboleth');
+  const abolethSpeed = splitBestiarySpeed(aboleth.speed);
+  assert.equal(abolethSpeed.value, '10');
+  assert.deepEqual(abolethSpeed.additional, ['плавання 40 фт']);
+  assert.deepEqual([abolethSpeed.base, ...abolethSpeed.additional], aboleth.speed);
 });
 
 test('dataset and bestiary pages do not leak raw invalid values', () => {
