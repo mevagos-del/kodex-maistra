@@ -11,9 +11,9 @@
   },
   "statBlockCount": 330,
   "coverage": {
-    "complete": 155,
+    "complete": 178,
     "partial": 0,
-    "missing": 175
+    "missing": 152
   },
   "monsters": [
     {
@@ -542,7 +542,7 @@
       "challengeRating": "9",
       "source": "SRD 5.2.1",
       "sourcePage": 275,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "cockatrice",
@@ -619,7 +619,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 277,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "swarm-of-crawling-claws",
@@ -685,7 +685,7 @@
       "challengeRating": "10",
       "source": "SRD 5.2.1",
       "sourcePage": 279,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "djinni",
@@ -817,7 +817,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 284,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "fire-elemental",
@@ -839,7 +839,7 @@
       "challengeRating": "9",
       "source": "SRD 5.2.1",
       "sourcePage": 285,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "flesh-golem",
@@ -861,7 +861,7 @@
       "challengeRating": "8",
       "source": "SRD 5.2.1",
       "sourcePage": 285,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "shrieker-fungus",
@@ -1180,7 +1180,7 @@
       "challengeRating": "10",
       "source": "SRD 5.2.1",
       "sourcePage": 296,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "guard",
@@ -1257,7 +1257,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 298,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "hippogriff",
@@ -1686,7 +1686,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 312,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "oni",
@@ -1730,7 +1730,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 313,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "phase-spider",
@@ -1785,7 +1785,7 @@
       "challengeRating": "16",
       "source": "SRD 5.2.1",
       "sourcePage": 315,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "priest-acolyte",
@@ -2115,7 +2115,7 @@
       "challengeRating": "21",
       "source": "SRD 5.2.1",
       "sourcePage": 326,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "specter",
@@ -2137,7 +2137,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 327,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "sphinx-of-lore",
@@ -2148,7 +2148,7 @@
       "challengeRating": "11",
       "source": "SRD 5.2.1",
       "sourcePage": 327,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "sphinx-of-valor",
@@ -2159,7 +2159,7 @@
       "challengeRating": "17",
       "source": "SRD 5.2.1",
       "sourcePage": 328,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "spirit-naga",
@@ -2214,7 +2214,7 @@
       "challengeRating": "7",
       "source": "SRD 5.2.1",
       "sourcePage": 330,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "stone-golem",
@@ -2236,7 +2236,7 @@
       "challengeRating": "13",
       "source": "SRD 5.2.1",
       "sourcePage": 330,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "succubus",
@@ -2302,7 +2302,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 333,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "troll-limb",
@@ -2313,7 +2313,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 333,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "unicorn",
@@ -2324,7 +2324,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 334,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "vampire-familiar",
@@ -2962,7 +2962,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 350,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-elk",
@@ -2973,7 +2973,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 351,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-fire-beetle",
@@ -3050,7 +3050,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 352,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "giant-rat",

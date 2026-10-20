@@ -50,7 +50,7 @@ test('SRD 5.2.1 manifest contains all 330 canonical stat blocks', () => {
   assert.equal(bestiaryManifest.monsters.length, 330);
   assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.slug)).size, 330);
   assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.nameOriginal)).size, 330);
-  assert.deepEqual(bestiaryManifest.coverage, { complete: 155, partial: 0, missing: 175 });
+  assert.deepEqual(bestiaryManifest.coverage, { complete: 178, partial: 0, missing: 152 });
   assert.ok(bestiaryManifest.monsters.every(entry => entry.source === 'SRD 5.2.1'));
   assert.ok(bestiaryManifest.monsters.every(entry => Number.isInteger(entry.sourcePage) && entry.sourcePage >= 258 && entry.sourcePage <= 364));
   assert.ok(bestiaryManifest.monsters.every(entry => entry.slug && entry.nameOriginal && entry.size && entry.creatureType && entry.identityLine));
@@ -74,11 +74,11 @@ test('runtime Bestiary identities map to Complete manifest entries', () => {
   }
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Complete').length, entries.length);
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Partial').length, 0);
-  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 175);
+  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 152);
 });
 
 test('imported Bestiary batches have unique official identities and valid sources', () => {
-  assert.equal(entries.length, 155);
+  assert.equal(entries.length, 178);
   assert.equal(new Set(entries.map(entry => entry.slug)).size, entries.length);
   assert.equal(new Set(entries.map(entry => entry.nameOriginal)).size, entries.length);
   assert.ok(entries.every(entry => entry.entity === 'monster' && entry.status === 'official'));
@@ -103,14 +103,20 @@ test('conditional renderer branches are represented by real data only', () => {
     'goblin-boss', 'mage', 'elephant', 'giant-ape', 'giant-hyena', 'giant-seahorse', 'mammoth', 'panther',
     'saber-toothed-tiger', 'tiger', 'assassin', 'cultist-fanatic', 'archmage', 'pirate-captain',
     'priest-acolyte', 'priest', 'spy', 'vampire-familiar', 'clay-golem', 'gorgon', 'magmin', 'stone-golem', 'xorn',
+    'cloud-giant', 'frost-giant', 'troll', 'couatl', 'deva', 'planetar', 'solar', 'unicorn',
   ]);
   assert.deepEqual(entries.filter(entry => entry.reactions?.length).map(entry => entry.slug), [
     'goblin-boss', 'mage', 'giant-octopus', 'octopus', 'bandit-captain', 'gladiator', 'knight', 'archmage',
     'noble', 'pirate-captain', 'warrior-veteran', 'black-pudding', 'shrieker-fungus', 'ochre-jelly', 'shield-guardian',
+    'stone-giant', 'sphinx-of-wonder',
   ]);
-  assert.deepEqual(entries.filter(entry => entry.legendaryActions?.length).map(entry => entry.slug), ['aboleth']);
+  assert.deepEqual(entries.filter(entry => entry.legendaryActions?.length).map(entry => entry.slug), [
+    'aboleth', 'solar', 'sphinx-of-lore', 'sphinx-of-valor', 'unicorn',
+  ]);
   assert.deepEqual(entries.filter(entry => entry.spellcasting).map(entry => entry.slug), [
     'mage', 'cultist-fanatic', 'druid', 'archmage', 'priest-acolyte', 'priest', 'djinni', 'efreeti',
+    'cloud-giant', 'storm-giant', 'couatl', 'deva', 'guardian-naga', 'planetar', 'solar', 'sphinx-of-lore',
+    'sphinx-of-valor', 'unicorn', 'giant-owl',
   ]);
   assert.ok(entries.every(entry => !entry.lairActions?.length));
 });
@@ -330,6 +336,91 @@ test('third-batch spellcasting preserves exact groups and only links available c
   assert.ok([bySlug.djinni, bySlug.efreeti].flatMap(entry => entry.relationships.spellSlugs).every(slug => spellSlugs.has(slug)));
 });
 
+test('all 23 canonical Giants and Celestials are complete in the fourth batch', () => {
+  const manifestEntries = bestiaryManifest.monsters.filter(entry => ['Giant', 'Celestial'].includes(entry.creatureType));
+  const runtimeEntries = entries.filter(entry => ['Велетень', 'Небожитель'].includes(entry.creatureType));
+  assert.equal(manifestEntries.length, 23);
+  assert.deepEqual(
+    Object.fromEntries(['Giant', 'Celestial'].map(type => [type, manifestEntries.filter(entry => entry.creatureType === type).length])),
+    { Giant: 10, Celestial: 13 },
+  );
+  assert.ok(manifestEntries.every(entry => entry.coverageStatus === 'Complete'));
+  assert.deepEqual(new Set(runtimeEntries.map(entry => entry.slug)), new Set(manifestEntries.map(entry => entry.slug)));
+});
+
+test('every fourth-batch creature matches its SRD 5.2.1 core and action-group signature', () => {
+  const expected = {
+    'cloud-giant': ['14', '200', '16к12 + 96', '+4', 14, '9', 5000, '+4', 275, [0, 3, 1, 0, 0, 3]],
+    ettin: ['12', '85', '10к10 + 30', '−1', 9, '4', 1100, '+2', 284, [0, 3, 0, 0, 0, 0]],
+    'fire-giant': ['18', '162', '13к12 + 78', '+3', 13, '9', 5000, '+4', 285, [0, 3, 0, 0, 0, 0]],
+    'frost-giant': ['15', '149', '13к12 + 65', '+2', 12, '8', 3900, '+3', 285, [0, 3, 1, 0, 0, 0]],
+    'hill-giant': ['13', '105', '10к12 + 40', '+2', 12, '5', 1800, '+3', 298, [0, 3, 0, 0, 0, 0]],
+    ogre: ['11', '68', '8к10 + 24', '−1', 9, '2', 450, '+2', 312, [0, 2, 0, 0, 0, 0]],
+    'stone-giant': ['17', '126', '11к12 + 55', '+5', 15, '7', 2900, '+3', 330, [0, 3, 0, 1, 0, 0]],
+    'storm-giant': ['16', '230', '20к12 + 100', '+7', 17, '13', 10000, '+5', 330, [1, 4, 0, 0, 0, 2]],
+    troll: ['15', '94', '9к10 + 45', '+1', 11, '5', 1800, '+3', 333, [2, 2, 1, 0, 0, 0]],
+    'troll-limb': ['13', '14', '4к6', '+1', 11, '1/2', 100, '+2', 333, [2, 1, 0, 0, 0, 0]],
+    couatl: ['19', '60', '8к8 + 24', '+5', 15, '4', 1100, '+2', 277, [1, 2, 1, 0, 0, 3]],
+    deva: ['17', '229', '27к8 + 108', '+4', 14, '10', 5900, '+4', 279, [2, 2, 1, 0, 0, 3]],
+    'guardian-naga': ['18', '136', '16к10 + 48', '+4', 14, '10', 5900, '+4', 296, [1, 3, 0, 0, 0, 2]],
+    pegasus: ['12', '59', '7к10 + 21', '+2', 12, '2', 450, '+2', 313, [0, 1, 0, 0, 0, 0]],
+    planetar: ['19', '262', '21к10 + 147', '+10', 20, '16', 15000, '+5', 315, [3, 3, 1, 0, 0, 3]],
+    solar: ['21', '297', '22к10 + 176', '+20', 30, '21', 33000, '+7', 326, [4, 3, 1, 0, 2, 3]],
+    'sphinx-of-wonder': ['13', '24', '7к4 + 7', '+3', 13, '1', 200, '+2', 327, [1, 1, 0, 1, 0, 0]],
+    'sphinx-of-lore': ['17', '170', '20к10 + 60', '+10', 20, '11', 7200, '+4', 327, [2, 3, 0, 0, 2, 2]],
+    'sphinx-of-valor': ['17', '199', '19к10 + 95', '+12', 22, '17', 18000, '+6', 328, [2, 3, 0, 0, 2, 2]],
+    unicorn: ['12', '97', '13к10 + 26', '+8', 18, '5', 1800, '+3', 334, [2, 3, 1, 0, 2, 3]],
+    'giant-eagle': ['13', '26', '4к10 + 4', '+3', 13, '1', 200, '+2', 350, [0, 2, 0, 0, 0, 0]],
+    'giant-elk': ['14', '42', '5к12 + 10', '+6', 16, '2', 450, '+2', 351, [0, 1, 0, 0, 0, 0]],
+    'giant-owl': ['12', '19', '3к10 + 3', '+2', 12, '1/4', 50, '+2', 352, [1, 1, 0, 0, 0, 2]],
+  };
+  for (const [slug, signature] of Object.entries(expected)) {
+    const entry = bySlug[slug];
+    const groups = [entry.traits?.length ?? 0, entry.actions.length, entry.bonusActions?.length ?? 0, entry.reactions?.length ?? 0, entry.legendaryActions?.length ?? 0, entry.spellcasting?.groups.length ?? 0];
+    assert.deepEqual([
+      entry.armorClass, entry.hitPoints, entry.hitDice, entry.initiative.modifier, entry.initiative.score,
+      entry.challengeRating, entry.experiencePoints, entry.proficiencyBonus, entry.sourcePage, groups,
+    ], signature, `${slug}: SRD core/action signature`);
+  }
+});
+
+test('fourth-batch complex saves, damage, recharge and legendary mechanics remain exact', () => {
+  assert.equal(bySlug['cloud-giant'].actions.find(action => action.nameOriginal === 'Thunderous Mace').damageInstances.length, 2);
+  assert.deepEqual(bySlug['stone-giant'].reactions[0].recharge, { kind: 'roll', die: 6, minimum: 5, maximum: 6 });
+  assert.deepEqual(bySlug['storm-giant'].actions.find(action => action.nameOriginal === 'Lightning Storm').savingThrow, {
+    ability: 'dexterity', dc: 18, onFailure: 'Ціль отримує повну шкоду.', onSuccess: 'Ціль отримує половину шкоди.',
+  });
+  assert.equal(bySlug.solar.actions.find(action => action.nameOriginal === 'Slaying Bow').savingThrow.dc, 21);
+  assert.match(bySlug.solar.actions.find(action => action.nameOriginal === 'Slaying Bow').savingThrow.onFailure, /100 хітів/u);
+  assert.ok(bySlug.solar.legendaryActions.every(action => action.legendaryActionCost === 1));
+  assert.deepEqual(bySlug['sphinx-of-lore'].alternativeExperience, [{ experiencePoints: 8400, condition: 'у лігві' }]);
+  assert.deepEqual(bySlug['sphinx-of-valor'].alternativeExperience, [{ experiencePoints: 20000, condition: 'у лігві' }]);
+  const roar = bySlug['sphinx-of-valor'].actions.find(action => action.nameOriginal === 'Roar');
+  assert.deepEqual(roar.mechanicSteps.map(step => step.order), [1, 2, 3]);
+  assert.equal(roar.mechanicSteps[1].savingThrow.repeat.endsEffectOnSuccess, true);
+  assert.equal(roar.mechanicSteps[2].damageInstances[0].formula, '8к10');
+  assert.deepEqual(bySlug.ogre.gear, [
+    { nameUk: 'Велика дубина', itemSlug: 'greatclub' },
+    { nameUk: 'Дротик', quantity: 3, itemSlug: 'javelin' },
+  ]);
+});
+
+test('fourth-batch spellcasting links exact catalog spells and preserves known unresolved names', () => {
+  const casters = entries.filter(entry => ['Велетень', 'Небожитель'].includes(entry.creatureType) && entry.spellcasting);
+  for (const entry of casters) {
+    const linked = entry.spellcasting.groups.flatMap(group => group.spells.map(value => value.slug).filter(Boolean));
+    assert.ok(linked.every(slug => spellSlugs.has(slug)), `${entry.slug}: invalid spell slug`);
+    assert.deepEqual(new Set(linked), new Set(entry.relationships.spellSlugs));
+  }
+  const unresolved = casters.flatMap(entry => entry.spellcasting.groups.flatMap(group => group.spells
+    .filter(value => !value.slug).map(value => [entry.slug, value.nameUk])));
+  assert.deepEqual(unresolved, [
+    ['couatl', 'Виявлення зла й добра'], ['deva', 'Виявлення зла й добра'], ['planetar', 'Виявлення зла й добра'],
+    ['solar', 'Виявлення зла й добра'], ['sphinx-of-valor', 'Виявлення зла й добра'],
+    ['unicorn', 'Виявлення зла й добра'], ['giant-owl', 'Виявлення зла й добра'],
+  ]);
+});
+
 test('five initial creatures match exact SRD 5.2.1 core statistics', () => {
   const expected = {
     bandit: ['12', '11', '2к8 + 2', ['30 фт'], '+1', 11, '1/8', 25, '+2', 261],
@@ -441,12 +532,20 @@ test('Recharge and limited-use mechanics are preserved only where stated by the 
     ['steam-mephit-steam-breath', { kind: 'roll', die: 6, minimum: 6 }],
     ['stone-golem-slow', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
     ['water-elemental-whelm', { kind: 'roll', die: 6, minimum: 4, maximum: 6 }],
+    ['frost-giant-war-cry', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['stone-giant-deflect-missile', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['storm-giant-lightning-storm', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['sphinx-of-lore-mind-rending-roar', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
   ]);
   assert.deepEqual(blocks.filter(block => block.limitedUse).map(block => block.id), [
     'mage-misty-step', 'mage-protective-magic', 'aboleth-legendary-resistance', 'aboleth-dominate-mind',
     'giant-hyena-rampage', 'giant-octopus-ink-cloud', 'octopus-ink-cloud', 'cultist-fanatic-spiritual-weapon',
     'archmage-misty-step', 'archmage-protective-magic', 'priest-acolyte-divine-aid', 'priest-divine-aid',
     'dust-mephit-sleep', 'ice-mephit-fog-cloud', 'treant-animate-trees',
+    'troll-loathsome-limbs', 'couatl-divine-aid', 'deva-divine-aid', 'planetar-divine-aid',
+    'solar-legendary-resistance', 'solar-divine-aid', 'sphinx-of-wonder-burst-of-ingenuity',
+    'sphinx-of-lore-legendary-resistance', 'sphinx-of-valor-legendary-resistance', 'sphinx-of-valor-roar',
+    'unicorn-legendary-resistance', 'unicorn-unicorns-blessing',
   ]);
   assert.equal(formatMonsterRecharge(fixtures.rechargeableAction.recharge), 'Відновлення: 5–6');
 });

@@ -7,13 +7,14 @@
 - Канонічне джерело: **System Reference Document 5.2.1**, D&D 2024, CC-BY-4.0.
 - Розділ зі stat blocks: друковані сторінки **258-364**.
 - Повноцінних monster stat blocks: **330**.
-- Поточний runtime dataset: **155** істот.
-- Complete: **155**.
+- Поточний runtime dataset: **178** істот.
+- Complete: **178**.
 - Partial: **0**.
-- Missing: **175**.
+- Missing: **152**.
 - Перша запланована партія завершена: додано **89** відсутніх Beast stat blocks; разом із Wolf runtime містить усі **90/90** звірів SRD 5.2.1.
 - Друга запланована партія завершена: додано **24** відсутні Humanoid stat blocks; разом із Bandit і Mage runtime містить усі **26/26** гуманоїдів SRD 5.2.1.
 - Третя запланована партія завершена: додано **37** stat blocks; runtime містить усі **17/17 Elementals, 10/10 Constructs, 4/4 Oozes і 6/6 Plants** SRD 5.2.1.
+- Четверта запланована партія завершена: додано **23** stat blocks; runtime містить усі **10/10 Giants і 13/13 Celestials** SRD 5.2.1.
 
 Повний машинозчитуваний перелік із canonical English name, slug, size, type, CR і сторінкою SRD збережено в `docs/bestiary-manifest.json`. До підрахунку включено лише записи з повноцінним stat block; згадки істот у правилах не враховано.
 
@@ -102,6 +103,25 @@ Air Elemental, Animated Armor, Animated Flying Sword, Animated Rug of Smothering
 
 Невирішені exact-link випадки цієї партії: `Detect Evil and Good` і `Wall of Fire` відсутні в поточному Spells dataset. Назви збережено текстом у точних spellcasting groups без fake/dead links. Gear у stat blocks цієї партії не вказано.
 
+### Імпортована партія 4: Giants + Celestials
+
+- Джерело stat blocks: SRD 5.2.1, сторінки **275-352**.
+- Додано: **23** істоти.
+- Покриття типів: **10 Giants / 13 Celestials**, усі Complete.
+- Runtime coverage після імпорту: **178 Complete / 0 Partial / 152 Missing**.
+
+Імпортовані canonical identities:
+
+Cloud Giant, Couatl, Deva, Ettin, Fire Giant, Frost Giant, Guardian Naga, Hill Giant, Ogre, Pegasus, Planetar, Solar, Sphinx of Wonder, Sphinx of Lore, Sphinx of Valor, Stone Giant, Storm Giant, Troll, Troll Limb, Unicorn, Giant Eagle, Giant Elk, Giant Owl.
+
+Для всіх 23 записів виконано field-by-field звірку з PDF: identity, core stats, Initiative, усі шість abilities із save modifiers, optional defenses/skills/senses/languages/Gear, CR/XP/PB та повний склад Traits/Actions/Bonus Actions/Reactions/Legendary Actions/Spellcasting. Окремі regression assertions фіксують точні core/action signatures кожної істоти.
+
+Structured representation зберігає Multiattack, кілька типів шкоди, save-for-half, instant-death threshold Solar, повторний ряткидок другого Roar, послідовні три Roar effects, Recharge 5-6, X/day limits, відновлення хітів, reaction trigger Stone Giant, alternative XP у лігві та Legendary Actions Solar/Sphinx/Unicorn із вартістю. Spellcasting groups зберігають at-will/daily/action qualifiers і рівні накладання Cure Wounds та Flame Strike.
+
+Gear має чотири точні Item links: Battleaxe, Morningstar, Greatclub і три Javelins. Усі інші relationships створено лише за прямими механічними згадками. `Detect Evil and Good` відсутнє в поточному Spells dataset, тому сім його входжень залишено текстом без fake link. Відомі unresolved spell names у всьому Bestiary: `Speak with Animals`, `Detect Evil and Good`, `Wall of Fire`.
+
+Підтвердженого сумісного lore для партії не додано. SRD 5.2.1 містить stat blocks без окремих повних lore-описів. Перевірені TTG fallback-сторінки позначені як MM Basic/2025; вони не є тим самим SRD source identity, тому тексти різних джерел і редакцій не змішувалися.
+
 ## Checklist повного stat block
 
 Для кожної істоти під час імпорту перевіряються:
@@ -153,8 +173,8 @@ Renderer використовує ці поля як компактні scan fac
 ## Механічна повнота поточних записів
 
 - Attack modifiers, reach/range, основні damage formulas та secondary effects збережені для наявних атак.
-- Recharge збережено для всіх **14** source-backed дій поточного runtime: чотирьох попередніх і десяти дій третьої партії з точними діапазонами 4-6, 5-6 або 6.
-- Limited-use mechanics збережено для всіх **15** поточних блоків, включно із Sleep/Fog Cloud мефітів та Animate Trees ента.
+- Recharge збережено для всіх **18** source-backed дій поточного runtime з точними діапазонами 4-6, 5-6 або 6.
+- Limited-use mechanics збережено для всіх **27** поточних блоків, включно з Legendary Resistance, Divine Aid, Roar, Troll limbs і реакцією Sphinx of Wonder.
 - Складні механіки першої партії включають swallow із повторною шкодою, web object defenses, grapple/restrained/prone conditions, swarm immunities/resistances, кілька типів руху, multiattack та save-for-half effects.
 - Mage має 12 чинних spell links, точні at-will/daily groups, рівень накладання Fireball, qualifier Mage Armor та structured 3/day Bonus Action/Reaction.
 - Aboleth має structured saves/outcomes, repeated save, daily limits, alternative XP і Legendary Actions із тригером, відновленням та вартістю.
@@ -162,12 +182,13 @@ Renderer використовує ці поля як компактні scan fac
 
 ## Описи та lore
 
-- Істот із заповненим `description`: **0 із 155**.
-- Істот без description: **155 із 155**.
-- Artwork: **0 із 155**.
+- Істот із заповненим `description`: **0 із 178**.
+- Істот без description: **178 із 178**.
+- Artwork: **0 із 178**.
 - Monster A-Z у SRD 5.2.1 є stat-block reference і не надає окремих повних lore-блоків для імпортованої Beast-партії. Перевірка дозволених fallback-джерел не дала послідовного повного відкритого lore-набору, придатного для точного перенесення всієї партії.
 - Для Humanoids додатково перевірено TTG fallback. Доступні сторінки належать до MM Basic/2025 і в окремих записах мають механічні значення, що не збігаються зі SRD 5.2.1; змішувати цей lore із canonical SRD-партією небезпечно. Тому description не додано.
 - Для третьої партії перевірка TTG fallback повторно підтвердила MM Basic/2025 походження й фактичні розбіжності зі SRD 5.2.1. Description не додано, щоб не змішувати різні source identities.
+- Для четвертої партії TTG fallback також повернув MM Basic/2025 сторінки. Description не додано, оскільки їх не можна атрибутувати canonical SRD 5.2.1 записам без змішування source identities.
 - Lore не вигадується, а внутрішній fallback не показується як джерело в UI. Тому `description` навмисно лишається порожнім.
 - Поточна модель і renderer підтримують відсутній опис, один абзац і кілька абзаців.
 
@@ -175,11 +196,11 @@ Renderer використовує ці поля як компактні scan fac
 
 Поточні точні зв'язки:
 
-- Spells: **75 placements**, усі ведуть на чинні spell slug.
-- Conditions: **278 placements**, усі ведуть на чинні condition slug.
-- Items: **64 placements**, усі ведуть на чинні item slug.
+- Spells: **150 placements**, усі ведуть на чинні spell slug.
+- Conditions: **324 placements**, усі ведуть на чинні condition slug.
+- Items: **68 placements**, усі ведуть на чинні item slug.
 - Dead references: **0**.
-- Rules: **774 placements**, усі ведуть на чинні canonical rule slug.
+- Rules: **944 placements**, усі ведуть на чинні canonical rule slug.
 
 Відомі точні прогалини: Gear `Wand` у Mage та Archmage не має однозначного generic item slug; `Speak with Animals`, `Detect Evil and Good` і `Wall of Fire` відсутні у Spells dataset. До створення canonical записів fake links не додаються. Під час імпорту зв'язки створюються лише для прямої згадки spell, condition, item або rule; тематичні links заборонені.
 
@@ -192,14 +213,14 @@ Model-first pass завершено: Initiative, Gear, Rules relationships, mult
 | 1 | Beasts | 0 (89 імпортовано) | Завершено | attacks, grapple/prone/poison, senses, swarms, movement types |
 | 2 | Humanoids | 0 (24 імпортовано) | Завершено | Gear, multiattack, spellcasting, item/spell links |
 | 3 | Elementals + Constructs + Oozes + Plants | 0 (37 імпортовано) | Завершено | forms, immunities, resistances, conditional damage |
-| 4 | Giants + Celestials | 23 | Середня/висока | ranged/melee variants, saves, healing, spellcasting |
+| 4 | Giants + Celestials | 0 (23 імпортовано) | Завершено | ranged/melee variants, saves, healing, spellcasting, legendary actions |
 | 5 | Fey + Aberrations | 22 | Висока | telepathy, charms, repeated saves, spell/condition links |
 | 6 | Monstrosities | 37 | Середня/висока | recharge, poison, grapple, multiple damage components |
 | 7 | Fiends + Undead | 48 | Висока | immunities, conditions, spellcasting, regeneration |
 | 8 | Dragons | 45 | Дуже висока | breath recharge, legendary/lair actions, alternate XP, complex saves |
-| **Залишилось** |  | **175** |  |  |
+| **Залишилось** |  | **152** |  |  |
 
-Наступна партія за планом: **23 записи Giants + Celestials**. Її в цій ітерації не розпочато. Кожна партія має додавати повні доступні механіки, а не identity-only записи. Після кожної партії потрібні schema validation, dead-link checks, exact source-page verification, renderer smoke test і responsive перевірка складних stat blocks.
+Наступна партія за планом: **22 записи Fey + Aberrations**. Її в цій ітерації не розпочато. Кожна партія має додавати повні доступні механіки, а не identity-only записи. Після кожної партії потрібні schema validation, dead-link checks, exact source-page verification, renderer smoke test і responsive перевірка складних stat blocks.
 
 ## Критерії завершеності Bestiary
 

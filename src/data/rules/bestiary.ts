@@ -2,6 +2,7 @@ import { SRD_52_SOURCE } from './source';
 import type { OfficialMonsterAbility, OfficialMonsterEntry } from './types';
 import { officialBeasts } from './bestiary/beasts';
 import { officialElementalsConstructsOozesPlants } from './bestiary/elementals-constructs-oozes-plants';
+import { officialGiantsCelestials } from './bestiary/giants-celestials';
 import { officialHumanoids } from './bestiary/humanoids';
 
 const ability = (score: number, modifier: string, save = modifier): OfficialMonsterAbility => ({ score, modifier, save });
@@ -107,6 +108,7 @@ export const officialBestiary: OfficialMonsterEntry[] = [
   ...officialBeasts,
   ...officialHumanoids,
   ...officialElementalsConstructsOozesPlants,
+  ...officialGiantsCelestials,
 ];
 
 export function bestiaryBySlug(slug?: string) {
