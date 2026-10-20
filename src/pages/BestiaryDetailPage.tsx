@@ -30,6 +30,7 @@ function InlineReferences({ text, references }: { text: string; references: Best
 function HitPointsControl({ average, formula }: { average: string; formula: string }) {
   const parsed = parseDiceFormula(formula);
   const [rolled, setRolled] = useState<number | null>(null);
+  const [rollAnimationKey, setRollAnimationKey] = useState(0);
   if (!parsed) return <dd className="bestiary-combat-stat__body">
     <span className="bestiary-combat-stat__icon bestiary-combat-stat__icon--hp">
       <img src={BESTIARY_ICONS.hitPoints} alt="" />
@@ -40,13 +41,19 @@ function HitPointsControl({ average, formula }: { average: string; formula: stri
 
   const roll = () => {
     const result = rollDiceFormula(formula);
-    if (result) setRolled(result.total);
+    if (result) {
+      setRolled(result.total);
+      setRollAnimationKey(current => current + 1);
+    }
   };
 
   return <dd className="bestiary-combat-stat__body bestiary-hp-control">
-    <button className="bestiary-combat-stat__icon bestiary-combat-stat__icon--hp bestiary-hp-control__roll" type="button" onClick={roll} aria-label={rolled === null ? 'Кинути хіти' : 'Кинути хіти ще раз'} title={rolled === null ? 'Кинути хіти' : 'Кинути ще раз'}>
-      <img src={BESTIARY_ICONS.hitPoints} alt="" />
-      <strong className={rolled === null ? undefined : 'bestiary-hp-control__rolled'} key={rolled ?? 'standard'} aria-live="polite">{rolled ?? average}</strong>
+    <button className="bestiary-hp-control__roll" type="button" onClick={roll} aria-label={rolled === null ? 'Кинути хіти' : 'Кинути хіти ще раз'} title="Кинути хіти">
+      <span className={`bestiary-combat-stat__icon bestiary-combat-stat__icon--hp bestiary-hp-control__press${rollAnimationKey ? ' bestiary-hp-control__press--active' : ''}`} key={rollAnimationKey}>
+        <img src={BESTIARY_ICONS.hitPoints} alt="" />
+        <strong className={rolled === null ? undefined : 'bestiary-hp-control__rolled'} aria-live="polite">{rolled ?? average}</strong>
+        <span className="bestiary-hp-control__die" aria-hidden="true" />
+      </span>
     </button>
     <span className="bestiary-combat-stat__formula">{parsed.canonical}</span>
     {rolled !== null ? <span className="bestiary-hp-control__standard">Стандартне: {average} <button type="button" onClick={() => setRolled(null)}>Повернути стандартне</button></span> : null}

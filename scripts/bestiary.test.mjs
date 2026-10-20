@@ -141,8 +141,11 @@ test('combat summary icons resolve and renderer keeps canonical stat values', ()
   assert.match(detailSource, /BESTIARY_ICONS\.armorClass/);
   assert.match(detailSource, /<strong>\{entry\.armorClass\}<\/strong>/);
   assert.match(detailSource, /average=\{entry\.hitPoints\}/);
+  assert.match(detailSource, /setRollAnimationKey\(current => current \+ 1\)/);
+  assert.match(detailSource, /bestiary-hp-control__die/);
   assert.match(detailSource, /setRolled\(null\)/);
   assert.match(detailSource, /Повернути стандартне/);
+  assert.match(detailSource, /title="Кинути хіти"/);
 });
 
 test('speed summary keeps base and additional movement types', () => {
