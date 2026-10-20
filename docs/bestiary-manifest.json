@@ -11,9 +11,9 @@
   },
   "statBlockCount": 330,
   "coverage": {
-    "complete": 178,
+    "complete": 200,
     "partial": 0,
-    "missing": 152
+    "missing": 130
   },
   "monsters": [
     {
@@ -289,7 +289,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 266,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "blue-dragon-wyrmling",
@@ -443,7 +443,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 271,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "bugbear-warrior",
@@ -454,7 +454,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 272,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "bulette",
@@ -476,7 +476,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 272,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "chain-devil",
@@ -509,7 +509,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 273,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "clay-golem",
@@ -531,7 +531,7 @@
       "challengeRating": "8",
       "source": "SRD 5.2.1",
       "sourcePage": 274,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "cloud-giant",
@@ -663,7 +663,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 278,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "death-dog",
@@ -762,7 +762,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 282,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "earth-elemental",
@@ -949,7 +949,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 288,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "glabrezu",
@@ -993,7 +993,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 290,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "goblin-warrior",
@@ -1004,7 +1004,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 290,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "goblin-boss",
@@ -1136,7 +1136,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 295,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "grick",
@@ -1147,7 +1147,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 295,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "griffon",
@@ -1169,7 +1169,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 296,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "guardian-naga",
@@ -1279,7 +1279,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 298,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "hobgoblin-captain",
@@ -1290,7 +1290,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 299,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "homunculus",
@@ -1708,7 +1708,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 313,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "owlbear",
@@ -1928,7 +1928,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 320,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "rust-monster",
@@ -1972,7 +1972,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 321,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "scout",
@@ -1994,7 +1994,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 322,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "shadow",
@@ -2181,7 +2181,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 329,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "spy",
@@ -2544,7 +2544,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 342,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "wraith",
