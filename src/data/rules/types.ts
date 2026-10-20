@@ -219,11 +219,72 @@ export type OfficialMonsterAbility = {
   save: string;
 };
 
+export type OfficialMonsterAbilityKey = 'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma';
+
+export type OfficialMonsterInitiative = {
+  modifier: string;
+  score?: number;
+};
+
+export type OfficialMonsterGear = {
+  nameUk: string;
+  quantity?: number;
+  itemSlug?: string;
+  notes?: string;
+};
+
+export type OfficialMonsterDamageInstance = {
+  average?: number;
+  formula?: string;
+  damageType: string;
+  application?: 'on-hit' | 'failed-save' | 'successful-save' | 'start-of-turn' | 'end-of-turn' | 'other';
+  qualifier?: string;
+};
+
+export type OfficialMonsterSavingThrow = {
+  ability: OfficialMonsterAbilityKey;
+  dc: number;
+  onFailure?: string;
+  onSuccess?: string;
+  repeat?: {
+    timing: string;
+    endsEffectOnSuccess?: boolean;
+  };
+};
+
+export type OfficialMonsterRecharge =
+  | { kind: 'roll'; die: number; minimum: number; maximum?: number }
+  | { kind: 'rest'; rest: 'short' | 'long' | 'short-or-long' }
+  | { kind: 'timing'; timing: string };
+
+export type OfficialMonsterLimitedUse = {
+  uses: number;
+  period: 'day' | 'turn' | 'round' | 'short-rest' | 'long-rest' | 'short-or-long-rest';
+  each?: boolean;
+  qualifier?: string;
+};
+
+export type OfficialMonsterMechanicStep = {
+  id: string;
+  order: number;
+  label?: string;
+  text: string;
+  trigger?: string;
+  conditionSlugs?: string[];
+  damageInstances?: OfficialMonsterDamageInstance[];
+  savingThrow?: OfficialMonsterSavingThrow;
+};
+
 export type OfficialMonsterRuleBlock = {
   id: string;
   nameUk: string;
   nameOriginal?: string;
   sourceText: string;
+  damageInstances?: OfficialMonsterDamageInstance[];
+  savingThrow?: OfficialMonsterSavingThrow;
+  recharge?: OfficialMonsterRecharge;
+  limitedUse?: OfficialMonsterLimitedUse;
+  mechanicSteps?: OfficialMonsterMechanicStep[];
 };
 
 export type OfficialMonsterAction = Omit<OfficialMonsterRuleBlock, 'sourceText'> & {
@@ -235,6 +296,27 @@ export type OfficialMonsterAction = Omit<OfficialMonsterRuleBlock, 'sourceText'>
   target?: string;
   damage?: string;
   damageType?: string;
+  legendaryActionCost?: number;
+};
+
+export type OfficialMonsterSpellReference = {
+  slug: string;
+  nameUk: string;
+  castAtLevel?: number;
+  concentration?: boolean;
+  qualifier?: string;
+};
+
+export type OfficialMonsterSpellcastingGroup = {
+  label?: string;
+  mode?: 'at-will' | 'daily' | 'slots' | 'rest' | 'other';
+  uses?: number;
+  each?: boolean;
+  slotLevel?: number;
+  slots?: number;
+  recharge?: OfficialMonsterRecharge;
+  qualifier?: string;
+  spells: OfficialMonsterSpellReference[];
 };
 
 export type OfficialMonsterSpellcasting = {
@@ -242,10 +324,12 @@ export type OfficialMonsterSpellcasting = {
   saveDc?: string;
   attackBonus?: string;
   notes?: string;
-  groups: Array<{
-    label: string;
-    spells: Array<{ slug: string; nameUk: string }>;
-  }>;
+  groups: OfficialMonsterSpellcastingGroup[];
+};
+
+export type OfficialMonsterAlternativeExperience = {
+  experiencePoints: number;
+  condition: string;
 };
 
 export type OfficialMonsterEntry = OfficialCatalogBase & {
@@ -257,8 +341,10 @@ export type OfficialMonsterEntry = OfficialCatalogBase & {
   armorClass: string;
   hitPoints: string;
   hitDice: string;
+  initiative?: OfficialMonsterInitiative;
+  gear?: OfficialMonsterGear[];
   speed: string[];
-  abilities: Record<'strength' | 'dexterity' | 'constitution' | 'intelligence' | 'wisdom' | 'charisma', OfficialMonsterAbility>;
+  abilities: Record<OfficialMonsterAbilityKey, OfficialMonsterAbility>;
   skills?: Record<string, string>;
   vulnerabilities?: string[];
   resistances?: string[];
@@ -269,6 +355,7 @@ export type OfficialMonsterEntry = OfficialCatalogBase & {
   languages?: string[];
   challengeRating: string;
   experiencePoints: number;
+  alternativeExperience?: OfficialMonsterAlternativeExperience[];
   proficiencyBonus: string;
   traits?: OfficialMonsterRuleBlock[];
   actions: OfficialMonsterAction[];
@@ -284,6 +371,7 @@ export type OfficialMonsterEntry = OfficialCatalogBase & {
     spellSlugs?: string[];
     conditionSlugs?: string[];
     itemSlugs?: string[];
+    ruleSlugs?: string[];
   };
   sourcePage: number;
 };

@@ -23,14 +23,22 @@ const rulesRoot = resolve('src/data/rules');
 const { officialBestiary: entries } = loadLocalRules(resolve(rulesRoot, 'bestiary.ts'));
 const { officialConditions: conditions } = loadLocalRules(resolve(rulesRoot, 'conditions.ts'));
 const { officialItems: items } = loadLocalRules(resolve(rulesRoot, 'items'));
+const { officialRules: rules } = loadLocalRules(resolve(rulesRoot, 'rules.ts'));
 const { officialSpells: spells } = await loadSpells();
-const { extractDamageFormula, formatAttackMetadata, formatDamageText, parseDiceFormula, rollDiceFormula, splitBestiaryDescription, splitBestiarySpeed } = loadLocalRules(resolve('src/features/catalog/utils/bestiaryMechanics.ts'));
+const { bestiaryModelFixtures: fixtures } = loadLocalRules(resolve('src/data/rules/__fixtures__/bestiaryModel.ts'));
+const {
+  extractDamageFormula, formatAttackMetadata, formatDamageText, formatMonsterActionScanFacts, formatMonsterDamageInstance,
+  formatMonsterGear, formatMonsterLimitedUse, formatMonsterRecharge, formatMonsterSavingThrow, formatMonsterSavingThrowOutcomes,
+  formatMonsterSpellcastingGroupLabel, formatMonsterSpellReference, normalizeMonsterDamageInstances, normalizeMonsterMechanicSteps,
+  parseDiceFormula, rollDiceFormula, splitBestiaryDescription, splitBestiarySpeed,
+} = loadLocalRules(resolve('src/features/catalog/utils/bestiaryMechanics.ts'));
 const { segmentBestiaryReferences } = loadLocalRules(resolve('src/features/catalog/utils/bestiaryReferences.ts'));
 const { BESTIARY_ICONS } = loadLocalRules(resolve('src/features/catalog/utils/codexIcons.ts'));
 const bestiaryManifest = JSON.parse(readFileSync(resolve('docs/bestiary-manifest.json'), 'utf8'));
 const spellSlugs = new Set(spells.map(entry => entry.slug));
 const conditionSlugs = new Set(conditions.map(entry => entry.slug));
 const itemSlugs = new Set(items.map(entry => entry.slug));
+const ruleSlugs = new Set(rules.map(entry => entry.slug));
 const abilityKeys = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 const validChallengeRating = /^(?:0|1\/8|1\/4|1\/2|[1-9]|[12]\d|30)$/;
 
@@ -96,21 +104,87 @@ test('conditional renderer branches are represented by real data only', () => {
   assert.ok(entries.every(entry => !entry.lairActions?.length));
 });
 
-test('spell, condition and item relationships resolve without dead links', () => {
+test('spell, condition, item and rule relationships resolve without dead links', () => {
   for (const entry of entries) {
     const spellLinks = entry.relationships?.spellSlugs ?? [];
     const conditionLinks = entry.relationships?.conditionSlugs ?? [];
     const itemLinks = entry.relationships?.itemSlugs ?? [];
+    const ruleLinks = entry.relationships?.ruleSlugs ?? [];
     assert.equal(new Set(spellLinks).size, spellLinks.length);
     assert.equal(new Set(conditionLinks).size, conditionLinks.length);
     assert.equal(new Set(itemLinks).size, itemLinks.length);
+    assert.equal(new Set(ruleLinks).size, ruleLinks.length);
     assert.ok(spellLinks.every(slug => spellSlugs.has(slug)), `${entry.slug}: dead spell link`);
     assert.ok(conditionLinks.every(slug => conditionSlugs.has(slug)), `${entry.slug}: dead condition link`);
     assert.ok(itemLinks.every(slug => itemSlugs.has(slug)), `${entry.slug}: dead item link`);
+    assert.ok(ruleLinks.every(slug => ruleSlugs.has(slug)), `${entry.slug}: dead rule link`);
     const groupedSpells = entry.spellcasting?.groups.flatMap(group => group.spells.map(spell => spell.slug)) ?? [];
     assert.ok(groupedSpells.every(slug => spellSlugs.has(slug)), `${entry.slug}: dead spellcasting link`);
     assert.deepEqual(new Set(groupedSpells), new Set(spellLinks));
   }
+});
+
+test('extended model normalizes initiative, gear and multiple damage instances', () => {
+  assert.deepEqual(fixtures.simpleBeast.initiative, { modifier: '+2', score: 12 });
+  assert.equal(formatMonsterGear(fixtures.equippedHumanoid.gear[0]), 'Довгий меч');
+  assert.equal(formatMonsterGear(fixtures.equippedHumanoid.gear[1]), '3 × Дротик');
+  assert.ok(itemSlugs.has(fixtures.equippedHumanoid.gear[0].itemSlug));
+
+  const damages = normalizeMonsterDamageInstances(fixtures.complexAttack);
+  assert.equal(damages.length, 2);
+  assert.deepEqual(damages.map(formatMonsterDamageInstance), [
+    '1к10 + 4 рубальна шкоди',
+    '2к6 вогняна шкоди (лише в розпеченій формі)',
+  ]);
+
+  const legacy = normalizeMonsterDamageInstances({ damage: '5 (1к6 + 2)', damageType: 'колюча' });
+  assert.deepEqual(legacy.map(formatMonsterDamageInstance), ['1к6 + 2 колюча шкоди']);
+});
+
+test('structured saves, recharge and limited uses produce precise scan facts', () => {
+  assert.equal(formatMonsterSavingThrow(fixtures.complexAttack.savingThrow), 'Ряткидок: Спритність, СК 15');
+  assert.deepEqual(formatMonsterSavingThrowOutcomes(fixtures.complexAttack.savingThrow), [
+    'Провал: Ціль отримує повну додаткову шкоду.',
+    'Успіх: Ціль отримує половину додаткової шкоди.',
+    'Повторний ряткидок: наприкінці кожного свого ходу; успіх завершує ефект',
+  ]);
+  assert.equal(formatMonsterRecharge(fixtures.rechargeableAction.recharge), 'Відновлення: 5–6');
+  assert.equal(formatMonsterLimitedUse(fixtures.limitedAction.limitedUse), 'Використання: 3/день кожне');
+  assert.deepEqual(formatMonsterActionScanFacts(fixtures.legendaryAction), ['Вартість: 2 легендарні дії']);
+  assert.equal(formatMonsterRecharge({ kind: 'roll', die: 6, minimum: 7 }), null);
+  assert.equal(formatMonsterLimitedUse({ uses: 0, period: 'day' }), null);
+});
+
+test('spellcasting qualifiers, legendary costs and alternative XP remain structured', () => {
+  const [atWill, daily, slots] = fixtures.spellcaster.groups;
+  assert.equal(formatMonsterSpellcastingGroupLabel(atWill), 'Без обмежень');
+  assert.equal(formatMonsterSpellcastingGroupLabel(daily), '1/день кожне');
+  assert.equal(formatMonsterSpellcastingGroupLabel(slots), '2 комірки 3-го рівня');
+  assert.equal(formatMonsterSpellReference(atWill.spells[0]), 'Виявлення магії (Концентрація)');
+  assert.equal(formatMonsterSpellReference(daily.spells[0]), 'Куля вогню (5-й рівень)');
+  assert.ok(fixtures.spellcaster.groups.flatMap(group => group.spells).every(spell => spellSlugs.has(spell.slug)));
+  assert.equal(fixtures.legendaryAction.legendaryActionCost, 2);
+  assert.deepEqual(fixtures.alternativeExperience, [{ experiencePoints: 7200, condition: 'у лігві' }]);
+});
+
+test('ordered mechanic steps represent sequential dragon and complex attack effects', () => {
+  assert.deepEqual(normalizeMonsterMechanicSteps(fixtures.complexAttack).map(step => step.order), [1, 2]);
+  assert.deepEqual(normalizeMonsterMechanicSteps(fixtures.dragonSequence).map(step => step.id), ['fixture-area', 'fixture-damage']);
+  assert.equal(formatMonsterRecharge(fixtures.dragonSequence.recharge), 'Відновлення: 5–6');
+  assert.equal(formatMonsterSavingThrow(fixtures.dragonSequence.savingThrow), 'Ряткидок: Спритність, СК 21');
+});
+
+test('canonical relationship fixtures resolve across all supported modules', () => {
+  const relationships = {
+    ruleSlugs: ['saving-throws', 'initiative'],
+    spellSlugs: ['fireball'],
+    conditionSlugs: ['prone'],
+    itemSlugs: ['longsword'],
+  };
+  assert.ok(relationships.ruleSlugs.every(slug => ruleSlugs.has(slug)));
+  assert.ok(relationships.spellSlugs.every(slug => spellSlugs.has(slug)));
+  assert.ok(relationships.conditionSlugs.every(slug => conditionSlugs.has(slug)));
+  assert.ok(relationships.itemSlugs.every(slug => itemSlugs.has(slug)));
 });
 
 test('attack renderer helpers use Ukrainian quick-scan wording without average damage', () => {
@@ -215,14 +289,21 @@ test('detail sidebar renders optional artwork, paragraph lore, relationships and
 
 test('dataset and bestiary pages do not leak raw invalid values', () => {
   const serialized = JSON.stringify(entries);
+  const serializedFixtures = JSON.stringify(fixtures);
   assert.doesNotMatch(serialized, /\[object Object\]|undefined|null|placeholder|опис не вказано/i);
+  assert.doesNotMatch(serializedFixtures, /\[object Object\]|undefined|null|placeholder|опис не вказано/i);
   const detailSource = readFileSync(resolve('src/pages/BestiaryDetailPage.tsx'), 'utf8');
   assert.match(detailSource, /entry\.bonusActions\?\.length/);
   assert.match(detailSource, /entry\.legendaryActions\?\.length/);
   assert.match(detailSource, /entry\.spellcasting \?/);
-  assert.match(detailSource, /extractDamageFormula\(entry\.damage\)/);
+  assert.match(detailSource, /normalizeMonsterDamageInstances\(entry\)/);
+  assert.match(detailSource, /formatMonsterSavingThrowOutcomes\(entry\.savingThrow\)/);
+  assert.match(detailSource, /entry\.initiative/);
+  assert.match(detailSource, /entry\.gear\?\.length/);
+  assert.match(detailSource, /entry\.relationships\?\.ruleSlugs/);
+  assert.match(detailSource, /entry\.alternativeExperience\?\.length/);
   assert.match(detailSource, /segmentBestiaryReferences/);
   assert.match(detailSource, /HitPointsControl/);
 });
 
-console.info(JSON.stringify({ creatures: entries.length, spells: entries.flatMap(entry => entry.relationships?.spellSlugs ?? []).length, conditions: entries.flatMap(entry => entry.relationships?.conditionSlugs ?? []).length, items: entries.flatMap(entry => entry.relationships?.itemSlugs ?? []).length }));
+console.info(JSON.stringify({ creatures: entries.length, spells: entries.flatMap(entry => entry.relationships?.spellSlugs ?? []).length, conditions: entries.flatMap(entry => entry.relationships?.conditionSlugs ?? []).length, items: entries.flatMap(entry => entry.relationships?.itemSlugs ?? []).length, rules: entries.flatMap(entry => entry.relationships?.ruleSlugs ?? []).length }));

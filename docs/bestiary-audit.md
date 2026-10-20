@@ -82,27 +82,32 @@ Canonical identity визначається за англійською назв
 
 `OfficialMonsterEntry` уже підтримує multiple movement types, abilities/saves, defenses, senses, traits, action groups, spellcasting groups, legendary actions, lair actions, description, source page та relationships до Spells, Conditions і Items.
 
-Виявлені прогалини моделі перед масовим імпортом:
+Підготовчий model pass додав:
 
-| Прогалина | Вплив |
+| Структура | Підтримка |
 | --- | --- |
-| Немає structured Initiative modifier/score | Усі поточні записи втрачають офіційний Initiative block. |
-| Немає structured Gear | Спорядження доводиться наближено виражати Item relationships або втрачати. |
-| Немає `ruleSlugs` | Прямі механічні зв'язки з Rules не можна зберегти в моделі істоти. |
-| Одна structured damage formula/type на дію | Дії з кількома компонентами або типами шкоди зберігають частину механіки лише в prose. |
-| Немає structured save DC/ability/outcomes у дії | Save mechanics неможливо надійно фільтрувати чи валідувати без parsing prose. |
-| Немає structured recharge/usage/restoration | Recharge та daily limits містяться в назві або тексті. |
-| Spellcasting groups не мають per-spell qualifiers | Cast level, включення spell у AC та інші винятки губляться як structured data. |
-| Legendary actions не мають structured cost/trigger | Вартість і timing лишаються prose-only. |
-| Один XP field | Альтернативний XP, наприклад для істоти в лігві, не представлений. |
+| `OfficialMonsterInitiative` | Initiative modifier і фіксований score. |
+| `OfficialMonsterGear` | Назва, кількість, optional canonical Item slug і примітка. |
+| `OfficialMonsterDamageInstance[]` | Кілька формул і типів шкоди, application timing та qualifier. Legacy `damage`/`damageType` нормалізуються без зміни чинних записів. |
+| `OfficialMonsterSavingThrow` | Ability, DC, наслідки успіху/провалу та повторний save. |
+| `OfficialMonsterRecharge` | Dice recharge, recharge після відпочинку або точний source-backed timing. |
+| `OfficialMonsterLimitedUse` | X/day, per turn/round і відновлення після відпочинку. |
+| `OfficialMonsterMechanicStep[]` | Впорядковані послідовні механічні умови з trigger, save, damage і condition links. |
+| `OfficialMonsterSpellcastingGroup` | At will, daily, slots, rest/custom groups, uses, slot level та recharge. |
+| `OfficialMonsterSpellReference` | Cast level, Concentration і source-backed per-spell qualifier. |
+| `legendaryActionCost` | Різна вартість Legendary Actions. |
+| `alternativeExperience` | Альтернативний XP із точною умовою. |
+| `relationships.ruleSlugs` | Canonical links до Rules разом зі Spells, Conditions та Items. |
 
-Модель підтримує `lairActions`, але ця гілка поки не покрита реальним runtime-записом. Renderer зараз змінювати не потрібно; спочатку слід розширити схему TypeScript і тести для наведених механік.
+Renderer використовує ці поля як компактні scan facts у чинних секціях. Повний `sourceText` не замінюється structured переказом і залишається обов'язковим там, де механіка має додаткові умови. Порожні або невалідні structured values formatter приховує.
+
+Модель підтримує `lairActions`, але ця гілка поки не покрита реальним runtime-записом. Нові структури перевірені type-safe fixtures, а не неповними production-істотами.
 
 ## Механічна повнота поточних записів
 
 - Attack modifiers, reach/range, основні damage formulas та secondary effects збережені для наявних атак.
-- Recharge/daily-use механіки поточних істот представлені в іменах або prose, а не окремими полями.
-- Mage має spellcasting groups і 12 чинних spell links, але per-spell qualifiers потребують моделі.
+- Recharge/daily-use механіки поточних істот досі представлені в іменах або prose; нова модель дозволяє перенести їх у structured fields під час контрольованого data pass.
+- Mage має spellcasting groups і 12 чинних spell links; модель тепер підтримує per-spell cast level, Concentration та qualifiers.
 - Aboleth має legendary actions і повторні condition/save effects у source text.
 - Наявність лише abilities/AC/HP без повних traits/actions надалі не може давати статус `Complete`.
 
@@ -123,13 +128,13 @@ Canonical identity визначається за англійською назв
 - Conditions: **4 placements** (`incapacitated`, `prone`, `charmed`, `grappled`).
 - Items: **7 placements** для Bandit і Goblin Boss.
 - Dead references: **0**.
-- Rules: **0**, бо поле `ruleSlugs` у моделі відсутнє.
+- Rules: **0** у поточних п'яти записах; модель і renderer уже підтримують `ruleSlugs` для майбутнього точного наповнення.
 
 Відома точна прогалина: Gear `Wand` у Mage не має однозначного generic item slug у поточному Items dataset. До створення такого запису fake link додавати не можна. Під час імпорту зв'язки створюються лише для прямої згадки spell, condition, item або rule; тематичні links заборонені.
 
 ## План масового імпорту
 
-Перед першою партією потрібен малий model-first pass: Initiative, Gear, Rules relationships, multi-damage/save/recharge fields, per-spell qualifiers та legendary action cost. Після цього рекомендовані партії:
+Model-first pass завершено: Initiative, Gear, Rules relationships, multi-damage/save/recharge fields, per-spell qualifiers, ordered mechanics, legendary action cost та alternative XP підтримуються. Рекомендовані партії:
 
 | Партія | Склад | Missing | Складність | Основні перевірки |
 | --- | --- | ---: | --- | --- |
@@ -157,6 +162,20 @@ Bestiary можна вважати завершеним, коли:
 6. Description додається лише там, де є допустимий source-backed lore.
 7. Тести перевіряють не лише identity, а й механічну повноту запису.
 8. Catalog/detail UI не показує `null`, `undefined`, `[object Object]`, порожні блоки чи зламані посилання.
+
+## Готовність до імпорту
+
+Data model готова представляти всі класи механік, виявлені під час аудиту 330 stat blocks. Fixtures підтверджують простого звіра, гуманоїда зі спорядженням, complex/multi-damage attack, spellcaster, Recharge, limited uses, Legendary Action із вартістю, alternative XP та дракона з послідовними механічними кроками.
+
+Поточні п'ять істот залишено backward-compatible: їхні source mechanics, HP roll, action groups і relationships не переписувалися. Вони залишаються `Partial`, доки окремий source verification pass не перенесе підтверджені Initiative, Gear, qualifiers та alternative XP у нові поля.
+
+Відомі обмеження:
+
+- модель не намагається перетворити кожну довільну source-backed умову на окремий enum; повний `sourceText` залишається потрібним;
+- українська морфологія типів шкоди й conditions зберігається у source data, formatter її не вигадує;
+- importer для автоматичного перетворення 325 записів ще не реалізований;
+- mass-import потребує per-entry source validation, exact slug resolution і перевірки відсутності 2014 mechanics;
+- manifest із 330 identities не змінювався в цій ітерації.
 
 ## Джерело
 
