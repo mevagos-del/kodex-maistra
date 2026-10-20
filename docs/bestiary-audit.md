@@ -7,12 +7,13 @@
 - Канонічне джерело: **System Reference Document 5.2.1**, D&D 2024, CC-BY-4.0.
 - Розділ зі stat blocks: друковані сторінки **258-364**.
 - Повноцінних monster stat blocks: **330**.
-- Поточний runtime dataset: **118** істот.
-- Complete: **118**.
+- Поточний runtime dataset: **155** істот.
+- Complete: **155**.
 - Partial: **0**.
-- Missing: **212**.
+- Missing: **175**.
 - Перша запланована партія завершена: додано **89** відсутніх Beast stat blocks; разом із Wolf runtime містить усі **90/90** звірів SRD 5.2.1.
 - Друга запланована партія завершена: додано **24** відсутні Humanoid stat blocks; разом із Bandit і Mage runtime містить усі **26/26** гуманоїдів SRD 5.2.1.
+- Третя запланована партія завершена: додано **37** stat blocks; runtime містить усі **17/17 Elementals, 10/10 Constructs, 4/4 Oozes і 6/6 Plants** SRD 5.2.1.
 
 Повний машинозчитуваний перелік із canonical English name, slug, size, type, CR і сторінкою SRD збережено в `docs/bestiary-manifest.json`. До підрахунку включено лише записи з повноцінним stat block; згадки істот у правилах не враховано.
 
@@ -84,6 +85,23 @@ Assassin, Bandit Captain, Berserker, Commoner, Cultist, Cultist Fanatic, Druid, 
 
 Невирішені exact-link випадки: generic `Wand` для Archmage не має однозначного Item slug; `Speak with Animals` у Druid відсутнє в поточному Spells dataset. Обидві назви відображаються як точний текст без fake/dead link.
 
+### Імпортована партія 3: Elementals + Constructs + Oozes + Plants
+
+- Джерело stat blocks: SRD 5.2.1, сторінки **258-343**.
+- Додано: **37** істот.
+- Покриття типів: **17 Elementals / 10 Constructs / 4 Oozes / 6 Plants**, усі Complete.
+- Runtime coverage після імпорту: **155 Complete / 0 Partial / 175 Missing**.
+
+Імпортовані canonical identities:
+
+Air Elemental, Animated Armor, Animated Flying Sword, Animated Rug of Smothering, Awakened Shrub, Awakened Tree, Azer Sentinel, Black Pudding, Clay Golem, Djinni, Earth Elemental, Efreeti, Fire Elemental, Flesh Golem, Shrieker Fungus, Violet Fungus, Gargoyle, Gelatinous Cube, Gorgon, Gray Ooze, Homunculus, Invisible Stalker, Iron Golem, Magmin, Dust Mephit, Ice Mephit, Magma Mephit, Steam Mephit, Merfolk Skirmisher, Ochre Jelly, Salamander, Shambling Mound, Shield Guardian, Stone Golem, Treant, Water Elemental, Xorn.
+
+Для кожного запису field-by-field звірено core stats, Initiative, abilities/saves, movement, defenses, senses, languages, CR/XP/PB і повний склад action groups. Збережено forms, поглинання шкоди, Multiattack, кілька компонентів шкоди, conditional damage, повторні ряткидки, Recharge 4-6/5-6/6, X/day, Split, Engulf/Whelm, suffocation, Spell Storing, reaction triggers і spellcasting Djinni/Efreeti.
+
+Підтвердженого сумісного lore не додано. SRD не містить окремого lore для цих stat blocks; перевірені TTG-сторінки належать до MM Basic/2025 і подекуди конфліктують зі SRD 5.2.1 (зокрема за швидкістю Clay Golem і світоглядом Djinni), тому їх не змішано з canonical SRD-партією.
+
+Невирішені exact-link випадки цієї партії: `Detect Evil and Good` і `Wall of Fire` відсутні в поточному Spells dataset. Назви збережено текстом у точних spellcasting groups без fake/dead links. Gear у stat blocks цієї партії не вказано.
+
 ## Checklist повного stat block
 
 Для кожної істоти під час імпорту перевіряються:
@@ -135,8 +153,8 @@ Renderer використовує ці поля як компактні scan fac
 ## Механічна повнота поточних записів
 
 - Attack modifiers, reach/range, основні damage formulas та secondary effects збережені для наявних атак.
-- Recharge перенесено лише для чотирьох source-backed дій: Ape Rock, Giant Ape Boulder Toss, Giant Spider Web і Swarm of Ravens Cacophony. Giant Spider має точний діапазон 5-6; решта відновлюються на 6.
-- Limited-use mechanics збережено для Giant Hyena Rampage та Ink Cloud у Giant Octopus/Octopus разом із наявними Mage й Aboleth usage limits.
+- Recharge збережено для всіх **14** source-backed дій поточного runtime: чотирьох попередніх і десяти дій третьої партії з точними діапазонами 4-6, 5-6 або 6.
+- Limited-use mechanics збережено для всіх **15** поточних блоків, включно із Sleep/Fog Cloud мефітів та Animate Trees ента.
 - Складні механіки першої партії включають swallow із повторною шкодою, web object defenses, grapple/restrained/prone conditions, swarm immunities/resistances, кілька типів руху, multiattack та save-for-half effects.
 - Mage має 12 чинних spell links, точні at-will/daily groups, рівень накладання Fireball, qualifier Mage Armor та structured 3/day Bonus Action/Reaction.
 - Aboleth має structured saves/outcomes, repeated save, daily limits, alternative XP і Legendary Actions із тригером, відновленням та вартістю.
@@ -144,11 +162,12 @@ Renderer використовує ці поля як компактні scan fac
 
 ## Описи та lore
 
-- Істот із заповненим `description`: **0 із 118**.
-- Істот без description: **118 із 118**.
-- Artwork: **0 із 118**.
+- Істот із заповненим `description`: **0 із 155**.
+- Істот без description: **155 із 155**.
+- Artwork: **0 із 155**.
 - Monster A-Z у SRD 5.2.1 є stat-block reference і не надає окремих повних lore-блоків для імпортованої Beast-партії. Перевірка дозволених fallback-джерел не дала послідовного повного відкритого lore-набору, придатного для точного перенесення всієї партії.
 - Для Humanoids додатково перевірено TTG fallback. Доступні сторінки належать до MM Basic/2025 і в окремих записах мають механічні значення, що не збігаються зі SRD 5.2.1; змішувати цей lore із canonical SRD-партією небезпечно. Тому description не додано.
+- Для третьої партії перевірка TTG fallback повторно підтвердила MM Basic/2025 походження й фактичні розбіжності зі SRD 5.2.1. Description не додано, щоб не змішувати різні source identities.
 - Lore не вигадується, а внутрішній fallback не показується як джерело в UI. Тому `description` навмисно лишається порожнім.
 - Поточна модель і renderer підтримують відсутній опис, один абзац і кілька абзаців.
 
@@ -156,13 +175,13 @@ Renderer використовує ці поля як компактні scan fac
 
 Поточні точні зв'язки:
 
-- Spells: **52 placements**, усі ведуть на чинні spell slug.
-- Conditions: **115 placements**, усі ведуть на чинні condition slug.
+- Spells: **75 placements**, усі ведуть на чинні spell slug.
+- Conditions: **278 placements**, усі ведуть на чинні condition slug.
 - Items: **64 placements**, усі ведуть на чинні item slug.
 - Dead references: **0**.
-- Rules: **555 placements**, усі ведуть на чинні canonical rule slug.
+- Rules: **774 placements**, усі ведуть на чинні canonical rule slug.
 
-Відомі точні прогалини: Gear `Wand` у Mage та Archmage не має однозначного generic item slug; `Speak with Animals` відсутнє у Spells dataset. До створення canonical записів fake links не додаються. Під час імпорту зв'язки створюються лише для прямої згадки spell, condition, item або rule; тематичні links заборонені.
+Відомі точні прогалини: Gear `Wand` у Mage та Archmage не має однозначного generic item slug; `Speak with Animals`, `Detect Evil and Good` і `Wall of Fire` відсутні у Spells dataset. До створення canonical записів fake links не додаються. Під час імпорту зв'язки створюються лише для прямої згадки spell, condition, item або rule; тематичні links заборонені.
 
 ## План масового імпорту
 
@@ -172,15 +191,15 @@ Model-first pass завершено: Initiative, Gear, Rules relationships, mult
 | --- | --- | ---: | --- | --- |
 | 1 | Beasts | 0 (89 імпортовано) | Завершено | attacks, grapple/prone/poison, senses, swarms, movement types |
 | 2 | Humanoids | 0 (24 імпортовано) | Завершено | Gear, multiattack, spellcasting, item/spell links |
-| 3 | Elementals + Constructs + Oozes + Plants | 37 | Середня | forms, immunities, resistances, conditional damage |
+| 3 | Elementals + Constructs + Oozes + Plants | 0 (37 імпортовано) | Завершено | forms, immunities, resistances, conditional damage |
 | 4 | Giants + Celestials | 23 | Середня/висока | ranged/melee variants, saves, healing, spellcasting |
 | 5 | Fey + Aberrations | 22 | Висока | telepathy, charms, repeated saves, spell/condition links |
 | 6 | Monstrosities | 37 | Середня/висока | recharge, poison, grapple, multiple damage components |
 | 7 | Fiends + Undead | 48 | Висока | immunities, conditions, spellcasting, regeneration |
 | 8 | Dragons | 45 | Дуже висока | breath recharge, legendary/lair actions, alternate XP, complex saves |
-| **Залишилось** |  | **212** |  |  |
+| **Залишилось** |  | **175** |  |  |
 
-Наступна партія за планом: **37 записів Elementals + Constructs + Oozes + Plants**. Кожна партія має додавати повні доступні механіки, а не identity-only записи. Після кожної партії потрібні schema validation, dead-link checks, exact source-page verification, renderer smoke test і responsive перевірка складних stat blocks.
+Наступна партія за планом: **23 записи Giants + Celestials**. Її в цій ітерації не розпочато. Кожна партія має додавати повні доступні механіки, а не identity-only записи. Після кожної партії потрібні schema validation, dead-link checks, exact source-page verification, renderer smoke test і responsive перевірка складних stat blocks.
 
 ## Критерії завершеності Bestiary
 
