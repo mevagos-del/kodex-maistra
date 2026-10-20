@@ -138,15 +138,15 @@ export function BestiaryDetailPage() {
   const relatedRules = (entry.relationships?.ruleSlugs ?? []).map(ruleSlug => officialRules.find(rule => rule.slug === ruleSlug)).filter(Boolean);
   const relatedSpellSlugs = new Set(entry.relationships?.spellSlugs ?? []);
   const relatedSpells = Array.from(new Map((entry.spellcasting?.groups.flatMap(group => group.spells) ?? [])
-    .filter(spell => relatedSpellSlugs.has(spell.slug))
-    .map(spell => [spell.slug, spell])).values());
+    .filter(spell => spell.slug && relatedSpellSlugs.has(spell.slug))
+    .map(spell => [spell.slug!, spell])).values());
   const inlineReferences: BestiaryInlineReference[] = [
     ...relatedConditions.map(condition => ({
       slug: condition!.slug,
       href: `/conditions/${condition!.slug}`,
       labels: Array.from(new Set([condition!.nameUk, ...(conditionAliases[condition!.slug] ?? [])])),
     })),
-    ...relatedSpells.map(spell => ({ slug: spell.slug, href: `/spells/${spell.slug}`, labels: [spell.nameUk] })),
+    ...relatedSpells.map(spell => ({ slug: spell.slug!, href: `/spells/${spell.slug}`, labels: [spell.nameUk] })),
     ...relatedRules.map(rule => ({ slug: rule!.slug, href: `/rules/${rule!.slug}`, labels: [rule!.nameUk, rule!.nameOriginal] })),
   ];
   const speed = splitBestiarySpeed(entry.speed);
@@ -183,7 +183,7 @@ export function BestiaryDetailPage() {
         {entry.spellcasting ? <section id="spellcasting" className="bestiary-section"><h2>Закляття</h2>
           <p className="bestiary-section__note">Заклинальна характеристика: {entry.spellcasting.ability}{entry.spellcasting.saveDc ? ` · СК ряткидка ${entry.spellcasting.saveDc}` : ''}{entry.spellcasting.attackBonus ? ` · до атаки ${entry.spellcasting.attackBonus}` : ''}</p>
           {entry.spellcasting.notes ? <p><InlineReferences text={entry.spellcasting.notes} references={inlineReferences} /></p> : null}
-          <dl className="bestiary-spells">{entry.spellcasting.groups.map((group, groupIndex) => <div key={`${formatMonsterSpellcastingGroupLabel(group)}-${groupIndex}`}><dt>{formatMonsterSpellcastingGroupLabel(group)}</dt><dd>{group.spells.map((spell, index) => <span key={`${spell.slug}-${index}`}>{index ? ', ' : ''}<Link to={`/spells/${spell.slug}`}>{formatMonsterSpellReference(spell)}</Link></span>)}</dd></div>)}</dl>
+          <dl className="bestiary-spells">{entry.spellcasting.groups.map((group, groupIndex) => <div key={`${formatMonsterSpellcastingGroupLabel(group)}-${groupIndex}`}><dt>{formatMonsterSpellcastingGroupLabel(group)}</dt><dd>{group.spells.map((spell, index) => <span key={`${spell.slug ?? spell.nameUk}-${index}`}>{index ? ', ' : ''}{spell.slug ? <Link to={`/spells/${spell.slug}`}>{formatMonsterSpellReference(spell)}</Link> : formatMonsterSpellReference(spell)}</span>)}</dd></div>)}</dl>
         </section> : null}
       </div>
 

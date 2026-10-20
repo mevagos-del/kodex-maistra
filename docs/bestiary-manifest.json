@@ -11,9 +11,9 @@
   },
   "statBlockCount": 330,
   "coverage": {
-    "complete": 94,
+    "complete": 118,
     "partial": 0,
-    "missing": 236
+    "missing": 212
   },
   "monsters": [
     {
@@ -91,7 +91,7 @@
       "challengeRating": "8",
       "source": "SRD 5.2.1",
       "sourcePage": 260,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "awakened-shrub",
@@ -168,7 +168,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 261,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "barbed-devil",
@@ -223,7 +223,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 263,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "black-dragon-wyrmling",
@@ -564,7 +564,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 275,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "copper-dragon-wyrmling",
@@ -641,7 +641,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 278,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "cultist-fanatic",
@@ -652,7 +652,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 278,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "darkmantle",
@@ -751,7 +751,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 282,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "dryad",
@@ -971,7 +971,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 289,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "gnoll-warrior",
@@ -1191,7 +1191,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 296,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "guard-captain",
@@ -1202,7 +1202,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 296,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "half-dragon",
@@ -1389,7 +1389,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 302,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "kobold-warrior",
@@ -1466,7 +1466,7 @@
       "challengeRating": "12",
       "source": "SRD 5.2.1",
       "sourcePage": 305,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "magmin",
@@ -1664,7 +1664,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 312,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ochre-jelly",
@@ -1752,7 +1752,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 314,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "pirate-captain",
@@ -1763,7 +1763,7 @@
       "challengeRating": "6",
       "source": "SRD 5.2.1",
       "sourcePage": 314,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "pit-fiend",
@@ -1796,7 +1796,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 316,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "priest",
@@ -1807,7 +1807,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 316,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "pseudodragon",
@@ -1983,7 +1983,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 322,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "sea-hag",
@@ -2192,7 +2192,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 329,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "stirge",
@@ -2269,7 +2269,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 332,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "tough-boss",
@@ -2280,7 +2280,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 332,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "treant",
@@ -2335,7 +2335,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 334,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "vampire-spawn",
@@ -2379,7 +2379,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 336,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "warrior-veteran",
@@ -2390,7 +2390,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 337,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "water-elemental",

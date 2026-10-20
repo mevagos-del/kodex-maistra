@@ -300,7 +300,7 @@ export type OfficialMonsterAction = Omit<OfficialMonsterRuleBlock, 'sourceText'>
 };
 
 export type OfficialMonsterSpellReference = {
-  slug: string;
+  slug?: string;
   nameUk: string;
   castAtLevel?: number;
   concentration?: boolean;

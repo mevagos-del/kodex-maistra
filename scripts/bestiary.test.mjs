@@ -50,7 +50,7 @@ test('SRD 5.2.1 manifest contains all 330 canonical stat blocks', () => {
   assert.equal(bestiaryManifest.monsters.length, 330);
   assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.slug)).size, 330);
   assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.nameOriginal)).size, 330);
-  assert.deepEqual(bestiaryManifest.coverage, { complete: 94, partial: 0, missing: 236 });
+  assert.deepEqual(bestiaryManifest.coverage, { complete: 118, partial: 0, missing: 212 });
   assert.ok(bestiaryManifest.monsters.every(entry => entry.source === 'SRD 5.2.1'));
   assert.ok(bestiaryManifest.monsters.every(entry => Number.isInteger(entry.sourcePage) && entry.sourcePage >= 258 && entry.sourcePage <= 364));
   assert.ok(bestiaryManifest.monsters.every(entry => entry.slug && entry.nameOriginal && entry.size && entry.creatureType && entry.identityLine));
@@ -74,11 +74,11 @@ test('runtime Bestiary identities map to Complete manifest entries', () => {
   }
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Complete').length, entries.length);
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Partial').length, 0);
-  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 236);
+  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 212);
 });
 
-test('first Bestiary import batch has unique official identities and valid sources', () => {
-  assert.equal(entries.length, 94);
+test('imported Bestiary batches have unique official identities and valid sources', () => {
+  assert.equal(entries.length, 118);
   assert.equal(new Set(entries.map(entry => entry.slug)).size, entries.length);
   assert.equal(new Set(entries.map(entry => entry.nameOriginal)).size, entries.length);
   assert.ok(entries.every(entry => entry.entity === 'monster' && entry.status === 'official'));
@@ -101,13 +101,17 @@ for (const entry of entries) test(`${entry.slug}: required runtime fields and va
 test('conditional renderer branches are represented by real data only', () => {
   assert.deepEqual(entries.filter(entry => entry.bonusActions?.length).map(entry => entry.slug), [
     'goblin-boss', 'mage', 'elephant', 'giant-ape', 'giant-hyena', 'giant-seahorse', 'mammoth', 'panther',
-    'saber-toothed-tiger', 'tiger',
+    'saber-toothed-tiger', 'tiger', 'assassin', 'cultist-fanatic', 'archmage', 'pirate-captain',
+    'priest-acolyte', 'priest', 'spy', 'vampire-familiar',
   ]);
   assert.deepEqual(entries.filter(entry => entry.reactions?.length).map(entry => entry.slug), [
-    'goblin-boss', 'mage', 'giant-octopus', 'octopus',
+    'goblin-boss', 'mage', 'giant-octopus', 'octopus', 'bandit-captain', 'gladiator', 'knight', 'archmage',
+    'noble', 'pirate-captain', 'warrior-veteran',
   ]);
   assert.deepEqual(entries.filter(entry => entry.legendaryActions?.length).map(entry => entry.slug), ['aboleth']);
-  assert.deepEqual(entries.filter(entry => entry.spellcasting).map(entry => entry.slug), ['mage']);
+  assert.deepEqual(entries.filter(entry => entry.spellcasting).map(entry => entry.slug), [
+    'mage', 'cultist-fanatic', 'druid', 'archmage', 'priest-acolyte', 'priest',
+  ]);
   assert.ok(entries.every(entry => !entry.lairActions?.length));
 });
 
@@ -138,6 +142,96 @@ test('representative imported Beasts match exact SRD 5.2.1 core statistics', () 
       entry.challengeRating, entry.experiencePoints, entry.proficiencyBonus, entry.sourcePage,
     ], values, `${slug}: core statistics`);
   }
+});
+
+test('all 26 canonical SRD Humanoids are complete after importing the second batch', () => {
+  const manifestHumanoids = bestiaryManifest.monsters.filter(entry => entry.creatureType === 'Humanoid');
+  const runtimeHumanoids = entries.filter(entry => entry.creatureType === 'Гуманоїд');
+  assert.equal(manifestHumanoids.length, 26);
+  assert.equal(runtimeHumanoids.length, 26);
+  assert.ok(manifestHumanoids.every(entry => entry.coverageStatus === 'Complete'));
+  assert.deepEqual(new Set(runtimeHumanoids.map(entry => entry.slug)), new Set(manifestHumanoids.map(entry => entry.slug)));
+  assert.ok(runtimeHumanoids.every(entry => entry.actions.length > 0));
+});
+
+test('every imported Humanoid matches its source-backed core and action-group signature', () => {
+  const expected = {
+    assassin: ['16', '97', '15к8 + 30', '+10', 20, '8', 3900, '+3', 260, [1, 3, 1, 0, 0]],
+    'bandit-captain': ['15', '52', '8к8 + 16', '+3', 13, '2', 450, '+2', 261, [0, 3, 0, 1, 0]],
+    berserker: ['13', '67', '9к8 + 27', '+1', 11, '2', 450, '+2', 263, [1, 1, 0, 0, 0]],
+    commoner: ['10', '4', '1к8', '+0', 10, '0', 10, '+2', 275, [1, 1, 0, 0, 0]],
+    cultist: ['12', '9', '2к8', '+1', 11, '1/8', 25, '+2', 278, [0, 1, 0, 0, 0]],
+    'cultist-fanatic': ['13', '44', '8к8 + 8', '+2', 12, '2', 450, '+2', 278, [0, 1, 1, 0, 4]],
+    druid: ['13', '44', '8к8 + 8', '+1', 11, '2', 450, '+2', 282, [0, 3, 0, 0, 3]],
+    gladiator: ['16', '112', '15к8 + 45', '+5', 15, '5', 1800, '+3', 289, [0, 3, 0, 1, 0]],
+    guard: ['16', '11', '2к8 + 2', '+1', 11, '1/8', 25, '+2', 296, [0, 1, 0, 0, 0]],
+    'guard-captain': ['18', '75', '10к8 + 30', '+4', 14, '4', 1100, '+2', 296, [0, 3, 0, 0, 0]],
+    knight: ['18', '52', '8к8 + 16', '+0', 10, '3', 700, '+2', 302, [0, 3, 0, 1, 0]],
+    archmage: ['17', '170', '31к8 + 31', '+7', 17, '12', 8000, '+4', 305, [1, 2, 1, 1, 5]],
+    noble: ['15', '9', '2к8', '+1', 11, '1/8', 25, '+2', 312, [0, 1, 0, 1, 0]],
+    pirate: ['14', '33', '6к8 + 6', '+5', 15, '1', 200, '+2', 314, [0, 3, 0, 0, 0]],
+    'pirate-captain': ['17', '84', '13к8 + 26', '+7', 17, '6', 2300, '+3', 314, [0, 3, 1, 1, 0]],
+    'priest-acolyte': ['13', '11', '2к8 + 2', '+0', 10, '1/4', 50, '+2', 316, [0, 2, 1, 0, 2]],
+    priest: ['13', '38', '7к8 + 7', '+0', 10, '2', 450, '+2', 316, [0, 3, 1, 0, 3]],
+    scout: ['13', '16', '3к8 + 3', '+2', 12, '1/2', 100, '+2', 322, [0, 3, 0, 0, 0]],
+    spy: ['12', '27', '6к8', '+4', 14, '1', 200, '+2', 329, [0, 2, 1, 0, 0]],
+    tough: ['12', '32', '5к8 + 10', '+1', 11, '1/2', 100, '+2', 332, [1, 2, 0, 0, 0]],
+    'tough-boss': ['16', '82', '11к8 + 33', '+2', 12, '4', 1100, '+2', 332, [1, 3, 0, 0, 0]],
+    'vampire-familiar': ['15', '65', '10к8 + 20', '+5', 15, '3', 700, '+2', 334, [1, 2, 1, 0, 0]],
+    'warrior-infantry': ['13', '9', '2к8', '+0', 10, '1/8', 25, '+2', 336, [1, 1, 0, 0, 0]],
+    'warrior-veteran': ['17', '65', '10к8 + 20', '+3', 13, '3', 700, '+2', 337, [0, 3, 0, 1, 0]],
+  };
+  for (const [slug, signature] of Object.entries(expected)) {
+    const entry = bySlug[slug];
+    const groups = [entry.traits?.length ?? 0, entry.actions.length, entry.bonusActions?.length ?? 0, entry.reactions?.length ?? 0, entry.spellcasting?.groups.length ?? 0];
+    assert.deepEqual([
+      entry.armorClass, entry.hitPoints, entry.hitDice, entry.initiative.modifier, entry.initiative.score,
+      entry.challengeRating, entry.experiencePoints, entry.proficiencyBonus, entry.sourcePage, groups,
+    ], signature, `${slug}: SRD core/action signature`);
+  }
+});
+
+test('Humanoid Gear uses exact Item links and preserves source quantities', () => {
+  const imported = entries.filter(entry => entry.creatureType === 'Гуманоїд' && !['bandit', 'mage'].includes(entry.slug));
+  assert.ok(imported.every(entry => entry.gear?.length));
+  assert.ok(imported.flatMap(entry => entry.gear ?? []).filter(gear => gear.itemSlug).every(gear => itemSlugs.has(gear.itemSlug)));
+  assert.deepEqual(bySlug.gladiator.gear.find(gear => gear.itemSlug === 'spear'), { nameUk: 'Спис', quantity: 3, itemSlug: 'spear' });
+  assert.deepEqual(bySlug['guard-captain'].gear.find(gear => gear.itemSlug === 'javelin'), { nameUk: 'Дротик', quantity: 6, itemSlug: 'javelin' });
+  assert.deepEqual(bySlug['vampire-familiar'].gear, [{ nameUk: 'Кинджал', quantity: 10, itemSlug: 'dagger' }]);
+  assert.deepEqual(bySlug.archmage.gear, [{ nameUk: 'Паличка' }]);
+});
+
+test('Humanoid spellcasting, usage limits and unlinked source spells remain exact', () => {
+  const casters = ['cultist-fanatic', 'druid', 'archmage', 'priest-acolyte', 'priest'].map(slug => bySlug[slug]);
+  for (const entry of casters) {
+    const linked = entry.spellcasting.groups.flatMap(group => group.spells.map(spell => spell.slug).filter(Boolean));
+    assert.deepEqual(new Set(linked), new Set(entry.relationships.spellSlugs));
+    assert.ok(linked.every(slug => spellSlugs.has(slug)));
+  }
+  const unlinked = casters.flatMap(entry => entry.spellcasting.groups.flatMap(group => group.spells.filter(spell => !spell.slug).map(spell => [entry.slug, spell.nameUk])));
+  assert.deepEqual(unlinked, [['druid', 'Розмова з тваринами']]);
+  const archmage = bySlug.archmage;
+  assert.equal(archmage.spellcasting.groups[1].spells.find(spell => spell.slug === 'lightning-bolt').castAtLevel, 7);
+  assert.equal(archmage.spellcasting.groups[2].spells.find(spell => spell.slug === 'cone-of-cold').castAtLevel, 9);
+  assert.equal(archmage.spellcasting.groups[2].spells.find(spell => spell.slug === 'mind-blank').qualifier, 'накладено до бою');
+  assert.deepEqual(archmage.bonusActions[0].limitedUse, { uses: 3, period: 'day' });
+  assert.deepEqual(bySlug['priest-acolyte'].bonusActions[0].limitedUse, { uses: 1, period: 'day' });
+  assert.deepEqual(bySlug.priest.bonusActions[0].limitedUse, { uses: 3, period: 'day' });
+});
+
+test('Humanoid saves, reactions and complex condition effects remain structured', () => {
+  assert.deepEqual(bySlug.gladiator.actions.find(action => action.id === 'gladiator-shield-bash').savingThrow, {
+    ability: 'strength', dc: 15, onFailure: 'Ціль отримує повну шкоду; якщо вона має Середній або менший розмір, також отримує стан Збитий з ніг.',
+  });
+  assert.deepEqual(bySlug.pirate.actions.find(action => action.id === 'pirate-enthralling-panache').savingThrow, {
+    ability: 'wisdom', dc: 12, onFailure: 'Ціль отримує стан Зачарований до початку наступного ходу пірата.',
+  });
+  assert.deepEqual(bySlug['pirate-captain'].bonusActions[0].savingThrow, {
+    ability: 'wisdom', dc: 14, onFailure: 'Ціль отримує стан Зачарований до початку наступного ходу пірата.',
+  });
+  assert.match(bySlug['pirate-captain'].reactions[0].sourceText, /У разі промаху/u);
+  assert.match(bySlug['vampire-familiar'].actions.find(action => action.id === 'vampire-familiar-umbral-dagger').sourceText, /Стабільною/u);
+  assert.deepEqual(bySlug['vampire-familiar'].relationships.conditionSlugs, ['charmed', 'paralyzed', 'poisoned']);
 });
 
 test('five initial creatures match exact SRD 5.2.1 core statistics', () => {
@@ -244,7 +338,8 @@ test('Recharge and limited-use mechanics are preserved only where stated by the 
   ]);
   assert.deepEqual(blocks.filter(block => block.limitedUse).map(block => block.id), [
     'mage-misty-step', 'mage-protective-magic', 'aboleth-legendary-resistance', 'aboleth-dominate-mind',
-    'giant-hyena-rampage', 'giant-octopus-ink-cloud', 'octopus-ink-cloud',
+    'giant-hyena-rampage', 'giant-octopus-ink-cloud', 'octopus-ink-cloud', 'cultist-fanatic-spiritual-weapon',
+    'archmage-misty-step', 'archmage-protective-magic', 'priest-acolyte-divine-aid', 'priest-divine-aid',
   ]);
   assert.equal(formatMonsterRecharge(fixtures.rechargeableAction.recharge), 'Відновлення: 5–6');
 });
@@ -293,7 +388,7 @@ test('spell, condition, item and rule relationships resolve without dead links',
     assert.ok(conditionLinks.every(slug => conditionSlugs.has(slug)), `${entry.slug}: dead condition link`);
     assert.ok(itemLinks.every(slug => itemSlugs.has(slug)), `${entry.slug}: dead item link`);
     assert.ok(ruleLinks.every(slug => ruleSlugs.has(slug)), `${entry.slug}: dead rule link`);
-    const groupedSpells = entry.spellcasting?.groups.flatMap(group => group.spells.map(spell => spell.slug)) ?? [];
+    const groupedSpells = entry.spellcasting?.groups.flatMap(group => group.spells.map(spell => spell.slug).filter(Boolean)) ?? [];
     assert.ok(groupedSpells.every(slug => spellSlugs.has(slug)), `${entry.slug}: dead spellcasting link`);
     assert.deepEqual(new Set(groupedSpells), new Set(spellLinks));
   }
