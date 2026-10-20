@@ -68,6 +68,13 @@ export function splitBestiarySpeed(values: string[]) {
   };
 }
 
+export function splitBestiaryDescription(value?: string) {
+  return value
+    ?.split(/\r?\n\s*\r?\n/u)
+    .map(paragraph => paragraph.trim())
+    .filter(Boolean) ?? [];
+}
+
 const attackTypeLabels: Record<string, string> = {
   'ближня': 'Ближня атака зброєю',
   'далекобійна': 'Дальня атака зброєю',

@@ -6,7 +6,7 @@ import { officialItems } from '@/data/rules/items';
 import type { OfficialMonsterAction, OfficialMonsterRuleBlock } from '@/data/rules/types';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { BESTIARY_ICONS } from '@/features/catalog/utils/codexIcons';
-import { extractDamageFormula, formatAttackMetadata, formatDamageText, parseDiceFormula, rollDiceFormula, splitBestiarySpeed } from '@/features/catalog/utils/bestiaryMechanics';
+import { extractDamageFormula, formatAttackMetadata, formatDamageText, parseDiceFormula, rollDiceFormula, splitBestiaryDescription, splitBestiarySpeed } from '@/features/catalog/utils/bestiaryMechanics';
 import { segmentBestiaryReferences, type BestiaryInlineReference } from '@/features/catalog/utils/bestiaryReferences';
 import './bestiary.css';
 
@@ -82,6 +82,7 @@ export function BestiaryDetailPage() {
   const entry = bestiaryBySlug(slug);
   if (!entry) return <main className="bestiary-detail"><h1>Істоту не знайдено</h1><Link to="/bestiary">До Бестіарію</Link></main>;
 
+  const descriptionParagraphs = splitBestiaryDescription(entry.description);
   const sections = [
     ['statistics', 'Статистика', true],
     ['traits', 'Риси', Boolean(entry.traits?.length)],
@@ -91,7 +92,7 @@ export function BestiaryDetailPage() {
     ['legendary-actions', 'Легендарні дії', Boolean(entry.legendaryActions?.length)],
     ['lair-actions', 'Дії лігва', Boolean(entry.lairActions?.length)],
     ['spellcasting', 'Закляття', Boolean(entry.spellcasting)],
-    ['description', 'Опис', Boolean(entry.description || entry.environment?.length)],
+    ['description', 'Опис', descriptionParagraphs.length > 0],
   ].filter(([, , visible]) => visible) as Array<[string, string, boolean]>;
 
   const savingThrows = Object.entries(entry.abilities)
@@ -133,7 +134,7 @@ export function BestiaryDetailPage() {
     <header className="bestiary-detail__header">
       <div className="bestiary-detail__heading"><Link to="/bestiary">‹ Бестіарій</Link><h1>{entry.nameUk}</h1><small>{entry.nameOriginal}</small>
         <p>{entry.size} {entry.creatureType}{entry.subtype ? ` (${entry.subtype})` : ''}{entry.alignment ? `, ${entry.alignment}` : ''}</p>
-        <div className="bestiary-detail__header-meta"><strong>ПО {entry.challengeRating}</strong><span>{entry.experiencePoints.toLocaleString('uk-UA')} досвіду</span><span>{entry.source.title}</span></div>
+        <div className="bestiary-detail__header-meta"><strong>ПО {entry.challengeRating}</strong><span>{entry.experiencePoints.toLocaleString('uk-UA')} досвіду</span></div>
       </div>
     </header>
     <nav className="bestiary-local-nav" aria-label="Розділи істоти">{sections.map(([id, label]) => <a href={`#${id}`} key={id}>{label}</a>)}</nav>
@@ -165,10 +166,11 @@ export function BestiaryDetailPage() {
 
       <aside className="bestiary-detail__aside">
         {entry.imageUrl ? <img className="bestiary-detail__art" src={entry.imageUrl} alt={entry.nameUk} /> : null}
-        {(entry.description || entry.environment?.length) ? <section id="description" className="bestiary-detail__lore"><h2>Опис</h2>{entry.description ? <p>{entry.description}</p> : null}{entry.environment?.length ? <p><strong>Середовище:</strong> {entry.environment.join(', ')}.</p> : null}</section> : null}
-        {(relatedConditions.length || relatedItems.length) ? <div className="bestiary-related" aria-label="Пов’язані механіки">
+        {descriptionParagraphs.length ? <section id="description" className="bestiary-detail__lore"><h2>Опис</h2>{descriptionParagraphs.map((paragraph, index) => <p key={index}>{paragraph}</p>)}{entry.environment?.length ? <p><strong>Середовище:</strong> {entry.environment.join(', ')}.</p> : null}</section> : null}
+        {(relatedConditions.length || relatedSpells.length || relatedItems.length) ? <div className="bestiary-related" aria-label="Пов’язані механіки">
           <h2>Пов’язані механіки</h2>
           {relatedConditions.length ? <p><strong>Стани:</strong> {relatedConditions.map((condition, index) => <span key={condition!.slug}>{index ? ', ' : ''}<Link to={`/conditions/${condition!.slug}`}>{condition!.nameUk}</Link></span>)}</p> : null}
+          {relatedSpells.length ? <p><strong>Закляття:</strong> {relatedSpells.map((spell, index) => <span key={spell.slug}>{index ? ', ' : ''}<Link to={`/spells/${spell.slug}`}>{spell.nameUk}</Link></span>)}</p> : null}
           {relatedItems.length ? <p><strong>Спорядження:</strong> {relatedItems.map((item, index) => <span key={item!.slug}>{index ? ', ' : ''}<Link to={`/items/${item!.slug}`}>{item!.nameUk}</Link></span>)}</p> : null}
         </div> : null}
         <footer className="bestiary-source">Джерело: <a href={entry.source.url} target="_blank" rel="noreferrer">{entry.source.title}</a>, с. {entry.sourcePage}</footer>

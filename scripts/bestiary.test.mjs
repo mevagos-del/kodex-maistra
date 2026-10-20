@@ -24,7 +24,7 @@ const { officialBestiary: entries } = loadLocalRules(resolve(rulesRoot, 'bestiar
 const { officialConditions: conditions } = loadLocalRules(resolve(rulesRoot, 'conditions.ts'));
 const { officialItems: items } = loadLocalRules(resolve(rulesRoot, 'items'));
 const { officialSpells: spells } = await loadSpells();
-const { extractDamageFormula, formatAttackMetadata, formatDamageText, parseDiceFormula, rollDiceFormula, splitBestiarySpeed } = loadLocalRules(resolve('src/features/catalog/utils/bestiaryMechanics.ts'));
+const { extractDamageFormula, formatAttackMetadata, formatDamageText, parseDiceFormula, rollDiceFormula, splitBestiaryDescription, splitBestiarySpeed } = loadLocalRules(resolve('src/features/catalog/utils/bestiaryMechanics.ts'));
 const { segmentBestiaryReferences } = loadLocalRules(resolve('src/features/catalog/utils/bestiaryReferences.ts'));
 const { BESTIARY_ICONS } = loadLocalRules(resolve('src/features/catalog/utils/codexIcons.ts'));
 const spellSlugs = new Set(spells.map(entry => entry.slug));
@@ -157,6 +157,25 @@ test('speed summary keeps base and additional movement types', () => {
   assert.equal(abolethSpeed.value, '10');
   assert.deepEqual(abolethSpeed.additional, ['плавання 40 фт']);
   assert.deepEqual([abolethSpeed.base, ...abolethSpeed.additional], aboleth.speed);
+});
+
+test('detail sidebar renders optional artwork, paragraph lore, relationships and one source in order', () => {
+  assert.deepEqual(splitBestiaryDescription(undefined), []);
+  assert.deepEqual(splitBestiaryDescription('  Один абзац.  '), ['Один абзац.']);
+  assert.deepEqual(splitBestiaryDescription('Перший абзац.\n\n  Другий абзац.\n\n'), ['Перший абзац.', 'Другий абзац.']);
+
+  const detailSource = readFileSync(resolve('src/pages/BestiaryDetailPage.tsx'), 'utf8');
+  const artworkIndex = detailSource.indexOf('entry.imageUrl ?');
+  const descriptionIndex = detailSource.indexOf('descriptionParagraphs.length ?');
+  const relationshipsIndex = detailSource.indexOf('className="bestiary-related"');
+  const sourceIndex = detailSource.indexOf('className="bestiary-source"');
+  assert.ok(artworkIndex < descriptionIndex && descriptionIndex < relationshipsIndex && relationshipsIndex < sourceIndex);
+  assert.match(detailSource, /\{entry\.imageUrl \? <img[^>]+> : null\}/);
+  assert.match(detailSource, /\{descriptionParagraphs\.length \? <section id="description"/);
+  assert.match(detailSource, /descriptionParagraphs\.map/);
+  assert.match(detailSource, /relatedConditions\.length \|\| relatedSpells\.length \|\| relatedItems\.length/);
+  assert.equal(detailSource.match(/aria-label="Пов’язані механіки"/gu)?.length, 1);
+  assert.equal(detailSource.match(/entry\.source\.title/gu)?.length, 1);
 });
 
 test('dataset and bestiary pages do not leak raw invalid values', () => {

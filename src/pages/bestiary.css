@@ -95,9 +95,10 @@
 .bestiary-spells > div + div { border-top: 1px solid rgb(184 132 61 / 16%); }
 .bestiary-spells dd { margin: 0; color: var(--archive-text-soft); line-height: 1.5; }
 
-.bestiary-detail__art { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border: 1px solid var(--archive-border); border-radius: var(--archive-radius-panel); }
+.bestiary-detail__art { width: 100%; aspect-ratio: 4 / 5; display: block; object-fit: cover; border-radius: var(--archive-radius-panel); }
 .bestiary-detail__lore, .bestiary-related { padding: 15px 2px 0; border-top: 1px solid var(--archive-border); }
-.bestiary-detail__lore p, .bestiary-related p { margin: 0; color: var(--archive-text-soft); line-height: 1.6; }
+.bestiary-detail__lore p, .bestiary-related p { margin: 0; color: var(--archive-text-soft); line-height: 1.65; }
+.bestiary-detail__lore p { font-size: .92rem; }
 .bestiary-detail__lore p + p, .bestiary-related p + p { margin-top: 9px; }
 .bestiary-related { color: var(--archive-muted); font-size: .8rem; }
 .bestiary-related > h2 { margin-bottom: 8px; font-size: 1rem; }
@@ -106,12 +107,11 @@
 
 @media (max-width: 1199px) {
   .bestiary-detail__layout { grid-template-columns: minmax(0, 1fr); }
-  .bestiary-detail__aside { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  .bestiary-detail__aside { grid-template-columns: minmax(0, 1fr); }
   .bestiary-detail__abilities { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .bestiary-detail__abilities > div:nth-child(4) { border-inline-start: 0; }
   .bestiary-detail__abilities > div:nth-child(n + 4) { border-block-start: 1px solid rgb(184 132 61 / 18%); }
-  .bestiary-detail__art { max-height: 28rem; }
-  .bestiary-source { align-self: end; }
+  .bestiary-detail__art { width: min(100%, 28rem); justify-self: start; }
 }
 
 @media (max-width: 767px) {
@@ -130,7 +130,7 @@
   .bestiary-detail__abilities > div:nth-child(n + 4) { border-block-start: 1px solid rgb(184 132 61 / 18%); }
   .bestiary-detail__secondary, .bestiary-detail__aside { grid-template-columns: minmax(0, 1fr); }
   .bestiary-spells > div { grid-template-columns: minmax(0, 1fr); gap: 3px; }
-  .bestiary-detail__art { max-height: min(30rem, 115vw); }
+  .bestiary-detail__art { width: 100%; }
 }
 
 @media (max-width: 420px) {
