@@ -70,7 +70,7 @@ function RuleList({ entries, references }: { entries: OfficialMonsterRuleBlock[]
       <p><strong>{entry.nameUk}.</strong> <InlineReferences text={entry.sourceText} references={references} /></p>
       {facts.length ? <p className="bestiary-action__facts">{facts.join(' · ')}</p> : null}
       {damageInstances.length ? <p className="bestiary-action__damage"><strong>Шкода:</strong> {damageInstances.join(' + ')}</p> : null}
-      {mechanicSteps.length ? <ol className="bestiary-action__steps">{mechanicSteps.map(step => <li key={step.id}><InlineReferences text={step.text} references={references} /></li>)}</ol> : null}
+      {!entry.sourceText && mechanicSteps.length ? <ol className="bestiary-action__steps">{mechanicSteps.map(step => <li key={step.id}><InlineReferences text={step.text} references={references} /></li>)}</ol> : null}
     </div>;
   })}</div>;
 }
@@ -89,7 +89,7 @@ function ActionList({ entries, references }: { entries: OfficialMonsterAction[];
       {damageInstances.length ? <p className="bestiary-action__damage"><strong>Шкода:</strong> {damageInstances.join(' + ')}</p> : null}
       {savingThrowOutcomes.length ? <p className="bestiary-action__outcomes">{savingThrowOutcomes.join(' · ')}</p> : null}
       {entry.sourceText ? <p className="bestiary-action__effect"><InlineReferences text={formatDamageText(entry.sourceText)} references={references} /></p> : null}
-      {mechanicSteps.length ? <ol className="bestiary-action__steps">{mechanicSteps.map(step => <li key={step.id}><InlineReferences text={step.text} references={references} /></li>)}</ol> : null}
+      {!entry.sourceText && mechanicSteps.length ? <ol className="bestiary-action__steps">{mechanicSteps.map(step => <li key={step.id}><InlineReferences text={step.text} references={references} /></li>)}</ol> : null}
     </article>;
   })}</div>;
 }

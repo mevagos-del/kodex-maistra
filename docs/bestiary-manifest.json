@@ -11,8 +11,8 @@
   },
   "statBlockCount": 330,
   "coverage": {
-    "complete": 0,
-    "partial": 5,
+    "complete": 5,
+    "partial": 0,
     "missing": 325
   },
   "monsters": [
@@ -25,7 +25,7 @@
       "challengeRating": "10",
       "source": "SRD 5.2.1",
       "sourcePage": 258,
-      "coverageStatus": "Partial"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "air-elemental",
@@ -157,7 +157,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 261,
-      "coverageStatus": "Partial"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "bandit-captain",
@@ -1015,7 +1015,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 290,
-      "coverageStatus": "Partial"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "gold-dragon-wyrmling",
@@ -1455,7 +1455,7 @@
       "challengeRating": "6",
       "source": "SRD 5.2.1",
       "sourcePage": 305,
-      "coverageStatus": "Partial"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "archmage",
@@ -3644,7 +3644,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 364,
-      "coverageStatus": "Partial"
+      "coverageStatus": "Complete"
     }
   ]
 }

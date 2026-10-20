@@ -41,6 +41,7 @@ const itemSlugs = new Set(items.map(entry => entry.slug));
 const ruleSlugs = new Set(rules.map(entry => entry.slug));
 const abilityKeys = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 const validChallengeRating = /^(?:0|1\/8|1\/4|1\/2|[1-9]|[12]\d|30)$/;
+const bySlug = Object.fromEntries(entries.map(entry => [entry.slug, entry]));
 
 test('SRD 5.2.1 manifest contains all 330 canonical stat blocks', () => {
   assert.equal(bestiaryManifest.source.id, 'srd-5-2-1');
@@ -49,7 +50,7 @@ test('SRD 5.2.1 manifest contains all 330 canonical stat blocks', () => {
   assert.equal(bestiaryManifest.monsters.length, 330);
   assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.slug)).size, 330);
   assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.nameOriginal)).size, 330);
-  assert.deepEqual(bestiaryManifest.coverage, { complete: 0, partial: 5, missing: 325 });
+  assert.deepEqual(bestiaryManifest.coverage, { complete: 5, partial: 0, missing: 325 });
   assert.ok(bestiaryManifest.monsters.every(entry => entry.source === 'SRD 5.2.1'));
   assert.ok(bestiaryManifest.monsters.every(entry => Number.isInteger(entry.sourcePage) && entry.sourcePage >= 258 && entry.sourcePage <= 364));
   assert.ok(bestiaryManifest.monsters.every(entry => entry.slug && entry.nameOriginal && entry.size && entry.creatureType && entry.identityLine));
@@ -63,15 +64,16 @@ test('SRD 5.2.1 manifest contains all 330 canonical stat blocks', () => {
   });
 });
 
-test('runtime Bestiary identities map to Partial manifest entries', () => {
+test('runtime Bestiary identities map to Complete manifest entries', () => {
   const manifestBySlug = new Map(bestiaryManifest.monsters.map(entry => [entry.slug, entry]));
   for (const entry of entries) {
     const manifestEntry = manifestBySlug.get(entry.slug);
     assert.ok(manifestEntry, `${entry.slug}: missing from canonical manifest`);
     assert.equal(manifestEntry.nameOriginal, entry.nameOriginal);
-    assert.equal(manifestEntry.coverageStatus, 'Partial');
+    assert.equal(manifestEntry.coverageStatus, 'Complete');
   }
-  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Partial').length, entries.length);
+  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Complete').length, entries.length);
+  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Partial').length, 0);
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 325);
 });
 
@@ -102,6 +104,106 @@ test('conditional renderer branches are represented by real data only', () => {
   assert.deepEqual(entries.filter(entry => entry.legendaryActions?.length).map(entry => entry.slug), ['aboleth']);
   assert.deepEqual(entries.filter(entry => entry.spellcasting).map(entry => entry.slug), ['mage']);
   assert.ok(entries.every(entry => !entry.lairActions?.length));
+});
+
+test('five initial creatures match exact SRD 5.2.1 core statistics', () => {
+  const expected = {
+    bandit: ['12', '11', '2к8 + 2', ['30 фт'], '+1', 11, '1/8', 25, '+2', 261],
+    'goblin-boss': ['17', '21', '6к6', ['30 фт'], '+2', 12, '1', 200, '+2', 290],
+    wolf: ['12', '11', '2к8 + 2', ['40 фт'], '+2', 12, '1/4', 50, '+2', 364],
+    mage: ['15', '81', '18к8', ['30 фт'], '+2', 12, '6', 2300, '+3', 305],
+    aboleth: ['17', '150', '20к10 + 40', ['10 фт', 'плавання 40 фт'], '+7', 17, '10', 5900, '+4', 258],
+  };
+  for (const [slug, values] of Object.entries(expected)) {
+    const entry = bySlug[slug];
+    assert.deepEqual([
+      entry.armorClass, entry.hitPoints, entry.hitDice, entry.speed, entry.initiative.modifier, entry.initiative.score,
+      entry.challengeRating, entry.experiencePoints, entry.proficiencyBonus, entry.sourcePage,
+    ], values, `${slug}: core statistics`);
+  }
+  assert.deepEqual(bySlug.aboleth.alternativeExperience, [{ experiencePoints: 7200, condition: 'у лігві' }]);
+});
+
+test('all six ability scores, modifiers and saves match the five SRD stat blocks', () => {
+  const compact = entry => abilityKeys.map(key => {
+    const value = entry.abilities[key];
+    return `${value.score}/${value.modifier}/${value.save}`;
+  }).join('|');
+  assert.equal(compact(bySlug.bandit), '11/+0/+0|12/+1/+1|12/+1/+1|10/+0/+0|10/+0/+0|10/+0/+0');
+  assert.equal(compact(bySlug['goblin-boss']), '10/+0/+0|15/+2/+2|10/+0/+0|10/+0/+0|8/−1/−1|10/+0/+0');
+  assert.equal(compact(bySlug.wolf), '14/+2/+2|15/+2/+2|12/+1/+1|3/−4/−4|12/+1/+1|6/−2/−2');
+  assert.equal(compact(bySlug.mage), '9/−1/−1|14/+2/+2|11/+0/+0|17/+3/+6|12/+1/+4|11/+0/+0');
+  assert.equal(compact(bySlug.aboleth), '21/+5/+5|9/−1/+3|15/+2/+6|18/+4/+8|15/+2/+6|18/+4/+4');
+});
+
+test('gear and exact item identities are complete without inventing a generic wand link', () => {
+  assert.deepEqual(bySlug.bandit.gear.map(entry => entry.itemSlug), ['leather-armor', 'light-crossbow', 'scimitar']);
+  assert.deepEqual(bySlug['goblin-boss'].gear.map(entry => entry.itemSlug), ['chain-shirt', 'scimitar', 'shield', 'shortbow']);
+  assert.deepEqual(bySlug.mage.gear, [{ nameUk: 'Паличка' }]);
+  assert.ok([...bySlug.bandit.gear, ...bySlug['goblin-boss'].gear].every(entry => itemSlugs.has(entry.itemSlug)));
+  assert.equal(itemSlugs.has('wand'), false);
+  assert.ok(!bySlug.wolf.gear && !bySlug.aboleth.gear);
+});
+
+test('traits and action groups are complete for the initial batch', () => {
+  assert.deepEqual({
+    bandit: [bySlug.bandit.traits?.length ?? 0, bySlug.bandit.actions.length, bySlug.bandit.bonusActions?.length ?? 0, bySlug.bandit.reactions?.length ?? 0, bySlug.bandit.legendaryActions?.length ?? 0],
+    goblinBoss: [bySlug['goblin-boss'].traits?.length ?? 0, bySlug['goblin-boss'].actions.length, bySlug['goblin-boss'].bonusActions.length, bySlug['goblin-boss'].reactions.length, bySlug['goblin-boss'].legendaryActions?.length ?? 0],
+    wolf: [bySlug.wolf.traits.length, bySlug.wolf.actions.length, bySlug.wolf.bonusActions?.length ?? 0, bySlug.wolf.reactions?.length ?? 0, bySlug.wolf.legendaryActions?.length ?? 0],
+    mage: [bySlug.mage.traits?.length ?? 0, bySlug.mage.actions.length, bySlug.mage.bonusActions.length, bySlug.mage.reactions.length, bySlug.mage.legendaryActions?.length ?? 0],
+    aboleth: [bySlug.aboleth.traits.length, bySlug.aboleth.actions.length, bySlug.aboleth.bonusActions?.length ?? 0, bySlug.aboleth.reactions?.length ?? 0, bySlug.aboleth.legendaryActions.length],
+  }, {
+    bandit: [0, 2, 0, 0, 0], goblinBoss: [0, 3, 1, 1, 0], wolf: [1, 1, 0, 0, 0],
+    mage: [0, 2, 1, 1, 0], aboleth: [5, 4, 0, 0, 2],
+  });
+  assert.deepEqual(bySlug['goblin-boss'].actions.map(action => action.nameUk), ['Мультиатака', 'Ятаган', 'Короткий лук']);
+  assert.deepEqual(bySlug.aboleth.actions.map(action => action.nameUk), ['Мультиатака', 'Щупальце', 'Поглинання спогадів', 'Панування над розумом']);
+});
+
+test('all structured damage formulas are valid and preserve multiple damage instances', () => {
+  const damageActions = entries.flatMap(entry => [entry.traits ?? [], entry.actions, entry.bonusActions ?? [], entry.reactions ?? [], entry.legendaryActions ?? []].flat())
+    .filter(block => block.damageInstances?.length);
+  for (const block of damageActions) {
+    assert.ok(block.damageInstances.every(damage => !damage.formula || parseDiceFormula(damage.formula)), `${block.id}: invalid damage formula`);
+  }
+  assert.equal(bySlug['goblin-boss'].actions.find(action => action.id === 'goblin-boss-scimitar').damageInstances.length, 2);
+  assert.equal(bySlug['goblin-boss'].actions.find(action => action.id === 'goblin-boss-shortbow').damageInstances.length, 2);
+  assert.equal(bySlug.aboleth.traits.find(trait => trait.id === 'aboleth-mucus-cloud').damageInstances[0].formula, '1к12');
+});
+
+test('Mage spellcasting preserves exact groups, qualifiers and limited uses', () => {
+  const mage = bySlug.mage;
+  assert.equal(mage.spellcasting.ability, 'Інтелект');
+  assert.equal(mage.spellcasting.saveDc, '14');
+  assert.deepEqual(mage.spellcasting.groups.map(formatMonsterSpellcastingGroupLabel), ['Без обмежень', '2/день кожне', '1/день кожне', 'Бонусна дія · 3/день', 'Реакція · 3/день']);
+  assert.equal(mage.spellcasting.groups[0].spells.find(spell => spell.slug === 'mage-armor').qualifier, 'враховано в КЗ');
+  assert.equal(mage.spellcasting.groups[1].spells.find(spell => spell.slug === 'fireball').castAtLevel, 4);
+  assert.deepEqual(mage.bonusActions[0].limitedUse, { uses: 3, period: 'day' });
+  assert.deepEqual(mage.reactions[0].limitedUse, { uses: 3, period: 'day' });
+  assert.equal(new Set(mage.spellcasting.groups.flatMap(group => group.spells.map(spell => spell.slug))).size, 12);
+});
+
+test('Aboleth saves, limits and legendary actions preserve exact mechanics', () => {
+  const aboleth = bySlug.aboleth;
+  const mucus = aboleth.traits.find(trait => trait.id === 'aboleth-mucus-cloud');
+  const resistance = aboleth.traits.find(trait => trait.id === 'aboleth-legendary-resistance');
+  const consume = aboleth.actions.find(action => action.id === 'aboleth-consume-memories');
+  const dominate = aboleth.actions.find(action => action.id === 'aboleth-dominate-mind');
+  assert.deepEqual(mucus.savingThrow, { ability: 'constitution', dc: 14, onFailure: 'Ціль проклята до завершення прокляття.' });
+  assert.deepEqual(mucus.mechanicSteps.map(step => step.order), [1, 2, 3]);
+  assert.deepEqual(resistance.limitedUse, { uses: 3, period: 'day', qualifier: '4/день у лігві' });
+  assert.deepEqual(consume.savingThrow, { ability: 'intelligence', dc: 16, onFailure: 'Ціль отримує повну шкоду.', onSuccess: 'Ціль отримує половину шкоди.' });
+  assert.equal(dominate.limitedUse.uses, 2);
+  assert.deepEqual([dominate.savingThrow.ability, dominate.savingThrow.dc, dominate.savingThrow.repeat.endsEffectOnSuccess], ['wisdom', 16, true]);
+  assert.ok(aboleth.legendaryActionUses.includes('Одразу після ходу іншої істоти'));
+  assert.ok(aboleth.legendaryActionUses.includes('початку кожного ходу'));
+  assert.ok(aboleth.legendaryActions.every(action => action.legendaryActionCost === 1));
+});
+
+test('no production Recharge fields are invented for the five source blocks', () => {
+  const blocks = entries.flatMap(entry => [entry.traits ?? [], entry.actions, entry.bonusActions ?? [], entry.reactions ?? [], entry.legendaryActions ?? []].flat());
+  assert.ok(blocks.every(block => block.recharge === undefined));
+  assert.equal(formatMonsterRecharge(fixtures.rechargeableAction.recharge), 'Відновлення: 5–6');
 });
 
 test('spell, condition, item and rule relationships resolve without dead links', () => {

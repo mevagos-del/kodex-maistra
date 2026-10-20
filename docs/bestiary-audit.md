@@ -8,8 +8,8 @@
 - Розділ зі stat blocks: друковані сторінки **258-364**.
 - Повноцінних monster stat blocks: **330**.
 - Поточний runtime dataset: **5** істот.
-- Complete: **0**.
-- Partial: **5**.
+- Complete: **5**.
+- Partial: **0**.
 - Missing: **325**.
 - Масовий імпорт у межах цього аудиту не виконувався.
 
@@ -45,15 +45,15 @@ Canonical identity визначається за англійською назв
 
 `Complete` означає, що збережено всі наявні в офіційному stat block механіки, а не лише identity та базові характеристики. Необов'язкове поле не вважається прогалиною, якщо його немає в офіційному записі.
 
-| Істота | Статус | Причина |
-| --- | --- | --- |
-| Aboleth | Partial | Основні риси, дії та legendary actions є; немає structured Initiative та альтернативного XP для лігва. |
-| Bandit | Partial | Основні атаки є; немає structured Initiative і Gear. |
-| Goblin Boss | Partial | Actions, Bonus Action і Reaction є; немає structured Initiative і Gear. |
-| Mage | Partial | Spellcasting і дії є; немає structured Initiative/Gear, а qualifiers `Fireball (level 4 version)` і `Mage Armor (included in AC)` не представлені окремими полями. |
-| Wolf | Partial | Основна риса й атака є; немає structured Initiative. |
+| Істота | Сторінка | Статус і повнота | Relationships | Lore / невирішене |
+| --- | ---: | --- | --- | --- |
+| Aboleth | 258 | Complete: Initiative, альтернативний XP у лігві, усі п'ять рис, чотири дії, saves/outcomes, daily limits і дві Legendary Actions з вартістю. | 2 Conditions, 6 Rules | Підтвердженого відкритого lore немає; механічних прогалин немає. |
+| Bandit | 261 | Complete: Initiative, повний Gear та обидві атаки з точними modifiers, range і damage. | 3 Items, 3 Rules | Підтвердженого відкритого lore немає; механічних прогалин немає. |
+| Goblin Boss | 290 | Complete: Initiative, Gear, Multiattack, двокомпонентна шкода за Переваги, Bonus Action і Reaction. | 4 Items, 7 Rules | Підтвердженого відкритого lore немає; механічних прогалин немає. |
+| Mage | 305 | Complete: Initiative, Gear, усі action groups, 12 spell links, точні daily groups, Fireball рівня 4 та Mage Armor, врахований у КЗ. | 12 Spells, 8 Rules | Підтвердженого відкритого lore немає. `Wand` не має однозначного item slug, тому fake link не створено. |
+| Wolf | 364 | Complete: Initiative, Pack Tactics і Bite з точним secondary condition effect. | 2 Conditions, 5 Rules | Підтвердженого відкритого lore немає; механічних прогалин немає. |
 
-Отже, чинні п'ять записів придатні для перевірки renderer, але жоден ще не відповідає суворому критерію повного SRD 5.2.1 stat block.
+Усі п'ять runtime-записів відповідають суворому критерію повного SRD 5.2.1 stat block. Відсутній lore не знижує статус, оскільки він не входить до stat block і для цих записів не знайдено придатного відкритого source-backed тексту.
 
 ## Checklist повного stat block
 
@@ -106,9 +106,9 @@ Renderer використовує ці поля як компактні scan fac
 ## Механічна повнота поточних записів
 
 - Attack modifiers, reach/range, основні damage formulas та secondary effects збережені для наявних атак.
-- Recharge/daily-use механіки поточних істот досі представлені в іменах або prose; нова модель дозволяє перенести їх у structured fields під час контрольованого data pass.
-- Mage має spellcasting groups і 12 чинних spell links; модель тепер підтримує per-spell cast level, Concentration та qualifiers.
-- Aboleth має legendary actions і повторні condition/save effects у source text.
+- У поточних п'яти stat blocks немає source-backed Recharge-механіки; її не додано штучно. Daily-use механіки Mage й Aboleth винесено у structured fields.
+- Mage має 12 чинних spell links, точні at-will/daily groups, рівень накладання Fireball, qualifier Mage Armor та structured 3/day Bonus Action/Reaction.
+- Aboleth має structured saves/outcomes, repeated save, daily limits, alternative XP і Legendary Actions із тригером, відновленням та вартістю.
 - Наявність лише abilities/AC/HP без повних traits/actions надалі не може давати статус `Complete`.
 
 ## Описи та lore
@@ -116,8 +116,8 @@ Renderer використовує ці поля як компактні scan fac
 - Істот із заповненим `description`: **0 із 5**.
 - Істот без description: **5 із 5**.
 - Artwork: **0 із 5**.
-- Monster A-Z у SRD 5.2.1 є переважно stat-block reference і не надає окремий повний lore-блок для цих п'яти записів.
-- Lore не можна вигадувати. TTG.club може бути лише внутрішнім fallback під час окремого імпорту згідно з source policy й не показується як джерело в UI.
+- Monster A-Z у SRD 5.2.1 є stat-block reference і не надає окремого повного lore-блоку для цих п'яти записів. Додатково перевірено доступні Basic Rules та внутрішній fallback; придатного повного lore-тексту для точного перенесення не знайдено.
+- Lore не вигадується, а внутрішній fallback не показується як джерело в UI. Тому `description` навмисно лишається порожнім.
 - Поточна модель і renderer підтримують відсутній опис, один абзац і кілька абзаців.
 
 ## Relationships
@@ -128,7 +128,7 @@ Renderer використовує ці поля як компактні scan fac
 - Conditions: **4 placements** (`incapacitated`, `prone`, `charmed`, `grappled`).
 - Items: **7 placements** для Bandit і Goblin Boss.
 - Dead references: **0**.
-- Rules: **0** у поточних п'яти записах; модель і renderer уже підтримують `ruleSlugs` для майбутнього точного наповнення.
+- Rules: **29 placements**, усі ведуть на чинні canonical rule slug.
 
 Відома точна прогалина: Gear `Wand` у Mage не має однозначного generic item slug у поточному Items dataset. До створення такого запису fake link додавати не можна. Під час імпорту зв'язки створюються лише для прямої згадки spell, condition, item або rule; тематичні links заборонені.
 
@@ -167,7 +167,7 @@ Bestiary можна вважати завершеним, коли:
 
 Data model готова представляти всі класи механік, виявлені під час аудиту 330 stat blocks. Fixtures підтверджують простого звіра, гуманоїда зі спорядженням, complex/multi-damage attack, spellcaster, Recharge, limited uses, Legendary Action із вартістю, alternative XP та дракона з послідовними механічними кроками.
 
-Поточні п'ять істот залишено backward-compatible: їхні source mechanics, HP roll, action groups і relationships не переписувалися. Вони залишаються `Partial`, доки окремий source verification pass не перенесе підтверджені Initiative, Gear, qualifiers та alternative XP у нові поля.
+Поточні п'ять істот пройшли source verification і мають статус `Complete`. Підтверджені Initiative, Gear, qualifiers, damage instances, saves, usage limits та alternative XP перенесено у structured fields без втрати повного rule text. Manifest тепер фіксує **5 Complete / 0 Partial / 325 Missing**.
 
 Відомі обмеження:
 
@@ -175,7 +175,8 @@ Data model готова представляти всі класи механі�
 - українська морфологія типів шкоди й conditions зберігається у source data, formatter її не вигадує;
 - importer для автоматичного перетворення 325 записів ще не реалізований;
 - mass-import потребує per-entry source validation, exact slug resolution і перевірки відсутності 2014 mechanics;
-- manifest із 330 identities не змінювався в цій ітерації.
+- generic Gear `Wand` у Mage не має однозначного item slug у поточному Items dataset, тому показується точна назва без fake relationship;
+- manifest із 330 identities не змінював canonical перелік, але coverage-status п'яти перевірених істот оновлено до `Complete`.
 
 ## Джерело
 
