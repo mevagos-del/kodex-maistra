@@ -1,21 +1,22 @@
 # Аудит Бестіарію SRD 5.2.1
 
-Дата аудиту: 20 жовтня 2026 року.
+Дата аудиту: 21 жовтня 2026 року.
 
 ## Підсумок
 
 - Канонічне джерело: **System Reference Document 5.2.1**, D&D 2024, CC-BY-4.0.
 - Розділ зі stat blocks: друковані сторінки **258-364**.
 - Повноцінних monster stat blocks: **330**.
-- Поточний runtime dataset: **200** істот.
-- Complete: **200**.
+- Поточний runtime dataset: **237** істот.
+- Complete: **237**.
 - Partial: **0**.
-- Missing: **130**.
+- Missing: **93**.
 - Перша запланована партія завершена: додано **89** відсутніх Beast stat blocks; разом із Wolf runtime містить усі **90/90** звірів SRD 5.2.1.
 - Друга запланована партія завершена: додано **24** відсутні Humanoid stat blocks; разом із Bandit і Mage runtime містить усі **26/26** гуманоїдів SRD 5.2.1.
 - Третя запланована партія завершена: додано **37** stat blocks; runtime містить усі **17/17 Elementals, 10/10 Constructs, 4/4 Oozes і 6/6 Plants** SRD 5.2.1.
 - Четверта запланована партія завершена: додано **23** stat blocks; runtime містить усі **10/10 Giants і 13/13 Celestials** SRD 5.2.1.
 - П'ята запланована партія завершена: додано **22** відсутні stat blocks; разом із Goblin Boss та Aboleth runtime містить усі **15/15 Fey і 9/9 Aberrations** SRD 5.2.1.
+- Шоста запланована партія завершена: додано **37** stat blocks; runtime містить усі **37/37 Monstrosities** SRD 5.2.1.
 
 Повний машинозчитуваний перелік із canonical English name, slug, size, type, CR і сторінкою SRD збережено в `docs/bestiary-manifest.json`. До підрахунку включено лише записи з повноцінним stat block; згадки істот у правилах не враховано.
 
@@ -57,7 +58,7 @@ Canonical identity визначається за англійською назв
 | Mage | 305 | Complete: Initiative, Gear, усі action groups, 12 spell links, точні daily groups, Fireball рівня 4 та Mage Armor, врахований у КЗ. | 12 Spells, 8 Rules | Підтвердженого відкритого lore немає. `Wand` не має однозначного item slug, тому fake link не створено. |
 | Wolf | 364 | Complete: Initiative, Pack Tactics і Bite з точним secondary condition effect. | 2 Conditions, 5 Rules | Підтвердженого відкритого lore немає; механічних прогалин немає. |
 
-Початкові п'ять runtime-записів і всі записи першої партії відповідають суворому критерію повного SRD 5.2.1 stat block. Відсутній lore не знижує статус, оскільки він не входить до stat block і не замінюється вигаданим текстом.
+Початкові п'ять runtime-записів і всі записи партій 1-6 відповідають суворому критерію повного SRD 5.2.1 stat block. Відсутній lore не знижує статус, оскільки він не входить до stat block і не замінюється вигаданим текстом.
 
 ### Імпортована партія 1: Beasts
 
@@ -142,6 +143,25 @@ Structured representation покриває телепортацію, телеп�
 
 Source-backed description не додано для жодної з 22 істот. SRD 5.2.1 і доступний Basic Rules reference дають canonical stat blocks без окремого придатного lore-шару; пошук дозволених fallback-джерел не підтвердив сумісного SRD 5.2.1 тексту, який можна було б додати без змішування source identities.
 
+### Імпортована партія 6: Monstrosities
+
+- Джерело stat blocks: SRD 5.2.1, сторінки **259-354**.
+- Додано: **37** істот.
+- Покриття типу: **37 Complete / 0 Partial / 0 Missing**.
+- Runtime coverage після імпорту: **237 Complete / 0 Partial / 93 Missing**.
+
+Імпортовані canonical identities:
+
+Ankheg, Axe Beak, Basilisk, Behir, Bulette, Chimera, Cockatrice, Death Dog, Doppelganger, Drider, Ettercap, Griffon, Harpy, Hippogriff, Hydra, Kraken, Manticore, Medusa, Merrow, Mimic, Minotaur of Baphomet, Owlbear, Phase Spider, Purple Worm, Remorhaz, Roc, Rust Monster, Stirge, Tarrasque, Werebear, Wereboar, Wererat, Weretiger, Werewolf, Winter Wolf, Flying Snake, Giant Vulture.
+
+Для кожної істоти field-by-field звірено identity, size/type/subtype/alignment, AC/HP/Hit Dice, Initiative, усі movement types, abilities і save modifiers, skills/defenses/senses/languages/Gear, CR/XP/PB, усі Traits/Actions/Bonus Actions/Reactions/Legendary Actions та source page. Окремі regression assertions фіксують точний core/action signature всіх 37 записів.
+
+Structured representation покриває Multiattack, кілька компонентів шкоди, отруту, захоплення/стримування, павутину, двоетапне скам'яніння, повторні ряткидки, forced movement, knock prone, Recharge 4-6/5-6/6, X/day, регенерацію голів Hydra, прикріплення Stirge, прокляття лікантропів, легендарний опір, alternative XP у лігві та Legendary Actions Kraken/Tarrasque. Для Behir, Kraken, Purple Worm, Remorhaz і Tarrasque поглинання збережено як ordered mechanic steps із точними порогами шкоди, ряткидками від відригування та шкодою на початку ходу. Повний `sourceText` лишено там, де structured fields не передають усіх умов.
+
+Партія додала **6 Spell, 51 Condition, 5 Item і 201 Rule placements**. Gear має точні Item links для Handaxe, Javelin, Hand Crossbow і Longbow. Усі додані relationships ведуть на чинні canonical slugs; нових unresolved references немає. Загальний перелік unresolved spell names не змінився: `Speak with Animals`, `Detect Evil and Good`, `Wall of Fire`.
+
+Source-backed description не додано для жодної з 37 істот. SRD 5.2.1 не містить окремого повного lore-шару для цих stat blocks. Перевірені fallback-сторінки TTG позначені як `MM Basic`, тобто мають інший source identity; їх не змішано з canonical SRD 5.2.1 записами. TTG не показується в UI.
+
 ## Checklist повного stat block
 
 Для кожної істоти під час імпорту перевіряються:
@@ -202,9 +222,9 @@ Renderer використовує ці поля як компактні scan fac
 
 ## Описи та lore
 
-- Істот із заповненим `description`: **0 із 200**.
-- Істот без description: **200 із 200**.
-- Artwork: **0 із 200**.
+- Істот із заповненим `description`: **0 із 237**.
+- Істот без description: **237 із 237**.
+- Artwork: **0 із 237**.
 - Monster A-Z у SRD 5.2.1 є stat-block reference і не надає окремих повних lore-блоків для імпортованої Beast-партії. Перевірка дозволених fallback-джерел не дала послідовного повного відкритого lore-набору, придатного для точного перенесення всієї партії.
 - Для Humanoids додатково перевірено TTG fallback. Доступні сторінки належать до MM Basic/2025 і в окремих записах мають механічні значення, що не збігаються зі SRD 5.2.1; змішувати цей lore із canonical SRD-партією небезпечно. Тому description не додано.
 - Для третьої партії перевірка TTG fallback повторно підтвердила MM Basic/2025 походження й фактичні розбіжності зі SRD 5.2.1. Description не додано, щоб не змішувати різні source identities.
@@ -217,11 +237,11 @@ Renderer використовує ці поля як компактні scan fac
 
 Поточні точні зв'язки:
 
-- Spells: **176 placements**, усі ведуть на чинні spell slug.
-- Conditions: **348 placements**, усі ведуть на чинні condition slug.
-- Items: **88 placements**, усі ведуть на чинні item slug.
+- Spells: **182 placements**, усі ведуть на чинні spell slug.
+- Conditions: **399 placements**, усі ведуть на чинні condition slug.
+- Items: **93 placements**, усі ведуть на чинні item slug.
 - Dead references: **0**.
-- Rules: **1089 placements**, усі ведуть на чинні canonical rule slug.
+- Rules: **1290 placements**, усі ведуть на чинні canonical rule slug.
 
 Відомі точні прогалини: Gear `Wand` у Mage та Archmage не має однозначного generic item slug; `Speak with Animals`, `Detect Evil and Good` і `Wall of Fire` відсутні у Spells dataset. До створення canonical записів fake links не додаються. Під час імпорту зв'язки створюються лише для прямої згадки spell, condition, item або rule; тематичні links заборонені.
 
@@ -236,14 +256,13 @@ Model-first pass завершено: Initiative, Gear, Rules relationships, mult
 | 3 | Elementals + Constructs + Oozes + Plants | 0 (37 імпортовано) | Завершено | forms, immunities, resistances, conditional damage |
 | 4 | Giants + Celestials | 0 (23 імпортовано) | Завершено | ranged/melee variants, saves, healing, spellcasting, legendary actions |
 | 5 | Fey + Aberrations | 0 (22 імпортовано) | Завершено | telepathy, charms, repeated saves, spell/condition links |
-| 6 | Monstrosities | 37 | Середня/висока | recharge, poison, grapple, multiple damage components |
+| 6 | Monstrosities | 0 (37 імпортовано) | Завершено | recharge, poison, grapple, petrification, swallow, legendary actions |
 | 7 | Fiends + Undead | 48 | Висока | immunities, conditions, spellcasting, regeneration |
 | 8 | Dragons | 45 | Дуже висока | breath recharge, legendary/lair actions, alternate XP, complex saves |
 
-Наступна партія за затвердженим планом: **Monstrosities, 37 істот**. У межах цієї ітерації її імпорт не розпочато.
-| **Залишилось** |  | **152** |  |  |
+| **Залишилось** |  | **93** |  |  |
 
-Наступна партія за планом: **22 записи Fey + Aberrations**. Її в цій ітерації не розпочато. Кожна партія має додавати повні доступні механіки, а не identity-only записи. Після кожної партії потрібні schema validation, dead-link checks, exact source-page verification, renderer smoke test і responsive перевірка складних stat blocks.
+Наступна партія за затвердженим планом: **Fiends + Undead, 48 істот**. Її в цій ітерації не розпочато. Кожна партія має додавати повні доступні механіки, а не identity-only записи. Після кожної партії потрібні schema validation, dead-link checks, exact source-page verification, renderer smoke test і responsive перевірка складних stat blocks.
 
 ## Критерії завершеності Bestiary
 
@@ -262,16 +281,16 @@ Bestiary можна вважати завершеним, коли:
 
 Data model готова представляти всі класи механік, виявлені під час аудиту 330 stat blocks. Fixtures підтверджують простого звіра, гуманоїда зі спорядженням, complex/multi-damage attack, spellcaster, Recharge, limited uses, Legendary Action із вартістю, alternative XP та дракона з послідовними механічними кроками.
 
-Початкові п'ять істот, усі 89 записів Beast-партії та 24 записи Humanoid-партії пройшли source verification і мають статус `Complete`. Manifest тепер фіксує **118 Complete / 0 Partial / 212 Missing**.
+Початкові п'ять істот і всі імпортовані записи партій 1-6 пройшли source verification та мають статус `Complete`. Manifest тепер фіксує **237 Complete / 0 Partial / 93 Missing**.
 
 Відомі обмеження:
 
 - модель не намагається перетворити кожну довільну source-backed умову на окремий enum; повний `sourceText` залишається потрібним;
 - українська морфологія типів шкоди й conditions зберігається у source data, formatter її не вигадує;
-- універсального importer для решти 212 записів немає; кожна завершена партія сформована з окремим source extraction та перевірена per-entry;
+- універсального importer для решти 93 записів немає; кожна завершена партія сформована з окремим source extraction та перевірена per-entry;
 - наступні партії потребують per-entry source validation, exact slug resolution і перевірки відсутності 2014 mechanics;
 - generic Gear `Wand` у Mage/Archmage і `Speak with Animals` у Druid не мають canonical target у відповідних runtime-каталогах, тому показуються без fake relationship;
-- manifest із 330 identities не змінював canonical перелік; coverage-status тепер оновлено для 118 перевірених істот.
+- manifest із 330 identities не змінював canonical перелік; coverage-status тепер оновлено для 237 перевірених істот.
 
 ## Джерело
 

@@ -5,6 +5,7 @@ import { officialElementalsConstructsOozesPlants } from './bestiary/elementals-c
 import { officialFeyAberrations } from './bestiary/fey-aberrations';
 import { officialGiantsCelestials } from './bestiary/giants-celestials';
 import { officialHumanoids } from './bestiary/humanoids';
+import { officialMonstrosities } from './bestiary/monstrosities';
 
 const ability = (score: number, modifier: string, save = modifier): OfficialMonsterAbility => ({ score, modifier, save });
 
@@ -111,6 +112,7 @@ export const officialBestiary: OfficialMonsterEntry[] = [
   ...officialElementalsConstructsOozesPlants,
   ...officialGiantsCelestials,
   ...officialFeyAberrations,
+  ...officialMonstrosities,
 ];
 
 export function bestiaryBySlug(slug?: string) {

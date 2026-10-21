@@ -50,7 +50,7 @@ test('SRD 5.2.1 manifest contains all 330 canonical stat blocks', () => {
   assert.equal(bestiaryManifest.monsters.length, 330);
   assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.slug)).size, 330);
   assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.nameOriginal)).size, 330);
-  assert.deepEqual(bestiaryManifest.coverage, { complete: 200, partial: 0, missing: 130 });
+  assert.deepEqual(bestiaryManifest.coverage, { complete: 237, partial: 0, missing: 93 });
   assert.ok(bestiaryManifest.monsters.every(entry => entry.source === 'SRD 5.2.1'));
   assert.ok(bestiaryManifest.monsters.every(entry => Number.isInteger(entry.sourcePage) && entry.sourcePage >= 258 && entry.sourcePage <= 364));
   assert.ok(bestiaryManifest.monsters.every(entry => entry.slug && entry.nameOriginal && entry.size && entry.creatureType && entry.identityLine));
@@ -74,11 +74,11 @@ test('runtime Bestiary identities map to Complete manifest entries', () => {
   }
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Complete').length, entries.length);
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Partial').length, 0);
-  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 130);
+  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 93);
 });
 
 test('imported Bestiary batches have unique official identities and valid sources', () => {
-  assert.equal(entries.length, 200);
+  assert.equal(entries.length, 237);
   assert.equal(new Set(entries.map(entry => entry.slug)).size, entries.length);
   assert.equal(new Set(entries.map(entry => entry.nameOriginal)).size, entries.length);
   assert.ok(entries.every(entry => entry.entity === 'monster' && entry.status === 'official'));
@@ -105,14 +105,17 @@ test('conditional renderer branches are represented by real data only', () => {
     'priest-acolyte', 'priest', 'spy', 'vampire-familiar', 'clay-golem', 'gorgon', 'magmin', 'stone-golem', 'xorn',
     'cloud-giant', 'frost-giant', 'troll', 'couatl', 'deva', 'planetar', 'solar', 'unicorn',
     'blink-dog', 'bugbear-stalker', 'centaur-trooper', 'dryad', 'goblin-minion', 'goblin-warrior', 'cloaker',
+    'basilisk', 'behir', 'bulette', 'doppelganger', 'drider', 'ettercap', 'medusa', 'mimic', 'phase-spider',
+    'purple-worm', 'remorhaz', 'roc', 'tarrasque', 'werebear', 'wereboar', 'wererat', 'weretiger', 'werewolf',
   ]);
   assert.deepEqual(entries.filter(entry => entry.reactions?.length).map(entry => entry.slug), [
     'goblin-boss', 'mage', 'giant-octopus', 'octopus', 'bandit-captain', 'gladiator', 'knight', 'archmage',
     'noble', 'pirate-captain', 'warrior-veteran', 'black-pudding', 'shrieker-fungus', 'ochre-jelly', 'shield-guardian',
     'stone-giant', 'sphinx-of-wonder',
+    'rust-monster',
   ]);
   assert.deepEqual(entries.filter(entry => entry.legendaryActions?.length).map(entry => entry.slug), [
-    'aboleth', 'solar', 'sphinx-of-lore', 'sphinx-of-valor', 'unicorn',
+    'aboleth', 'solar', 'sphinx-of-lore', 'sphinx-of-valor', 'unicorn', 'kraken', 'tarrasque',
   ]);
   assert.deepEqual(entries.filter(entry => entry.spellcasting).map(entry => entry.slug), [
     'mage', 'cultist-fanatic', 'druid', 'archmage', 'priest-acolyte', 'priest', 'djinni', 'efreeti',
@@ -500,6 +503,106 @@ test('fifth-batch spellcasting and exact relationships remain complete', () => {
   assert.deepEqual(bySlug.cloaker.bonusActions.find(action => action.nameOriginal === 'Phantasms').recharge, { kind: 'rest', rest: 'short-or-long' });
 });
 
+test('all 37 canonical Monstrosities are complete in the sixth batch', () => {
+  const manifestEntries = bestiaryManifest.monsters.filter(entry => entry.creatureType === 'Monstrosity');
+  const manifestSlugs = new Set(manifestEntries.map(entry => entry.slug));
+  const runtimeEntries = entries.filter(entry => manifestSlugs.has(entry.slug));
+  assert.equal(manifestEntries.length, 37);
+  assert.equal(runtimeEntries.length, 37);
+  assert.ok(manifestEntries.every(entry => entry.coverageStatus === 'Complete'));
+  assert.deepEqual(new Set(runtimeEntries.map(entry => entry.slug)), manifestSlugs);
+});
+
+test('every sixth-batch creature matches its SRD 5.2.1 core and action-group signature', () => {
+  const expected = {
+    ankheg: ['14', '45', '6к10 + 12', '+0', 10, '2', 450, '+2', 259, [1, 2, 0, 0, 0]],
+    'axe-beak': ['11', '19', '3к10 + 3', '+1', 11, '1/4', 50, '+2', 260, [0, 1, 0, 0, 0]],
+    basilisk: ['15', '52', '8к8 + 16', '−1', 9, '3', 700, '+2', 262, [0, 1, 1, 0, 0]],
+    behir: ['17', '168', '16к12 + 64', '+3', 13, '11', 7200, '+4', 263, [0, 4, 1, 0, 0]],
+    bulette: ['17', '94', '9к10 + 45', '+0', 10, '5', 1800, '+3', 272, [0, 3, 1, 0, 0]],
+    chimera: ['14', '114', '12к10 + 48', '+0', 10, '6', 2300, '+3', 273, [0, 5, 0, 0, 0]],
+    cockatrice: ['11', '22', '5к6 + 5', '+1', 11, '1/2', 100, '+2', 275, [0, 1, 0, 0, 0]],
+    'death-dog': ['12', '39', '6к8 + 12', '+2', 12, '1', 200, '+2', 279, [0, 2, 0, 0, 0]],
+    doppelganger: ['14', '52', '8к8 + 16', '+4', 14, '3', 700, '+2', 280, [0, 4, 1, 0, 0]],
+    drider: ['19', '123', '13к10 + 52', '+4', 14, '6', 2300, '+3', 281, [3, 3, 1, 0, 0]],
+    ettercap: ['13', '44', '8к8 + 8', '+2', 12, '2', 450, '+2', 284, [2, 4, 1, 0, 0]],
+    griffon: ['12', '59', '7к10 + 21', '+2', 12, '2', 450, '+2', 295, [0, 2, 0, 0, 0]],
+    harpy: ['11', '38', '7к8 + 7', '+1', 11, '1', 200, '+2', 297, [0, 2, 0, 0, 0]],
+    hippogriff: ['11', '26', '4к10 + 4', '+1', 11, '1', 200, '+2', 298, [1, 2, 0, 0, 0]],
+    hydra: ['15', '184', '16к12 + 80', '+4', 14, '8', 3900, '+3', 300, [3, 2, 0, 0, 0]],
+    kraken: ['18', '481', '26к20 + 208', '+14', 24, '23', 50000, '+7', 303, [3, 5, 0, 0, 2]],
+    manticore: ['14', '68', '8к10 + 24', '+3', 13, '3', 700, '+2', 306, [0, 3, 0, 0, 0]],
+    medusa: ['15', '127', '17к8 + 51', '+6', 16, '6', 2300, '+3', 306, [0, 4, 1, 0, 0]],
+    merrow: ['13', '45', '6к10 + 12', '+2', 12, '2', 450, '+2', 308, [1, 4, 0, 0, 0]],
+    mimic: ['12', '58', '9к8 + 18', '+3', 13, '2', 450, '+2', 308, [1, 2, 1, 0, 0]],
+    'minotaur-of-baphomet': ['14', '85', '10к10 + 30', '+0', 10, '3', 700, '+2', 309, [0, 2, 0, 0, 0]],
+    owlbear: ['13', '59', '7к10 + 21', '+1', 11, '3', 700, '+2', 313, [0, 2, 0, 0, 0]],
+    'phase-spider': ['14', '45', '7к10 + 7', '+3', 13, '3', 700, '+2', 313, [3, 2, 1, 0, 0]],
+    'purple-worm': ['18', '247', '15к20 + 90', '+3', 13, '15', 13000, '+5', 316, [1, 3, 1, 0, 0]],
+    remorhaz: ['17', '195', '17к12 + 85', '+5', 15, '11', 7200, '+4', 319, [1, 1, 1, 0, 0]],
+    roc: ['15', '248', '16к20 + 80', '+8', 18, '11', 7200, '+4', 320, [0, 3, 1, 0, 0]],
+    'rust-monster': ['14', '33', '6к8 + 6', '+1', 11, '1/2', 100, '+2', 320, [1, 4, 0, 1, 0]],
+    stirge: ['13', '5', '2к4', '+3', 13, '1/8', 25, '+2', 329, [0, 1, 0, 0, 0]],
+    tarrasque: ['25', '697', '34к20 + 340', '+18', 28, '30', 155000, '+9', 331, [4, 5, 1, 0, 2]],
+    werebear: ['15', '135', '18к8 + 54', '+3', 13, '5', 1800, '+3', 337, [0, 4, 1, 0, 0]],
+    wereboar: ['15', '97', '15к8 + 30', '+2', 12, '4', 1100, '+2', 338, [0, 4, 1, 0, 0]],
+    wererat: ['13', '60', '11к8 + 11', '+3', 13, '2', 450, '+2', 338, [0, 4, 1, 0, 0]],
+    weretiger: ['12', '120', '16к8 + 48', '+2', 12, '4', 1100, '+2', 339, [0, 4, 2, 0, 0]],
+    werewolf: ['15', '71', '11к8 + 22', '+4', 14, '3', 700, '+2', 339, [1, 4, 1, 0, 0]],
+    'winter-wolf': ['13', '75', '10к10 + 20', '+1', 11, '3', 700, '+2', 342, [1, 2, 0, 0, 0]],
+    'flying-snake': ['14', '5', '2к4', '+2', 12, '1/8', 25, '+2', 348, [1, 1, 0, 0, 0]],
+    'giant-vulture': ['10', '25', '3к10 + 9', '+0', 10, '1', 200, '+2', 354, [1, 1, 0, 0, 0]],
+  };
+  for (const [slug, signature] of Object.entries(expected)) {
+    const entry = bySlug[slug];
+    const groups = [entry.traits?.length ?? 0, entry.actions.length, entry.bonusActions?.length ?? 0, entry.reactions?.length ?? 0, entry.legendaryActions?.length ?? 0];
+    assert.deepEqual([
+      entry.armorClass, entry.hitPoints, entry.hitDice, entry.initiative.modifier, entry.initiative.score,
+      entry.challengeRating, entry.experiencePoints, entry.proficiencyBonus, entry.sourcePage, groups,
+    ], signature, `${slug}: SRD core/action signature`);
+  }
+});
+
+test('sixth-batch complex mechanics preserve saves, recharge, ordered steps and multiple damage', () => {
+  assert.equal(bySlug.ankheg.actions.find(value => value.nameOriginal === 'Bite').damageInstances.length, 2);
+  assert.equal(bySlug.basilisk.bonusActions[0].savingThrow.repeat.endsEffectOnSuccess, true);
+  assert.equal(bySlug.cockatrice.actions[0].savingThrow.onFailure.includes('24 години'), true);
+  assert.equal(bySlug.behir.bonusActions[0].mechanicSteps.length, 4);
+  assert.equal(bySlug.behir.actions.find(value => value.nameOriginal === 'Lightning Breath').damageInstances[0].average, 66);
+  assert.equal(bySlug['death-dog'].actions.find(value => value.nameOriginal === 'Bite').savingThrow.repeat.timing, 'кожні 24 години');
+  assert.deepEqual(bySlug.ettercap.actions.find(value => value.nameOriginal === 'Web Strand').recharge, { kind: 'roll', die: 6, minimum: 5, maximum: 6 });
+  assert.match(bySlug.harpy.actions.find(value => value.nameOriginal === 'Luring Song').sourceText, /Концентрацію/u);
+  assert.match(bySlug.hydra.traits.find(value => value.nameOriginal === 'Multiple Heads').sourceText, /20 хітів/u);
+  assert.deepEqual(bySlug.kraken.alternativeExperience, [{ experiencePoints: 62000, condition: 'у лігві' }]);
+  assert.equal(bySlug.kraken.legendaryActionUses, '3 (4 у лігві)');
+  assert.equal(bySlug.mimic.actions.find(value => value.nameOriginal === 'Bite').damageInstances.length, 2);
+  assert.equal(bySlug['minotaur-of-baphomet'].actions.find(value => value.nameOriginal === 'Gore').damageInstances.length, 2);
+  assert.equal(bySlug['phase-spider'].relationships.conditionSlugs.includes('paralyzed'), true);
+  assert.equal(bySlug.remorhaz.bonusActions[0].damageInstances.length, 2);
+  assert.equal(bySlug['rust-monster'].actions.find(value => value.nameOriginal === 'Antennae').savingThrow.dc, 11);
+  assert.match(bySlug['rust-monster'].reactions[0].sourceText, /Тригер/u);
+  assert.equal(bySlug.stirge.actions[0].damageInstances[1].application, 'start-of-turn');
+  assert.equal(bySlug.tarrasque.traits.find(value => value.nameOriginal === 'Legendary Resistance').limitedUse.uses, 6);
+  assert.match(bySlug.tarrasque.traits.find(value => value.nameOriginal === 'Magic Resistance').sourceText, /Перевагу/u);
+  assert.equal(bySlug.tarrasque.legendaryActions.length, 2);
+  assert.ok([...bySlug.kraken.legendaryActions, ...bySlug.tarrasque.legendaryActions].every(value => value.legendaryActionCost === 1));
+  assert.equal(bySlug.werebear.actions.find(value => value.nameOriginal === 'Bite').savingThrow.dc, 14);
+  assert.match(bySlug.werebear.actions.find(value => value.nameOriginal === 'Handaxe').sourceText, /гуманоїдній або гібридній формі/u);
+  assert.equal(bySlug['winter-wolf'].actions.find(value => value.nameOriginal === 'Cold Breath').savingThrow.onSuccess, 'Половина шкоди.');
+});
+
+test('sixth-batch exact spell, condition and equipment relationships resolve', () => {
+  assert.deepEqual(bySlug.doppelganger.relationships.spellSlugs, ['detect-thoughts']);
+  assert.deepEqual(bySlug.drider.relationships.spellSlugs, ['darkness', 'faerie-fire', 'web']);
+  assert.deepEqual(bySlug['rust-monster'].relationships.spellSlugs, ['mending']);
+  assert.deepEqual(bySlug.tarrasque.relationships.spellSlugs, ['magic-missile']);
+  assert.deepEqual(bySlug.werebear.relationships.itemSlugs, ['handaxe']);
+  assert.deepEqual(bySlug.wereboar.relationships.itemSlugs, ['javelin']);
+  assert.deepEqual(bySlug.wererat.relationships.itemSlugs, ['hand-crossbow']);
+  assert.deepEqual(bySlug.weretiger.relationships.itemSlugs, ['longbow']);
+  assert.deepEqual(bySlug.werewolf.relationships.itemSlugs, ['longbow']);
+});
+
 test('five initial creatures match exact SRD 5.2.1 core statistics', () => {
   const expected = {
     bandit: ['12', '11', '2к8 + 2', ['30 фт'], '+1', 11, '1/8', 25, '+2', 261],
@@ -620,6 +723,18 @@ test('Recharge and limited-use mechanics are preserved only where stated by the 
     ['sea-hag-death-glare', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
     ['cloaker-phantasms', { kind: 'rest', rest: 'short-or-long' }],
     ['gibbering-mouther-blinding-spittle', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['ankheg-acid-spray', { kind: 'roll', die: 6, minimum: 6 }],
+    ['basilisk-petrifying-gaze', { kind: 'roll', die: 6, minimum: 4, maximum: 6 }],
+    ['behir-lightning-breath', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['chimera-fire-breath', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['doppelganger-unsettling-visage', { kind: 'roll', die: 6, minimum: 6 }],
+    ['drider-magic-of-the-spider-queen', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['ettercap-web-strand', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['medusa-petrifying-gaze', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['minotaur-of-baphomet-gore', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['roc-swoop', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['tarrasque-thunderous-bellow', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
+    ['winter-wolf-cold-breath', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
   ]);
   assert.deepEqual(blocks.filter(block => block.limitedUse).map(block => block.id), [
     'mage-misty-step', 'mage-protective-magic', 'aboleth-legendary-resistance', 'aboleth-dominate-mind',
@@ -631,6 +746,7 @@ test('Recharge and limited-use mechanics are preserved only where stated by the 
     'sphinx-of-lore-legendary-resistance', 'sphinx-of-valor-legendary-resistance', 'sphinx-of-valor-roar',
     'unicorn-legendary-resistance', 'unicorn-unicorns-blessing',
     'green-hag-coven-magic', 'sea-hag-coven-magic', 'darkmantle-darkness-aura',
+    'kraken-legendary-resistance', 'tarrasque-legendary-resistance',
   ]);
   assert.equal(formatMonsterRecharge(fixtures.rechargeableAction.recharge), 'Відновлення: 5–6');
 });
