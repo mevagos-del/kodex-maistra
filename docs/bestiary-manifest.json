@@ -11,9 +11,9 @@
   },
   "statBlockCount": 330,
   "coverage": {
-    "complete": 237,
+    "complete": 285,
     "partial": 0,
-    "missing": 93
+    "missing": 45
   },
   "monsters": [
     {
@@ -146,7 +146,7 @@
       "challengeRating": "19",
       "source": "SRD 5.2.1",
       "sourcePage": 261,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "bandit",
@@ -179,7 +179,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 262,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "basilisk",
@@ -201,7 +201,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 262,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "behir",
@@ -344,7 +344,7 @@
       "challengeRating": "9",
       "source": "SRD 5.2.1",
       "sourcePage": 267,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "brass-dragon-wyrmling",
@@ -487,7 +487,7 @@
       "challengeRating": "8",
       "source": "SRD 5.2.1",
       "sourcePage": 272,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "chimera",
@@ -630,7 +630,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 278,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "cultist",
@@ -729,7 +729,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 281,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "drider",
@@ -795,7 +795,7 @@
       "challengeRating": "12",
       "source": "SRD 5.2.1",
       "sourcePage": 283,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ettercap",
@@ -916,7 +916,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 287,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ghost",
@@ -927,7 +927,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 287,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ghoul",
@@ -938,7 +938,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 288,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "gibbering-mouther",
@@ -960,7 +960,7 @@
       "challengeRating": "9",
       "source": "SRD 5.2.1",
       "sourcePage": 289,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "gladiator",
@@ -982,7 +982,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 289,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "goblin-minion",
@@ -1235,7 +1235,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 297,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "hezrou",
@@ -1246,7 +1246,7 @@
       "challengeRating": "8",
       "source": "SRD 5.2.1",
       "sourcePage": 298,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "hill-giant",
@@ -1312,7 +1312,7 @@
       "challengeRating": "11",
       "source": "SRD 5.2.1",
       "sourcePage": 299,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "hydra",
@@ -1334,7 +1334,7 @@
       "challengeRating": "14",
       "source": "SRD 5.2.1",
       "sourcePage": 300,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "imp",
@@ -1345,7 +1345,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 300,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "incubus",
@@ -1356,7 +1356,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 301,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "invisible-stalker",
@@ -1422,7 +1422,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 303,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "lemure",
@@ -1433,7 +1433,7 @@
       "challengeRating": "0",
       "source": "SRD 5.2.1",
       "sourcePage": 304,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "lich",
@@ -1444,7 +1444,7 @@
       "challengeRating": "21",
       "source": "SRD 5.2.1",
       "sourcePage": 304,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "mage",
@@ -1499,7 +1499,7 @@
       "challengeRating": "16",
       "source": "SRD 5.2.1",
       "sourcePage": 306,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "medusa",
@@ -1609,7 +1609,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 309,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "mummy-lord",
@@ -1620,7 +1620,7 @@
       "challengeRating": "15",
       "source": "SRD 5.2.1",
       "sourcePage": 309,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "nalfeshnee",
@@ -1631,7 +1631,7 @@
       "challengeRating": "13",
       "source": "SRD 5.2.1",
       "sourcePage": 310,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "night-hag",
@@ -1642,7 +1642,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 311,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "nightmare",
@@ -1653,7 +1653,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 311,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "noble",
@@ -1697,7 +1697,7 @@
       "challengeRating": "7",
       "source": "SRD 5.2.1",
       "sourcePage": 312,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "otyugh",
@@ -1774,7 +1774,7 @@
       "challengeRating": "20",
       "source": "SRD 5.2.1",
       "sourcePage": 314,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "planetar",
@@ -1840,7 +1840,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 317,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "rakshasa",
@@ -1851,7 +1851,7 @@
       "challengeRating": "13",
       "source": "SRD 5.2.1",
       "sourcePage": 317,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "red-dragon-wyrmling",
@@ -1950,7 +1950,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 321,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "salamander",
@@ -2005,7 +2005,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 322,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "shambling-mound",
@@ -2082,7 +2082,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 325,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "warhorse-skeleton",
@@ -2093,7 +2093,7 @@
       "challengeRating": "1/2",
       "source": "SRD 5.2.1",
       "sourcePage": 326,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "minotaur-skeleton",
@@ -2104,7 +2104,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 326,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "solar",
@@ -2126,7 +2126,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 327,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "sphinx-of-wonder",
@@ -2170,7 +2170,7 @@
       "challengeRating": "8",
       "source": "SRD 5.2.1",
       "sourcePage": 329,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "sprite",
@@ -2247,7 +2247,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 331,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "tarrasque",
@@ -2346,7 +2346,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 334,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "vampire",
@@ -2357,7 +2357,7 @@
       "challengeRating": "13",
       "source": "SRD 5.2.1",
       "sourcePage": 335,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "vrock",
@@ -2368,7 +2368,7 @@
       "challengeRating": "6",
       "source": "SRD 5.2.1",
       "sourcePage": 336,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "warrior-infantry",
@@ -2511,7 +2511,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 341,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "will-o-wisp",
@@ -2522,7 +2522,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 341,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "winter-wolf",
@@ -2555,7 +2555,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 342,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "wyvern",
@@ -2588,7 +2588,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 343,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ogre-zombie",
@@ -2599,7 +2599,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 344,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "allosaurus",

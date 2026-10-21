@@ -7,16 +7,17 @@
 - Канонічне джерело: **System Reference Document 5.2.1**, D&D 2024, CC-BY-4.0.
 - Розділ зі stat blocks: друковані сторінки **258-364**.
 - Повноцінних monster stat blocks: **330**.
-- Поточний runtime dataset: **237** істот.
-- Complete: **237**.
+- Поточний runtime dataset: **285** істот.
+- Complete: **285**.
 - Partial: **0**.
-- Missing: **93**.
+- Missing: **45**.
 - Перша запланована партія завершена: додано **89** відсутніх Beast stat blocks; разом із Wolf runtime містить усі **90/90** звірів SRD 5.2.1.
 - Друга запланована партія завершена: додано **24** відсутні Humanoid stat blocks; разом із Bandit і Mage runtime містить усі **26/26** гуманоїдів SRD 5.2.1.
 - Третя запланована партія завершена: додано **37** stat blocks; runtime містить усі **17/17 Elementals, 10/10 Constructs, 4/4 Oozes і 6/6 Plants** SRD 5.2.1.
 - Четверта запланована партія завершена: додано **23** stat blocks; runtime містить усі **10/10 Giants і 13/13 Celestials** SRD 5.2.1.
 - П'ята запланована партія завершена: додано **22** відсутні stat blocks; разом із Goblin Boss та Aboleth runtime містить усі **15/15 Fey і 9/9 Aberrations** SRD 5.2.1.
 - Шоста запланована партія завершена: додано **37** stat blocks; runtime містить усі **37/37 Monstrosities** SRD 5.2.1.
+- Сьома запланована партія завершена: додано **48** stat blocks; runtime містить усі **29/29 Fiends і 19/19 Undead** SRD 5.2.1.
 
 Повний машинозчитуваний перелік із canonical English name, slug, size, type, CR і сторінкою SRD збережено в `docs/bestiary-manifest.json`. До підрахунку включено лише записи з повноцінним stat block; згадки істот у правилах не враховано.
 
@@ -58,7 +59,7 @@ Canonical identity визначається за англійською назв
 | Mage | 305 | Complete: Initiative, Gear, усі action groups, 12 spell links, точні daily groups, Fireball рівня 4 та Mage Armor, врахований у КЗ. | 12 Spells, 8 Rules | Підтвердженого відкритого lore немає. `Wand` не має однозначного item slug, тому fake link не створено. |
 | Wolf | 364 | Complete: Initiative, Pack Tactics і Bite з точним secondary condition effect. | 2 Conditions, 5 Rules | Підтвердженого відкритого lore немає; механічних прогалин немає. |
 
-Початкові п'ять runtime-записів і всі записи партій 1-6 відповідають суворому критерію повного SRD 5.2.1 stat block. Відсутній lore не знижує статус, оскільки він не входить до stat block і не замінюється вигаданим текстом.
+Початкові п'ять runtime-записів і всі записи партій 1-7 відповідають суворому критерію повного SRD 5.2.1 stat block. Відсутній lore не знижує статус, оскільки він не входить до stat block і не замінюється вигаданим текстом.
 
 ### Імпортована партія 1: Beasts
 
@@ -162,6 +163,25 @@ Structured representation покриває Multiattack, кілька компо�
 
 Source-backed description не додано для жодної з 37 істот. SRD 5.2.1 не містить окремого повного lore-шару для цих stat blocks. Перевірені fallback-сторінки TTG позначені як `MM Basic`, тобто мають інший source identity; їх не змішано з canonical SRD 5.2.1 записами. TTG не показується в UI.
 
+### Імпортована партія 7: Fiends + Undead
+
+- Джерело stat blocks: SRD 5.2.1, сторінки **261-344**.
+- Додано: **48** істот.
+- Покриття типів: **29/29 Fiends і 19/19 Undead Complete**.
+- Runtime coverage після імпорту: **285 Complete / 0 Partial / 45 Missing**.
+
+Імпортовані canonical identities:
+
+Balor, Barbed Devil, Bearded Devil, Bone Devil, Chain Devil, Swarm of Crawling Claws, Dretch, Erinyes, Ghast, Ghost, Ghoul, Glabrezu, Gnoll Warrior, Hell Hound, Hezrou, Horned Devil, Ice Devil, Imp, Incubus, Lamia, Lemure, Lich, Marilith, Mummy, Mummy Lord, Nalfeshnee, Night Hag, Nightmare, Oni, Pit Fiend, Quasit, Rakshasa, Sahuagin Warrior, Shadow, Skeleton, Warhorse Skeleton, Minotaur Skeleton, Specter, Spirit Naga, Succubus, Vampire Spawn, Vampire, Vrock, Wight, Will-o’-Wisp, Wraith, Zombie, Ogre Zombie.
+
+Для всіх 48 записів виконано field-by-field звірку з PDF: identity, core stats, Initiative, усі abilities/save modifiers, optional defenses/skills/senses/languages/Gear, CR/XP/PB, Traits та повний склад Actions/Bonus Actions/Reactions/Legendary Actions/Spellcasting. Незалежний QA-manifest підтвердив **80 Traits, 140 Actions, 17 Bonus Actions, 6 Reactions і 8 Legendary Actions**; окремі regression assertions фіксують точну core/action signature кожної істоти.
+
+Structured representation покриває імунітети та стійкості, infernal/demonic/undead restoration, регенерацію, Life Drain і зменшення максимуму хітів, одержимість Ghost, incorporeal movement, sunlight weaknesses, charm/fear/paralysis/poison, повторні ряткидки, кілька компонентів шкоди, Recharge 4-6/5-6/6, X/day limits, Legendary Resistance, alternative XP у лігві, Legendary Actions Lich/Mummy Lord/Vampire та впорядковані наслідки Vampire Bite/Misty Escape. Повний `sourceText` збережено там, де structured поля не передають усіх умов.
+
+Партія додала **80 Spell, 118 Condition, 4 Item і 366 Rule placements**. Точні Item links: Shortbow, Shortsword, Studded Leather Armor і Component Pouch. Після звірки з поточним повним Spells dataset усі названі закляття партії отримали чинні canonical slugs; dead і unresolved references у цій партії відсутні.
+
+Source-backed description не додано для жодної з 48 істот. SRD 5.2.1 не містить окремого повного lore-шару для цих stat blocks. Перевірені fallback-сторінки TTG позначені як `MM Basic` і мають інший source identity, тому їх не змішано з canonical SRD 5.2.1 записами. TTG не показується в UI.
+
 ## Checklist повного stat block
 
 Для кожної істоти під час імпорту перевіряються:
@@ -222,14 +242,15 @@ Renderer використовує ці поля як компактні scan fac
 
 ## Описи та lore
 
-- Істот із заповненим `description`: **0 із 237**.
-- Істот без description: **237 із 237**.
-- Artwork: **0 із 237**.
+- Істот із заповненим `description`: **0 із 285**.
+- Істот без description: **285 із 285**.
+- Artwork: **0 із 285**.
 - Monster A-Z у SRD 5.2.1 є stat-block reference і не надає окремих повних lore-блоків для імпортованої Beast-партії. Перевірка дозволених fallback-джерел не дала послідовного повного відкритого lore-набору, придатного для точного перенесення всієї партії.
 - Для Humanoids додатково перевірено TTG fallback. Доступні сторінки належать до MM Basic/2025 і в окремих записах мають механічні значення, що не збігаються зі SRD 5.2.1; змішувати цей lore із canonical SRD-партією небезпечно. Тому description не додано.
 - Для третьої партії перевірка TTG fallback повторно підтвердила MM Basic/2025 походження й фактичні розбіжності зі SRD 5.2.1. Description не додано, щоб не змішувати різні source identities.
 - Для четвертої партії TTG fallback також повернув MM Basic/2025 сторінки. Description не додано, оскільки їх не можна атрибутувати canonical SRD 5.2.1 записам без змішування source identities.
 - Для п'ятої партії перевірено SRD 5.2.1, D&D 2024 Basic Rules і дозволений fallback. Окремого сумісного lore-шару для точного перенесення не підтверджено; description не вигадано.
+- Для сьомої партії перевірено SRD 5.2.1, D&D 2024 Basic Rules і дозволений fallback. TTG-сторінки належать до `MM Basic`, тому їхній lore не змішано з SRD source identity.
 - Lore не вигадується, а внутрішній fallback не показується як джерело в UI. Тому `description` навмисно лишається порожнім.
 - Поточна модель і renderer підтримують відсутній опис, один абзац і кілька абзаців.
 
@@ -237,13 +258,13 @@ Renderer використовує ці поля як компактні scan fac
 
 Поточні точні зв'язки:
 
-- Spells: **182 placements**, усі ведуть на чинні spell slug.
-- Conditions: **399 placements**, усі ведуть на чинні condition slug.
-- Items: **93 placements**, усі ведуть на чинні item slug.
+- Spells: **262 placements**, усі ведуть на чинні spell slug.
+- Conditions: **517 placements**, усі ведуть на чинні condition slug.
+- Items: **97 placements**, усі ведуть на чинні item slug.
 - Dead references: **0**.
-- Rules: **1290 placements**, усі ведуть на чинні canonical rule slug.
+- Rules: **1656 placements**, усі ведуть на чинні canonical rule slug.
 
-Відомі точні прогалини: Gear `Wand` у Mage та Archmage не має однозначного generic item slug; `Speak with Animals`, `Detect Evil and Good` і `Wall of Fire` відсутні у Spells dataset. До створення canonical записів fake links не додаються. Під час імпорту зв'язки створюються лише для прямої згадки spell, condition, item або rule; тематичні links заборонені.
+Відома точна прогалина: Gear `Wand` у Mage та Archmage не має однозначного generic item slug. Раніше зафіксовані в завершених партіях текстові spell references (`Speak with Animals`, `Detect Evil and Good`, `Wall of Fire`) тепер мають canonical записи у поточному Spells dataset, але їх ретроактивне оновлення не входило до цієї ітерації. У партії 7 всі named spells зв'язані й unresolved references немає. Під час імпорту зв'язки створюються лише для прямої згадки spell, condition, item або rule; тематичні links заборонені.
 
 ## План масового імпорту
 
@@ -257,12 +278,12 @@ Model-first pass завершено: Initiative, Gear, Rules relationships, mult
 | 4 | Giants + Celestials | 0 (23 імпортовано) | Завершено | ranged/melee variants, saves, healing, spellcasting, legendary actions |
 | 5 | Fey + Aberrations | 0 (22 імпортовано) | Завершено | telepathy, charms, repeated saves, spell/condition links |
 | 6 | Monstrosities | 0 (37 імпортовано) | Завершено | recharge, poison, grapple, petrification, swallow, legendary actions |
-| 7 | Fiends + Undead | 48 | Висока | immunities, conditions, spellcasting, regeneration |
+| 7 | Fiends + Undead | 0 (48 імпортовано) | Завершено | immunities, conditions, spellcasting, regeneration |
 | 8 | Dragons | 45 | Дуже висока | breath recharge, legendary/lair actions, alternate XP, complex saves |
 
-| **Залишилось** |  | **93** |  |  |
+| **Залишилось** |  | **45** |  |  |
 
-Наступна партія за затвердженим планом: **Fiends + Undead, 48 істот**. Її в цій ітерації не розпочато. Кожна партія має додавати повні доступні механіки, а не identity-only записи. Після кожної партії потрібні schema validation, dead-link checks, exact source-page verification, renderer smoke test і responsive перевірка складних stat blocks.
+Наступна партія за затвердженим планом: **Dragons, 45 істот**. Її в цій ітерації не розпочато. Кожна партія має додавати повні доступні механіки, а не identity-only записи. Після кожної партії потрібні schema validation, dead-link checks, exact source-page verification, renderer smoke test і responsive перевірка складних stat blocks.
 
 ## Критерії завершеності Bestiary
 
@@ -281,16 +302,16 @@ Bestiary можна вважати завершеним, коли:
 
 Data model готова представляти всі класи механік, виявлені під час аудиту 330 stat blocks. Fixtures підтверджують простого звіра, гуманоїда зі спорядженням, complex/multi-damage attack, spellcaster, Recharge, limited uses, Legendary Action із вартістю, alternative XP та дракона з послідовними механічними кроками.
 
-Початкові п'ять істот і всі імпортовані записи партій 1-6 пройшли source verification та мають статус `Complete`. Manifest тепер фіксує **237 Complete / 0 Partial / 93 Missing**.
+Початкові п'ять істот і всі імпортовані записи партій 1-7 пройшли source verification та мають статус `Complete`. Manifest тепер фіксує **285 Complete / 0 Partial / 45 Missing**.
 
 Відомі обмеження:
 
 - модель не намагається перетворити кожну довільну source-backed умову на окремий enum; повний `sourceText` залишається потрібним;
 - українська морфологія типів шкоди й conditions зберігається у source data, formatter її не вигадує;
-- універсального importer для решти 93 записів немає; кожна завершена партія сформована з окремим source extraction та перевірена per-entry;
+- універсального importer для решти 45 записів немає; кожна завершена партія сформована з окремим source extraction та перевірена per-entry;
 - наступні партії потребують per-entry source validation, exact slug resolution і перевірки відсутності 2014 mechanics;
-- generic Gear `Wand` у Mage/Archmage і `Speak with Animals` у Druid не мають canonical target у відповідних runtime-каталогах, тому показуються без fake relationship;
-- manifest із 330 identities не змінював canonical перелік; coverage-status тепер оновлено для 237 перевірених істот.
+- generic Gear `Wand` у Mage/Archmage не має однозначного canonical Item target, тому показується без fake relationship;
+- manifest із 330 identities не змінював canonical перелік; coverage-status тепер оновлено для 285 перевірених істот.
 
 ## Джерело
 
