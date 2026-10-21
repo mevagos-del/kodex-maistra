@@ -88,7 +88,7 @@ Assassin, Bandit Captain, Berserker, Commoner, Cultist, Cultist Fanatic, Druid, 
 
 Для кожного запису звірено core stats, Initiative, усі шість abilities/saves, skills, senses, languages, CR/XP/PB, Gear і повний склад Traits/Actions/Bonus Actions/Reactions. Spellcasting структуровано для Cultist Fanatic, Druid, Archmage, Priest Acolyte та Priest. Збережено Multiattack, multiple damage instances, save DC/outcomes, reaction triggers, daily limits, condition effects і точні spell/item/rule relationships.
 
-Невирішені exact-link випадки: generic `Wand` для Archmage не має однозначного Item slug; `Speak with Animals` у Druid відсутнє в поточному Spells dataset. Обидві назви відображаються як точний текст без fake/dead link.
+Під час імпорту generic `Wand` для Archmage не мав однозначного Item slug, а `Speak with Animals` у Druid тимчасово лишалося текстом без spell link. Пізніший повний аудит Bestiary → Spells підтвердив canonical `speak-with-animals` і додав точний зв'язок; generic `Wand` надалі не отримує fake Item link.
 
 ### Імпортована партія 3: Elementals + Constructs + Oozes + Plants
 
@@ -105,7 +105,7 @@ Air Elemental, Animated Armor, Animated Flying Sword, Animated Rug of Smothering
 
 Підтвердженого сумісного lore не додано. SRD не містить окремого lore для цих stat blocks; перевірені TTG-сторінки належать до MM Basic/2025 і подекуди конфліктують зі SRD 5.2.1 (зокрема за швидкістю Clay Golem і світоглядом Djinni), тому їх не змішано з canonical SRD-партією.
 
-Невирішені exact-link випадки цієї партії: `Detect Evil and Good` і `Wall of Fire` відсутні в поточному Spells dataset. Назви збережено текстом у точних spellcasting groups без fake/dead links. Gear у stat blocks цієї партії не вказано.
+Під час імпорту `Detect Evil and Good` і `Wall of Fire` лишалися текстом у точних spellcasting groups. Пізніший повний аудит Bestiary → Spells підтвердив canonical `detect-evil-and-good` і `wall-of-fire` та додав точні зв'язки. Gear у stat blocks цієї партії не вказано.
 
 ### Імпортована партія 4: Giants + Celestials
 
@@ -122,7 +122,7 @@ Cloud Giant, Couatl, Deva, Ettin, Fire Giant, Frost Giant, Guardian Naga, Hill G
 
 Structured representation зберігає Multiattack, кілька типів шкоди, save-for-half, instant-death threshold Solar, повторний ряткидок другого Roar, послідовні три Roar effects, Recharge 5-6, X/day limits, відновлення хітів, reaction trigger Stone Giant, alternative XP у лігві та Legendary Actions Solar/Sphinx/Unicorn із вартістю. Spellcasting groups зберігають at-will/daily/action qualifiers і рівні накладання Cure Wounds та Flame Strike.
 
-Gear має чотири точні Item links: Battleaxe, Morningstar, Greatclub і три Javelins. Усі інші relationships створено лише за прямими механічними згадками. `Detect Evil and Good` відсутнє в поточному Spells dataset, тому сім його входжень залишено текстом без fake link. Відомі unresolved spell names у всьому Bestiary: `Speak with Animals`, `Detect Evil and Good`, `Wall of Fire`.
+Gear має чотири точні Item links: Battleaxe, Morningstar, Greatclub і три Javelins. Усі інші relationships створено лише за прямими механічними згадками. Сім входжень `Detect Evil and Good`, які під час імпорту лишалися текстом, тепер посилаються на canonical `detect-evil-and-good` після повного аудиту Bestiary → Spells.
 
 Підтвердженого сумісного lore для партії не додано. SRD 5.2.1 містить stat blocks без окремих повних lore-описів. Перевірені TTG fallback-сторінки позначені як MM Basic/2025; вони не є тим самим SRD source identity, тому тексти різних джерел і редакцій не змішувалися.
 
@@ -141,7 +141,7 @@ Blink Dog, Bugbear Stalker, Bugbear Warrior, Centaur Trooper, Chuul, Cloaker, Da
 
 Structured representation покриває телепортацію, телепатію, Зачарування/Налякання, повторні ряткидки Chuul та Otyugh, кілька типів шкоди, save-for-half, прикріплення Cloaker і Darkmantle, ordered d8 effects Gibbering Mouther, Recharge 4-6/5-6, X/day, rest recharge, spellcasting at-will/daily/coven groups, grapple/restrained-like attachments і руйнівні щупальця Roper. Повний `sourceText` збережено для механік, де structured fields не передають усіх умов.
 
-Партія додала **26 Spell, 24 Condition, 20 Item і 145 Rule placements**. Усі пов'язані slugs перевірені; нових unresolved references немає. Загальний перелік unresolved spell names не змінився: `Speak with Animals`, `Detect Evil and Good`, `Wall of Fire`.
+Партія додала **26 Spell, 24 Condition, 20 Item і 145 Rule placements**. Усі пов'язані slugs перевірені; нових unresolved references немає. Три успадковані unresolved назви з попередніх партій пізніше закрито окремим повним аудитом Bestiary → Spells.
 
 Source-backed description не додано для жодної з 22 істот. SRD 5.2.1 і доступний Basic Rules reference дають canonical stat blocks без окремого придатного lore-шару; пошук дозволених fallback-джерел не підтвердив сумісного SRD 5.2.1 тексту, який можна було б додати без змішування source identities.
 
@@ -160,7 +160,7 @@ Ankheg, Axe Beak, Basilisk, Behir, Bulette, Chimera, Cockatrice, Death Dog, Dopp
 
 Structured representation покриває Multiattack, кілька компонентів шкоди, отруту, захоплення/стримування, павутину, двоетапне скам'яніння, повторні ряткидки, forced movement, knock prone, Recharge 4-6/5-6/6, X/day, регенерацію голів Hydra, прикріплення Stirge, прокляття лікантропів, легендарний опір, alternative XP у лігві та Legendary Actions Kraken/Tarrasque. Для Behir, Kraken, Purple Worm, Remorhaz і Tarrasque поглинання збережено як ordered mechanic steps із точними порогами шкоди, ряткидками від відригування та шкодою на початку ходу. Повний `sourceText` лишено там, де structured fields не передають усіх умов.
 
-Партія додала **6 Spell, 51 Condition, 5 Item і 201 Rule placements**. Gear має точні Item links для Handaxe, Javelin, Hand Crossbow і Longbow. Усі додані relationships ведуть на чинні canonical slugs; нових unresolved references немає. Загальний перелік unresolved spell names не змінився: `Speak with Animals`, `Detect Evil and Good`, `Wall of Fire`.
+Партія додала **6 Spell, 51 Condition, 5 Item і 201 Rule placements**. Gear має точні Item links для Handaxe, Javelin, Hand Crossbow і Longbow. Усі додані relationships ведуть на чинні canonical slugs; нових unresolved references немає. Три успадковані unresolved назви з попередніх партій пізніше закрито окремим повним аудитом Bestiary → Spells.
 
 Source-backed description не додано для жодної з 37 істот. SRD 5.2.1 не містить окремого повного lore-шару для цих stat blocks. Перевірені fallback-сторінки TTG позначені як `MM Basic`, тобто мають інший source identity; їх не змішано з canonical SRD 5.2.1 записами. TTG не показується в UI.
 
@@ -277,13 +277,27 @@ Renderer використовує ці поля як компактні scan fac
 
 Поточні точні зв'язки:
 
-- Spells: **371 placements**, усі ведуть на чинні spell slug.
+- Spells: **386 placements**, усі ведуть на чинні spell slug.
 - Conditions: **556 placements**, усі ведуть на чинні condition slug.
 - Items: **98 placements**, усі ведуть на чинні item slug.
 - Dead references: **0**.
 - Rules: **2004 placements**, усі ведуть на чинні canonical rule slug.
 
-Відома точна прогалина: Gear `Wand` у Mage та Archmage не має однозначного generic item slug, тому показується текстом без fake Item link. Раніше зафіксовані spell names (`Speak with Animals`, `Detect Evil and Good`, `Wall of Fire`) тепер мають canonical записи у поточному Spells dataset. У партії 8 всі named spells зв'язані; unresolved або dead relationship slugs у runtime немає. Під час імпорту зв'язки створюються лише для прямої згадки spell, condition, item або rule; тематичні links заборонені.
+Відома точна прогалина: Gear `Wand` у Mage та Archmage не має однозначного generic item slug, тому показується текстом без fake Item link. Під час імпорту зв'язки створюються лише для прямої згадки spell, condition, item або rule; тематичні links заборонені.
+
+### Аудит Bestiary → Spells
+
+Повний аудит 330 stat blocks проти **339** записів Spells підтвердив, що всі три раніше unresolved назви входять до SRD 5.2.1 і вже були в runtime dataset:
+
+- `Speak With Animals` → `speak-with-animals`, сторінка SRD 164;
+- `Detect Evil And Good` → `detect-evil-and-good`, сторінка SRD 123;
+- `Wall Of Fire` → `wall-of-fire`, сторінка SRD 172.
+
+Причиною прогалин були не відсутні закляття, а неповна прив'язка ранніх Bestiary-партій до пізніше завершеного Spells registry. Виправлено **10 structured spell references**: Druid, Djinni, Efreeti, Couatl, Deva, Planetar, Solar, Sphinx of Valor, Unicorn і Giant Owl. Додатково створено **5** точних relationships для прямо названих заклять поза spellcasting groups: Wish у Spirit Naga, Etherealness у Ghost, Fear у Lich та Command у Mummy Lord і Vampire.
+
+Також узгоджено українські labels із canonical spell identities для `raise-dead` у Deva/Planetar та `geas` у Guardian Naga; механіки істот і spell slugs не змінювалися. Загальна кількість Spell placements зросла з **371** до **386**. Після виправлення: structured references без slug — **0**, unresolved exact references — **0**, dead spell relationships — **0**, дублікати spell relationships — **0**.
+
+Звичайні збіги слів у prose не перетворюються на посилання: наприклад, «світло», «стрибок» або «прокляття» можуть описувати механіку, а не конкретне закляття. Автоматична перевірка охоплює structured spellcasting та точні прямо названі закляття, зберігаючи заборону thematic/fake links.
 
 ## План масового імпорту
 

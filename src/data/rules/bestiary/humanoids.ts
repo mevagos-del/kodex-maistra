@@ -978,7 +978,8 @@ export const officialHumanoids: OfficialMonsterEntry[] = [
               "slug": "druidcraft"
             },
             {
-              "nameUk": "Розмова з тваринами"
+              "nameUk": "Розмова з тваринами",
+              "slug": "speak-with-animals"
             }
           ]
         },
@@ -1030,6 +1031,7 @@ export const officialHumanoids: OfficialMonsterEntry[] = [
       ],
       "spellSlugs": [
         "druidcraft",
+        "speak-with-animals",
         "entangle",
         "thunderwave",
         "animal-messenger",

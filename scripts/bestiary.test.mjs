@@ -227,7 +227,7 @@ test('Humanoid Gear uses exact Item links and preserves source quantities', () =
   assert.deepEqual(bySlug.archmage.gear, [{ nameUk: 'Паличка' }]);
 });
 
-test('Humanoid spellcasting, usage limits and unlinked source spells remain exact', () => {
+test('Humanoid spellcasting, usage limits and canonical spell links remain exact', () => {
   const casters = ['cultist-fanatic', 'druid', 'archmage', 'priest-acolyte', 'priest'].map(slug => bySlug[slug]);
   for (const entry of casters) {
     const linked = entry.spellcasting.groups.flatMap(group => group.spells.map(spell => spell.slug).filter(Boolean));
@@ -235,7 +235,9 @@ test('Humanoid spellcasting, usage limits and unlinked source spells remain exac
     assert.ok(linked.every(slug => spellSlugs.has(slug)));
   }
   const unlinked = casters.flatMap(entry => entry.spellcasting.groups.flatMap(group => group.spells.filter(spell => !spell.slug).map(spell => [entry.slug, spell.nameUk])));
-  assert.deepEqual(unlinked, [['druid', 'Розмова з тваринами']]);
+  assert.deepEqual(unlinked, []);
+  assert.equal(bySlug.druid.spellcasting.groups.flatMap(group => group.spells)
+    .find(spell => spell.nameUk === 'Розмова з тваринами').slug, 'speak-with-animals');
   const archmage = bySlug.archmage;
   assert.equal(archmage.spellcasting.groups[1].spells.find(spell => spell.slug === 'lightning-bolt').castAtLevel, 7);
   assert.equal(archmage.spellcasting.groups[2].spells.find(spell => spell.slug === 'cone-of-cold').castAtLevel, 9);
@@ -343,7 +345,7 @@ test('third-batch complex mechanics remain structured and source-complete', () =
   assert.deepEqual(bySlug['ochre-jelly'].reactions.map(action => action.nameOriginal), ['Split']);
 });
 
-test('third-batch spellcasting preserves exact groups and only links available canonical spells', () => {
+test('third-batch spellcasting preserves exact groups and canonical spell links', () => {
   assert.deepEqual(bySlug.djinni.spellcasting.groups.map(group => [group.mode, group.uses ?? null, group.each ?? false, group.spells.length]), [
     ['at-will', null, false, 2], ['daily', 2, true, 3], ['daily', 1, true, 5],
   ]);
@@ -351,7 +353,11 @@ test('third-batch spellcasting preserves exact groups and only links available c
     ['at-will', null, false, 2], ['daily', 1, true, 6],
   ]);
   const unlinked = [bySlug.djinni, bySlug.efreeti].flatMap(entry => entry.spellcasting.groups.flatMap(group => group.spells.filter(spell => !spell.slug).map(spell => [entry.slug, spell.nameUk])));
-  assert.deepEqual(unlinked, [['djinni', 'Виявлення зла й добра'], ['efreeti', 'Стіна вогню']]);
+  assert.deepEqual(unlinked, []);
+  assert.equal(bySlug.djinni.spellcasting.groups.flatMap(group => group.spells)
+    .find(spell => spell.nameUk === 'Виявлення зла й добра').slug, 'detect-evil-and-good');
+  assert.equal(bySlug.efreeti.spellcasting.groups.flatMap(group => group.spells)
+    .find(spell => spell.nameUk === 'Стіна вогню').slug, 'wall-of-fire');
   assert.equal(bySlug.efreeti.spellcasting.groups[1].spells.find(spell => spell.nameUk === 'Стіна вогню').castAtLevel, 7);
   assert.ok([bySlug.djinni, bySlug.efreeti].flatMap(entry => entry.relationships.spellSlugs).every(slug => spellSlugs.has(slug)));
 });
@@ -425,7 +431,7 @@ test('fourth-batch complex saves, damage, recharge and legendary mechanics remai
   ]);
 });
 
-test('fourth-batch spellcasting links exact catalog spells and preserves known unresolved names', () => {
+test('fourth-batch spellcasting links every exact catalog spell', () => {
   const casters = entries.filter(entry => ['Велетень', 'Небожитель'].includes(entry.creatureType) && entry.spellcasting);
   for (const entry of casters) {
     const linked = entry.spellcasting.groups.flatMap(group => group.spells.map(value => value.slug).filter(Boolean));
@@ -434,11 +440,12 @@ test('fourth-batch spellcasting links exact catalog spells and preserves known u
   }
   const unresolved = casters.flatMap(entry => entry.spellcasting.groups.flatMap(group => group.spells
     .filter(value => !value.slug).map(value => [entry.slug, value.nameUk])));
-  assert.deepEqual(unresolved, [
-    ['couatl', 'Виявлення зла й добра'], ['deva', 'Виявлення зла й добра'], ['planetar', 'Виявлення зла й добра'],
-    ['solar', 'Виявлення зла й добра'], ['sphinx-of-valor', 'Виявлення зла й добра'],
-    ['unicorn', 'Виявлення зла й добра'], ['giant-owl', 'Виявлення зла й добра'],
-  ]);
+  assert.deepEqual(unresolved, []);
+  for (const slug of ['couatl', 'deva', 'planetar', 'solar', 'sphinx-of-valor', 'unicorn', 'giant-owl']) {
+    const reference = bySlug[slug].spellcasting.groups.flatMap(group => group.spells)
+      .find(spell => spell.nameUk === 'Виявлення зла й добра');
+    assert.equal(reference.slug, 'detect-evil-and-good', `${slug}: canonical Detect Evil and Good slug`);
+  }
 });
 
 test('all 22 missing Fey and Aberrations are complete in the fifth batch', () => {
@@ -719,7 +726,7 @@ test('seventh-batch spellcasting and exact relationships have no unresolved refe
   const groupedSpells = batch.flatMap(entry => entry.spellcasting?.groups ?? []).flatMap(group => group.spells);
   assert.ok(groupedSpells.length > 0);
   assert.ok(groupedSpells.every(spell => spell.slug && spellSlugs.has(spell.slug)));
-  assert.equal(batch.flatMap(entry => entry.relationships?.spellSlugs ?? []).length, 80);
+  assert.equal(batch.flatMap(entry => entry.relationships?.spellSlugs ?? []).length, 85);
   assert.equal(batch.flatMap(entry => entry.relationships?.conditionSlugs ?? []).length, 118);
   assert.equal(batch.flatMap(entry => entry.relationships?.itemSlugs ?? []).length, 4);
   assert.equal(batch.flatMap(entry => entry.relationships?.ruleSlugs ?? []).length, 366);
@@ -1049,6 +1056,45 @@ test('spell, condition, item and rule relationships resolve without dead links',
     const groupedSpells = entry.spellcasting?.groups.flatMap(group => group.spells.map(spell => spell.slug).filter(Boolean)) ?? [];
     assert.ok(groupedSpells.every(slug => spellSlugs.has(slug)), `${entry.slug}: dead spellcasting link`);
     assert.ok(groupedSpells.every(slug => spellLinks.includes(slug)), `${entry.slug}: spellcasting link missing from relationships`);
+  }
+});
+
+test('all Bestiary spell references resolve to canonical SRD spell routes', () => {
+  const structuredReferences = entries.flatMap(entry => entry.spellcasting?.groups
+    .flatMap(group => group.spells.map(spell => ({ creature: entry.slug, spell }))) ?? []);
+  const relationshipPlacements = entries.flatMap(entry => entry.relationships?.spellSlugs ?? []);
+
+  assert.equal(spells.length, 339);
+  assert.equal(structuredReferences.length, 360);
+  assert.equal(relationshipPlacements.length, 386);
+  assert.ok(structuredReferences.every(({ spell }) => spell.slug && spellSlugs.has(spell.slug)));
+  assert.ok(structuredReferences.every(({ creature, spell }) => bySlug[creature].relationships.spellSlugs.includes(spell.slug)));
+
+  const knownSpells = [
+    ['speak-with-animals', 'Розмова з тваринами'],
+    ['detect-evil-and-good', 'Виявлення зла й добра'],
+    ['wall-of-fire', 'Стіна вогню'],
+  ];
+  for (const [slug, nameUk] of knownSpells) {
+    const spell = spells.find(entry => entry.slug === slug);
+    assert.ok(spell, `${slug}: missing SRD spell`);
+    assert.equal(spell.nameUk, nameUk);
+    assert.equal(spell.source.title, 'SRD 5.2.1');
+    const segment = segmentBestiaryReferences(`«${nameUk}»`, [{ slug, href: `/spells/${slug}`, labels: [nameUk] }])
+      .find(value => value.slug === slug);
+    assert.ok(segment, `${slug}: detail renderer did not create a spell segment`);
+    assert.equal(segment.href, `/spells/${slug}`);
+  }
+
+  const exactRuleMentions = {
+    'spirit-naga': 'wish',
+    ghost: 'etherealness',
+    lich: 'fear',
+    'mummy-lord': 'command',
+    vampire: 'command',
+  };
+  for (const [creature, spellSlug] of Object.entries(exactRuleMentions)) {
+    assert.ok(bySlug[creature].relationships.spellSlugs.includes(spellSlug), `${creature}: exact spell mention is not linked`);
   }
 });
 

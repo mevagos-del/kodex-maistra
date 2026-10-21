@@ -1334,7 +1334,8 @@ export const officialElementalsConstructsOozesPlants: OfficialMonsterEntry[] = [
           "mode": "at-will",
           "spells": [
             {
-              "nameUk": "Виявлення зла й добра"
+              "nameUk": "Виявлення зла й добра",
+              "slug": "detect-evil-and-good"
             },
             {
               "nameUk": "Виявлення магії",
@@ -1411,6 +1412,7 @@ export const officialElementalsConstructsOozesPlants: OfficialMonsterEntry[] = [
       "spellSlugs": [
         "create-food-and-water",
         "creation",
+        "detect-evil-and-good",
         "detect-magic",
         "gaseous-form",
         "invisibility",
@@ -1758,6 +1760,7 @@ export const officialElementalsConstructsOozesPlants: OfficialMonsterEntry[] = [
             },
             {
               "nameUk": "Стіна вогню",
+              "slug": "wall-of-fire",
               "castAtLevel": 7
             }
           ]
@@ -1782,6 +1785,7 @@ export const officialElementalsConstructsOozesPlants: OfficialMonsterEntry[] = [
         "major-image",
         "plane-shift",
         "tongues",
+        "wall-of-fire",
         "wish"
       ]
     },
