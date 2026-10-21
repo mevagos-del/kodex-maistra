@@ -14,6 +14,7 @@ const ability = (score: number, modifier: string, save = modifier): OfficialMons
 
 const bandit: OfficialMonsterEntry = {
   entity: 'monster', slug: 'bandit', nameUk: 'Бандит', nameOriginal: 'Bandit', status: 'official', source: SRD_52_SOURCE,
+  description: 'Бандит — озброєний гуманоїд, який покладається на просте спорядження й нападає з близької або дальньої відстані. Шкіряний обладунок дає базовий захист, а поєднання ятагана та легкого арбалета дозволяє змінювати дистанцію бою. Бандит не має особливих бойових рис, тому його загроза визначається позицією, чисельністю союзників і можливістю обрати зручну ціль.',
   size: 'Середній або Малий', creatureType: 'Гуманоїд', alignment: 'нейтральний', armorClass: '12', hitPoints: '11', hitDice: '2к8 + 2', initiative: { modifier: '+1', score: 11 }, speed: ['30 фт'],
   gear: [{ nameUk: 'Шкіряний обладунок', itemSlug: 'leather-armor' }, { nameUk: 'Легкий арбалет', itemSlug: 'light-crossbow' }, { nameUk: 'Ятаган', itemSlug: 'scimitar' }],
   abilities: { strength: ability(11, '+0'), dexterity: ability(12, '+1'), constitution: ability(12, '+1'), intelligence: ability(10, '+0'), wisdom: ability(10, '+0'), charisma: ability(10, '+0') },
@@ -43,6 +44,7 @@ const goblinBoss: OfficialMonsterEntry = {
 
 const wolf: OfficialMonsterEntry = {
   entity: 'monster', slug: 'wolf', nameUk: 'Вовк', nameOriginal: 'Wolf', status: 'official', source: SRD_52_SOURCE,
+  description: 'Вовк — чотириногий хижак із гострим чуттям і здатністю непомітно наближатися до здобичі. Він найнебезпечніший поруч із союзниками, коли зграя зосереджує атаки на одній цілі. Висока швидкість допомагає йому наздоганяти ціль або змінювати позицію. Укус вовка може повалити противника, створюючи зручну нагоду для наступних атак зграї.',
   size: 'Середній', creatureType: 'Звір', alignment: 'без світогляду', armorClass: '12', hitPoints: '11', hitDice: '2к8 + 2', initiative: { modifier: '+2', score: 12 }, speed: ['40 фт'],
   abilities: { strength: ability(14, '+2'), dexterity: ability(15, '+2'), constitution: ability(12, '+1'), intelligence: ability(3, '−4'), wisdom: ability(12, '+1'), charisma: ability(6, '−2') },
   skills: { Сприйняття: '+5', Скритність: '+4' }, senses: ['Темний зір 60 фт'], passivePerception: 15, languages: [], challengeRating: '1/4', experiencePoints: 50, proficiencyBonus: '+2',
@@ -80,6 +82,7 @@ const mage: OfficialMonsterEntry = {
 
 const aboleth: OfficialMonsterEntry = {
   entity: 'monster', slug: 'aboleth', nameUk: 'Аболет', nameOriginal: 'Aboleth', status: 'official', source: SRD_52_SOURCE,
+  description: 'Аболет — велика водна аберація зі щупальцями, здатна дихати у воді й на повітрі та спілкуватися телепатично. Він підкорює волю інших істот, читає їхні найсильніші бажання й використовує захоплених жертв як підконтрольних союзників. Слиз навколо аболета змінює стан уражених істот, а його щупальця утримують цілі для подальшого психічного впливу.',
   size: 'Великий', creatureType: 'Аберрація', alignment: 'законно-злий', armorClass: '17', hitPoints: '150', hitDice: '20к10 + 40', initiative: { modifier: '+7', score: 17 }, speed: ['10 фт', 'плавання 40 фт'],
   abilities: { strength: ability(21, '+5'), dexterity: ability(9, '−1', '+3'), constitution: ability(15, '+2', '+6'), intelligence: ability(18, '+4', '+8'), wisdom: ability(15, '+2', '+6'), charisma: ability(18, '+4') },
   skills: { Історія: '+12', Сприйняття: '+10' }, senses: ['Темний зір 120 фт'], passivePerception: 20, languages: ['Глибинна мова', 'телепатія 120 фт'], challengeRating: '10', experiencePoints: 5900, alternativeExperience: [{ experiencePoints: 7200, condition: 'у лігві' }], proficiencyBonus: '+4',

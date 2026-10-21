@@ -42,6 +42,9 @@ const ruleSlugs = new Set(rules.map(entry => entry.slug));
 const abilityKeys = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 const validChallengeRating = /^(?:0|1\/8|1\/4|1\/2|[1-9]|[12]\d|30)$/;
 const bySlug = Object.fromEntries(entries.map(entry => [entry.slug, entry]));
+const sampleDescriptionSlugs = [
+  'wolf', 'bandit', 'ghost', 'imp', 'aboleth', 'fire-elemental', 'animated-armor', 'owlbear', 'adult-red-dragon', 'treant',
+];
 
 test('SRD 5.2.1 manifest contains all 330 canonical stat blocks', () => {
   assert.equal(bestiaryManifest.source.id, 'srd-5-2-1');
@@ -75,6 +78,34 @@ test('runtime Bestiary identities map to Complete manifest entries', () => {
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Complete').length, entries.length);
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Partial').length, 0);
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 0);
+});
+
+test('sample editorial descriptions follow the approved data and style constraints', () => {
+  const describedEntries = entries.filter(entry => entry.description);
+  assert.deepEqual(new Set(describedEntries.map(entry => entry.slug)), new Set(sampleDescriptionSlugs));
+  assert.equal(describedEntries.length, 10);
+  assert.deepEqual(new Set(describedEntries.map(entry => entry.creatureType)), new Set([
+    'Звір', 'Гуманоїд', 'Нежить', 'Погань', 'Аберрація', 'Елементаль', 'Конструкт', 'Монстр', 'Дракон', 'Рослина',
+  ]));
+
+  for (const entry of describedEntries) {
+    const words = entry.description.match(/[\p{L}’'-]+/gu) ?? [];
+    const sentences = entry.description.split(/[.!?]+/u).map(value => value.trim()).filter(Boolean);
+    assert.ok(words.length >= 40 && words.length <= 90, `${entry.slug}: expected 40-90 words, got ${words.length}`);
+    assert.ok(sentences.length >= 2 && sentences.length <= 4, `${entry.slug}: expected 2-4 sentences, got ${sentences.length}`);
+    assert.doesNotMatch(entry.description, /\d|\b[кd]\d+\b|(?:^|[^\p{L}])(?:КЗ|СК|CR|хіт(?:и|ів)?)(?=$|[^\p{L}])/iu, `${entry.slug}: description duplicates numeric mechanics`);
+  }
+
+  assert.ok(bySlug.wolf.traits.some(value => value.id === 'wolf-pack-tactics'));
+  assert.deepEqual(bySlug.bandit.gear.map(value => value.itemSlug), ['leather-armor', 'light-crossbow', 'scimitar']);
+  assert.ok(bySlug.ghost.actions.some(value => value.id === 'ghost-possession'));
+  assert.ok(bySlug.imp.actions.some(value => value.id === 'imp-shape-shift'));
+  assert.ok(bySlug.aboleth.actions.some(value => value.id === 'aboleth-dominate-mind'));
+  assert.ok(bySlug['fire-elemental'].traits.some(value => value.id === 'fire-elemental-water-susceptibility'));
+  assert.ok(bySlug['animated-armor'].conditionImmunities.length > 0);
+  assert.ok(bySlug.owlbear.speed.some(value => value.includes('лазіння')));
+  assert.ok(bySlug['adult-red-dragon'].spellcasting.groups.flatMap(group => group.spells).some(value => value.slug === 'scorching-ray'));
+  assert.ok(bySlug.treant.actions.some(value => value.id === 'treant-animate-trees'));
 });
 
 test('imported Bestiary batches have unique official identities and valid sources', () => {
