@@ -50,7 +50,7 @@ test('SRD 5.2.1 manifest contains all 330 canonical stat blocks', () => {
   assert.equal(bestiaryManifest.monsters.length, 330);
   assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.slug)).size, 330);
   assert.equal(new Set(bestiaryManifest.monsters.map(entry => entry.nameOriginal)).size, 330);
-  assert.deepEqual(bestiaryManifest.coverage, { complete: 285, partial: 0, missing: 45 });
+  assert.deepEqual(bestiaryManifest.coverage, { complete: 330, partial: 0, missing: 0 });
   assert.ok(bestiaryManifest.monsters.every(entry => entry.source === 'SRD 5.2.1'));
   assert.ok(bestiaryManifest.monsters.every(entry => Number.isInteger(entry.sourcePage) && entry.sourcePage >= 258 && entry.sourcePage <= 364));
   assert.ok(bestiaryManifest.monsters.every(entry => entry.slug && entry.nameOriginal && entry.size && entry.creatureType && entry.identityLine));
@@ -74,11 +74,11 @@ test('runtime Bestiary identities map to Complete manifest entries', () => {
   }
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Complete').length, entries.length);
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Partial').length, 0);
-  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 45);
+  assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 0);
 });
 
 test('imported Bestiary batches have unique official identities and valid sources', () => {
-  assert.equal(entries.length, 285);
+  assert.equal(entries.length, 330);
   assert.equal(new Set(entries.map(entry => entry.slug)).size, entries.length);
   assert.equal(new Set(entries.map(entry => entry.nameOriginal)).size, entries.length);
   assert.ok(entries.every(entry => entry.entity === 'monster' && entry.status === 'official'));
@@ -108,7 +108,7 @@ test('conditional renderer branches are represented by real data only', () => {
     'basilisk', 'behir', 'bulette', 'doppelganger', 'drider', 'ettercap', 'medusa', 'mimic', 'phase-spider',
     'purple-worm', 'remorhaz', 'roc', 'tarrasque', 'werebear', 'wereboar', 'wererat', 'weretiger', 'werewolf',
     'balor', 'gnoll-warrior', 'hezrou', 'incubus', 'lamia', 'marilith', 'nalfeshnee', 'night-hag', 'oni',
-    'sahuagin-warrior', 'succubus', 'shadow', 'will-o-wisp', 'vampire-spawn', 'vampire',
+    'sahuagin-warrior', 'succubus', 'shadow', 'will-o-wisp', 'vampire-spawn', 'vampire', 'half-dragon',
   ]);
   assert.deepEqual(entries.filter(entry => entry.reactions?.length).map(entry => entry.slug), [
     'goblin-boss', 'mage', 'giant-octopus', 'octopus', 'bandit-captain', 'gladiator', 'knight', 'archmage',
@@ -120,6 +120,11 @@ test('conditional renderer branches are represented by real data only', () => {
   assert.deepEqual(entries.filter(entry => entry.legendaryActions?.length).map(entry => entry.slug), [
     'aboleth', 'solar', 'sphinx-of-lore', 'sphinx-of-valor', 'unicorn', 'kraken', 'tarrasque',
     'lich', 'mummy-lord', 'vampire',
+    'adult-black-dragon', 'ancient-black-dragon', 'adult-blue-dragon', 'ancient-blue-dragon',
+    'adult-green-dragon', 'ancient-green-dragon', 'adult-red-dragon', 'ancient-red-dragon',
+    'adult-white-dragon', 'ancient-white-dragon', 'adult-brass-dragon', 'ancient-brass-dragon',
+    'adult-bronze-dragon', 'ancient-bronze-dragon', 'adult-copper-dragon', 'ancient-copper-dragon',
+    'adult-gold-dragon', 'ancient-gold-dragon', 'adult-silver-dragon', 'ancient-silver-dragon',
   ]);
   assert.deepEqual(entries.filter(entry => entry.spellcasting).map(entry => entry.slug), [
     'mage', 'cultist-fanatic', 'druid', 'archmage', 'priest-acolyte', 'priest', 'djinni', 'efreeti',
@@ -127,6 +132,11 @@ test('conditional renderer branches are represented by real data only', () => {
     'sphinx-of-valor', 'unicorn', 'giant-owl', 'dryad', 'green-hag', 'sea-hag', 'sprite', 'cloaker',
     'glabrezu', 'ice-devil', 'imp', 'incubus', 'lamia', 'night-hag', 'oni', 'pit-fiend', 'quasit', 'rakshasa',
     'spirit-naga', 'succubus', 'lich', 'mummy-lord',
+    'adult-black-dragon', 'ancient-black-dragon', 'adult-blue-dragon', 'ancient-blue-dragon',
+    'adult-green-dragon', 'ancient-green-dragon', 'adult-red-dragon', 'ancient-red-dragon',
+    'adult-brass-dragon', 'ancient-brass-dragon', 'adult-bronze-dragon', 'ancient-bronze-dragon',
+    'adult-copper-dragon', 'ancient-copper-dragon', 'adult-gold-dragon', 'ancient-gold-dragon',
+    'adult-silver-dragon', 'ancient-silver-dragon',
   ]);
   assert.ok(entries.every(entry => !entry.lairActions?.length));
 });
@@ -718,6 +728,109 @@ test('seventh-batch spellcasting and exact relationships have no unresolved refe
   assert.equal(bySlug['mummy-lord'].spellcasting.groups[1].spells.find(spell => spell.slug === 'insect-plague').castAtLevel, 7);
 });
 
+test('all 45 canonical SRD Dragons are complete in the final batch', () => {
+  const manifestEntries = bestiaryManifest.monsters.filter(entry => entry.creatureType === 'Dragon');
+  const runtimeEntries = entries.filter(entry => entry.creatureType === 'Дракон');
+  assert.equal(manifestEntries.length, 45);
+  assert.equal(runtimeEntries.length, 45);
+  assert.ok(manifestEntries.every(entry => entry.coverageStatus === 'Complete'));
+  assert.deepEqual(new Set(runtimeEntries.map(entry => entry.slug)), new Set(manifestEntries.map(entry => entry.slug)));
+  assert.ok(runtimeEntries.every(entry => entry.actions.length > 0 && entry.sourcePage >= 263 && entry.sourcePage <= 343));
+});
+
+test('final Dragon batch matches exact SRD 5.2.1 core and action-group signatures', () => {
+  const expected = {
+    'black-dragon-wyrmling': [17, 33, '6d8 + 6', 4, 14, '2', 450, null, 2, 263, [1, 3, 0, 0, 0, 0]],
+    'young-black-dragon': [18, 127, '15d10 + 45', 5, 15, '7', 2900, null, 3, 264, [1, 3, 0, 0, 0, 0]],
+    'adult-black-dragon': [19, 195, '17d12 + 85', 12, 22, '14', 11500, [13000], 5, 264, [2, 4, 0, 0, 3, 0]],
+    'ancient-black-dragon': [22, 367, '21d20 + 147', 16, 26, '21', 33000, [41000], 7, 265, [2, 4, 0, 0, 3, 0]],
+    'blue-dragon-wyrmling': [17, 65, '10d8 + 20', 2, 12, '3', 700, null, 2, 266, [0, 3, 0, 0, 0, 0]],
+    'young-blue-dragon': [18, 152, '16d10 + 64', 4, 14, '9', 5000, null, 4, 266, [0, 3, 0, 0, 0, 0]],
+    'adult-blue-dragon': [19, 212, '17d12 + 102', 10, 20, '16', 15000, [18000], 5, 266, [1, 4, 0, 0, 3, 0]],
+    'ancient-blue-dragon': [22, 481, '26d20 + 208', 14, 24, '23', 50000, [62000], 7, 267, [1, 4, 0, 0, 3, 0]],
+    'brass-dragon-wyrmling': [15, 22, '4d8 + 4', 2, 12, '1', 200, null, 2, 268, [0, 3, 0, 0, 0, 0]],
+    'young-brass-dragon': [17, 110, '13d10 + 39', 3, 13, '6', 2300, null, 3, 268, [0, 4, 0, 0, 0, 0]],
+    'adult-brass-dragon': [18, 172, '15d12 + 75', 10, 20, '13', 10000, [11500], 5, 268, [1, 5, 0, 0, 3, 0]],
+    'ancient-brass-dragon': [20, 332, '19d20 + 133', 12, 22, '20', 25000, [33000], 6, 269, [1, 5, 0, 0, 3, 0]],
+    'bronze-dragon-wyrmling': [15, 39, '6d8 + 12', 2, 12, '2', 450, null, 2, 269, [1, 4, 0, 0, 0, 0]],
+    'young-bronze-dragon': [17, 142, '15d10 + 60', 3, 13, '8', 3900, null, 3, 270, [1, 4, 0, 0, 0, 0]],
+    'adult-bronze-dragon': [18, 212, '17d12 + 102', 10, 20, '15', 13000, [15000], 5, 270, [2, 5, 0, 0, 3, 0]],
+    'ancient-bronze-dragon': [22, 444, '24d20 + 192', 14, 24, '22', 41000, [50000], 7, 271, [2, 5, 0, 0, 3, 0]],
+    'copper-dragon-wyrmling': [16, 22, '4d8 + 4', 3, 13, '1', 200, null, 2, 275, [0, 3, 0, 0, 0, 0]],
+    'young-copper-dragon': [17, 119, '14d10 + 42', 4, 14, '7', 2900, null, 3, 276, [0, 4, 0, 0, 0, 0]],
+    'adult-copper-dragon': [18, 184, '16d12 + 80', 11, 21, '14', 11500, [13000], 5, 276, [1, 5, 0, 0, 3, 0]],
+    'ancient-copper-dragon': [21, 367, '21d20 + 147', 15, 25, '21', 33000, [41000], 7, 277, [1, 5, 0, 0, 3, 0]],
+    'dragon-turtle': [20, 356, '23d20 + 115', 6, 16, '17', 18000, null, 6, 281, [1, 4, 0, 0, 0, 0]],
+    'gold-dragon-wyrmling': [17, 60, '8d8 + 24', 4, 14, '3', 700, null, 2, 290, [1, 4, 0, 0, 0, 0]],
+    'young-gold-dragon': [18, 178, '17d10 + 85', 6, 16, '10', 5900, null, 4, 291, [1, 4, 0, 0, 0, 0]],
+    'adult-gold-dragon': [19, 243, '18d12 + 126', 14, 24, '17', 18000, [20000], 6, 291, [2, 5, 0, 0, 3, 0]],
+    'ancient-gold-dragon': [22, 546, '28d20 + 252', 16, 26, '24', 62000, [75000], 7, 292, [2, 5, 0, 0, 3, 0]],
+    'green-dragon-wyrmling': [17, 38, '7d8 + 7', 3, 13, '2', 450, null, 2, 293, [1, 3, 0, 0, 0, 0]],
+    'young-green-dragon': [18, 136, '16d10 + 48', 4, 14, '8', 3900, null, 3, 293, [1, 3, 0, 0, 0, 0]],
+    'adult-green-dragon': [19, 207, '18d12 + 90', 11, 21, '15', 13000, [15000], 5, 294, [2, 4, 0, 0, 3, 0]],
+    'ancient-green-dragon': [21, 402, '23d20 + 161', 15, 25, '22', 41000, [50000], 7, 294, [2, 4, 0, 0, 3, 0]],
+    'half-dragon': [18, 105, '14d8 + 42', 5, 15, '5', 1800, null, 3, 297, [1, 3, 1, 0, 0, 0]],
+    'kobold-warrior': [14, 7, '3d6 − 3', 2, 12, '1/8', 25, null, 2, 302, [2, 1, 0, 0, 0, 0]],
+    pseudodragon: [14, 10, '3d4 + 3', 2, 12, '1/4', 50, null, 2, 316, [1, 3, 0, 0, 0, 0]],
+    'red-dragon-wyrmling': [17, 75, '10d8 + 30', 2, 12, '4', 1100, null, 2, 318, [0, 3, 0, 0, 0, 0]],
+    'young-red-dragon': [18, 178, '17d10 + 85', 4, 14, '10', 5900, null, 4, 318, [0, 3, 0, 0, 0, 0]],
+    'adult-red-dragon': [19, 256, '19d12 + 133', 12, 22, '17', 18000, [20000], 6, 318, [1, 4, 0, 0, 3, 0]],
+    'ancient-red-dragon': [22, 507, '26d20 + 234', 14, 24, '24', 62000, [75000], 7, 319, [1, 4, 0, 0, 3, 0]],
+    'silver-dragon-wyrmling': [17, 45, '6d8 + 18', 2, 12, '2', 450, null, 2, 324, [0, 4, 0, 0, 0, 0]],
+    'young-silver-dragon': [18, 168, '16d10 + 80', 4, 14, '9', 5000, null, 4, 324, [0, 4, 0, 0, 0, 0]],
+    'adult-silver-dragon': [19, 216, '16d12 + 112', 10, 20, '16', 15000, [18000], 5, 324, [1, 5, 0, 0, 3, 0]],
+    'ancient-silver-dragon': [22, 468, '24d20 + 216', 14, 24, '23', 50000, [62000], 7, 325, [1, 5, 0, 0, 3, 0]],
+    'white-dragon-wyrmling': [16, 32, '5d8 + 10', 2, 12, '2', 450, null, 2, 339, [1, 3, 0, 0, 0, 0]],
+    'young-white-dragon': [17, 123, '13d10 + 52', 3, 13, '6', 2300, null, 3, 340, [1, 3, 0, 0, 0, 0]],
+    'adult-white-dragon': [18, 200, '16d12 + 96', 10, 20, '13', 10000, [11500], 5, 340, [2, 3, 0, 0, 3, 0]],
+    'ancient-white-dragon': [20, 333, '18d20 + 144', 12, 22, '20', 25000, [33000], 6, 341, [2, 3, 0, 0, 3, 0]],
+    wyvern: [14, 127, '15d10 + 45', 0, 10, '6', 2300, null, 3, 343, [0, 3, 0, 0, 0, 0]],
+  };
+  for (const [slug, values] of Object.entries(expected)) {
+    const entry = bySlug[slug];
+    const groups = [entry.traits?.length ?? 0, entry.actions.length, entry.bonusActions?.length ?? 0,
+      entry.reactions?.length ?? 0, entry.legendaryActions?.length ?? 0, entry.lairActions?.length ?? 0];
+    assert.deepEqual([
+      Number(entry.armorClass), Number(entry.hitPoints), entry.hitDice.replaceAll('к', 'd'),
+      Number(entry.initiative.modifier.replace('−', '-')), entry.initiative.score, entry.challengeRating,
+      entry.experiencePoints, entry.alternativeExperience?.map(value => value.experiencePoints) ?? null,
+      Number(entry.proficiencyBonus.replace('+', '')), entry.sourcePage, groups,
+    ], values, `${slug}: exact Dragon signature`);
+  }
+});
+
+test('Dragon breath, control, legendary and spellcasting mechanics remain structured', () => {
+  const ancientRedBreath = bySlug['ancient-red-dragon'].actions.find(action => action.nameOriginal === 'Fire Breath');
+  assert.deepEqual([ancientRedBreath.recharge.minimum, ancientRedBreath.savingThrow.dc,
+    ancientRedBreath.damageInstances[0].formula, ancientRedBreath.damageInstances[0].damageType], [5, 24, '26к6', 'вогняна']);
+  assert.equal(bySlug['adult-bronze-dragon'].actions.find(action => action.nameOriginal === 'Repulsion Breath').savingThrow.onFailure.includes('60 футів'), true);
+  assert.equal(bySlug['adult-silver-dragon'].actions.find(action => action.nameOriginal === 'Paralyzing Breath').savingThrow.repeat.endsEffectOnSuccess, true);
+  assert.equal(bySlug['young-copper-dragon'].actions.find(action => action.nameOriginal === 'Slowing Breath').sourceText.includes('Бонусну дію'), true);
+  assert.equal(bySlug['young-brass-dragon'].actions.find(action => action.nameOriginal === 'Sleep Breath')
+    .mechanicSteps.some(step => step.conditionSlugs?.includes('unconscious')), true);
+  assert.equal(bySlug.pseudodragon.actions.find(action => action.nameOriginal === 'Sting').mechanicSteps.length, 2);
+  assert.equal(bySlug.wyvern.actions.find(action => action.nameOriginal === 'Sting').damageInstances.length, 2);
+  assert.equal(bySlug['dragon-turtle'].actions.find(action => action.nameOriginal === 'Steam Breath').savingThrow.onSuccess.toLowerCase().includes('половина'), true);
+  const legendaryDragons = entries.filter(entry => entry.creatureType === 'Дракон' && entry.legendaryActions?.length);
+  assert.equal(legendaryDragons.length, 20);
+  assert.equal(legendaryDragons.flatMap(entry => entry.legendaryActions).length, 60);
+  assert.ok(legendaryDragons.flatMap(entry => entry.legendaryActions).every(action => action.legendaryActionCost === 1));
+  assert.ok(legendaryDragons.every(entry => entry.alternativeExperience?.length === 1));
+  assert.ok(legendaryDragons.every(entry => !entry.lairActions?.length));
+});
+
+test('Dragon relationships resolve completely without invented links', () => {
+  const batch = entries.filter(entry => entry.creatureType === 'Дракон');
+  const groupedSpells = batch.flatMap(entry => entry.spellcasting?.groups ?? []).flatMap(group => group.spells);
+  assert.ok(groupedSpells.length > 0);
+  assert.ok(groupedSpells.every(spell => spell.slug && spellSlugs.has(spell.slug)));
+  assert.equal(batch.flatMap(entry => entry.relationships?.spellSlugs ?? []).length, 109);
+  assert.equal(batch.flatMap(entry => entry.relationships?.conditionSlugs ?? []).length, 39);
+  assert.equal(batch.flatMap(entry => entry.relationships?.itemSlugs ?? []).length, 1);
+  assert.equal(batch.flatMap(entry => entry.relationships?.ruleSlugs ?? []).length, 348);
+  assert.deepEqual(bySlug['kobold-warrior'].relationships.itemSlugs, ['dagger']);
+});
+
 test('five initial creatures match exact SRD 5.2.1 core statistics', () => {
   const expected = {
     bandit: ['12', '11', '2к8 + 2', ['30 фт'], '+1', 11, '1/8', 25, '+2', 261],
@@ -814,7 +927,9 @@ test('Aboleth saves, limits and legendary actions preserve exact mechanics', () 
 
 test('Recharge and limited-use mechanics are preserved only where stated by the source', () => {
   const blocks = entries.flatMap(entry => [entry.traits ?? [], entry.actions, entry.bonusActions ?? [], entry.reactions ?? [], entry.legendaryActions ?? []].flat());
-  assert.deepEqual(blocks.filter(block => block.recharge).map(block => [block.id, block.recharge]), [
+  const dragonIds = new Set(entries.filter(entry => entry.creatureType === 'Дракон').map(entry => entry.slug));
+  const isDragonBlock = block => [...dragonIds].some(slug => block.id.startsWith(`${slug}-`));
+  assert.deepEqual(blocks.filter(block => block.recharge && !isDragonBlock(block)).map(block => [block.id, block.recharge]), [
     ['ape-rock', { kind: 'roll', die: 6, minimum: 6 }],
     ['giant-ape-boulder-toss', { kind: 'roll', die: 6, minimum: 6 }],
     ['giant-spider-web', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
@@ -861,7 +976,7 @@ test('Recharge and limited-use mechanics are preserved only where stated by the 
     ['ghost-possession', { kind: 'roll', die: 6, minimum: 6 }],
     ['vampire-charm', { kind: 'roll', die: 6, minimum: 5, maximum: 6 }],
   ]);
-  assert.deepEqual(blocks.filter(block => block.limitedUse).map(block => block.id), [
+  assert.deepEqual(blocks.filter(block => block.limitedUse && !isDragonBlock(block)).map(block => block.id), [
     'mage-misty-step', 'mage-protective-magic', 'aboleth-legendary-resistance', 'aboleth-dominate-mind',
     'giant-hyena-rampage', 'giant-octopus-ink-cloud', 'octopus-ink-cloud', 'cultist-fanatic-spiritual-weapon',
     'archmage-misty-step', 'archmage-protective-magic', 'priest-acolyte-divine-aid', 'priest-divine-aid',
@@ -876,6 +991,14 @@ test('Recharge and limited-use mechanics are preserved only where stated by the 
     'night-hag-nightmare-haunting', 'pit-fiend-legendary-resistance', 'quasit-scare', 'vrock-stunning-screech',
     'lich-legendary-resistance', 'mummy-lord-legendary-resistance', 'vampire-legendary-resistance',
   ]);
+  const dragonRecharge = blocks.filter(block => block.recharge && isDragonBlock(block));
+  assert.equal(dragonRecharge.length, 42);
+  assert.ok(dragonRecharge.every(block => block.recharge.kind === 'roll'
+    && block.recharge.die === 6 && block.recharge.minimum === 5 && block.recharge.maximum === 6));
+  const dragonLimitedUse = blocks.filter(block => block.limitedUse && isDragonBlock(block));
+  assert.equal(dragonLimitedUse.length, 20);
+  assert.ok(dragonLimitedUse.every(block => block.id.endsWith('-legendary-resistance')
+    && block.limitedUse.period === 'day' && [3, 4].includes(block.limitedUse.uses)));
   assert.equal(formatMonsterRecharge(fixtures.rechargeableAction.recharge), 'Відновлення: 5–6');
 });
 
@@ -1100,6 +1223,7 @@ test('dataset and bestiary pages do not leak raw invalid values', () => {
   const detailSource = readFileSync(resolve('src/pages/BestiaryDetailPage.tsx'), 'utf8');
   assert.match(detailSource, /entry\.bonusActions\?\.length/);
   assert.match(detailSource, /entry\.legendaryActions\?\.length/);
+  assert.match(detailSource, /entry\.lairActions\?\.length/);
   assert.match(detailSource, /entry\.spellcasting \?/);
   assert.match(detailSource, /normalizeMonsterDamageInstances\(entry\)/);
   assert.match(detailSource, /formatMonsterSavingThrowOutcomes\(entry\.savingThrow\)/);

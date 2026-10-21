@@ -2,6 +2,7 @@ import { SRD_52_SOURCE } from './source';
 import type { OfficialMonsterAbility, OfficialMonsterEntry } from './types';
 import { officialBeasts } from './bestiary/beasts';
 import { officialElementalsConstructsOozesPlants } from './bestiary/elementals-constructs-oozes-plants';
+import { officialDragons } from './bestiary/dragons';
 import { officialFiends } from './bestiary/fiends';
 import { officialFeyAberrations } from './bestiary/fey-aberrations';
 import { officialGiantsCelestials } from './bestiary/giants-celestials';
@@ -117,6 +118,7 @@ export const officialBestiary: OfficialMonsterEntry[] = [
   ...officialMonstrosities,
   ...officialFiends,
   ...officialUndead,
+  ...officialDragons,
 ];
 
 export function bestiaryBySlug(slug?: string) {

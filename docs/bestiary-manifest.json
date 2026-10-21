@@ -11,9 +11,9 @@
   },
   "statBlockCount": 330,
   "coverage": {
-    "complete": 285,
+    "complete": 330,
     "partial": 0,
-    "missing": 45
+    "missing": 0
   },
   "monsters": [
     {
@@ -234,7 +234,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 263,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "young-black-dragon",
@@ -245,7 +245,7 @@
       "challengeRating": "7",
       "source": "SRD 5.2.1",
       "sourcePage": 264,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "adult-black-dragon",
@@ -256,7 +256,7 @@
       "challengeRating": "14",
       "source": "SRD 5.2.1",
       "sourcePage": 264,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ancient-black-dragon",
@@ -267,7 +267,7 @@
       "challengeRating": "21",
       "source": "SRD 5.2.1",
       "sourcePage": 265,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "black-pudding",
@@ -300,7 +300,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 266,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "young-blue-dragon",
@@ -311,7 +311,7 @@
       "challengeRating": "9",
       "source": "SRD 5.2.1",
       "sourcePage": 266,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "adult-blue-dragon",
@@ -322,7 +322,7 @@
       "challengeRating": "16",
       "source": "SRD 5.2.1",
       "sourcePage": 266,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ancient-blue-dragon",
@@ -333,7 +333,7 @@
       "challengeRating": "23",
       "source": "SRD 5.2.1",
       "sourcePage": 267,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "bone-devil",
@@ -355,7 +355,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 268,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "young-brass-dragon",
@@ -366,7 +366,7 @@
       "challengeRating": "6",
       "source": "SRD 5.2.1",
       "sourcePage": 268,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "adult-brass-dragon",
@@ -377,7 +377,7 @@
       "challengeRating": "13",
       "source": "SRD 5.2.1",
       "sourcePage": 268,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ancient-brass-dragon",
@@ -388,7 +388,7 @@
       "challengeRating": "20",
       "source": "SRD 5.2.1",
       "sourcePage": 269,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "bronze-dragon-wyrmling",
@@ -399,7 +399,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 269,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "young-bronze-dragon",
@@ -410,7 +410,7 @@
       "challengeRating": "8",
       "source": "SRD 5.2.1",
       "sourcePage": 270,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "adult-bronze-dragon",
@@ -421,7 +421,7 @@
       "challengeRating": "15",
       "source": "SRD 5.2.1",
       "sourcePage": 270,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ancient-bronze-dragon",
@@ -432,7 +432,7 @@
       "challengeRating": "22",
       "source": "SRD 5.2.1",
       "sourcePage": 271,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "bugbear-stalker",
@@ -575,7 +575,7 @@
       "challengeRating": "1",
       "source": "SRD 5.2.1",
       "sourcePage": 275,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "young-copper-dragon",
@@ -586,7 +586,7 @@
       "challengeRating": "7",
       "source": "SRD 5.2.1",
       "sourcePage": 276,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "adult-copper-dragon",
@@ -597,7 +597,7 @@
       "challengeRating": "14",
       "source": "SRD 5.2.1",
       "sourcePage": 276,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ancient-copper-dragon",
@@ -608,7 +608,7 @@
       "challengeRating": "21",
       "source": "SRD 5.2.1",
       "sourcePage": 277,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "couatl",
@@ -718,7 +718,7 @@
       "challengeRating": "17",
       "source": "SRD 5.2.1",
       "sourcePage": 281,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "dretch",
@@ -1026,7 +1026,7 @@
       "challengeRating": "3",
       "source": "SRD 5.2.1",
       "sourcePage": 290,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "young-gold-dragon",
@@ -1037,7 +1037,7 @@
       "challengeRating": "10",
       "source": "SRD 5.2.1",
       "sourcePage": 291,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "adult-gold-dragon",
@@ -1048,7 +1048,7 @@
       "challengeRating": "17",
       "source": "SRD 5.2.1",
       "sourcePage": 291,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ancient-gold-dragon",
@@ -1059,7 +1059,7 @@
       "challengeRating": "24",
       "source": "SRD 5.2.1",
       "sourcePage": 292,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "gorgon",
@@ -1092,7 +1092,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 293,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "young-green-dragon",
@@ -1103,7 +1103,7 @@
       "challengeRating": "8",
       "source": "SRD 5.2.1",
       "sourcePage": 293,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "adult-green-dragon",
@@ -1114,7 +1114,7 @@
       "challengeRating": "15",
       "source": "SRD 5.2.1",
       "sourcePage": 294,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ancient-green-dragon",
@@ -1125,7 +1125,7 @@
       "challengeRating": "22",
       "source": "SRD 5.2.1",
       "sourcePage": 294,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "green-hag",
@@ -1213,7 +1213,7 @@
       "challengeRating": "5",
       "source": "SRD 5.2.1",
       "sourcePage": 297,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "harpy",
@@ -1400,7 +1400,7 @@
       "challengeRating": "1/8",
       "source": "SRD 5.2.1",
       "sourcePage": 302,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "kraken",
@@ -1818,7 +1818,7 @@
       "challengeRating": "1/4",
       "source": "SRD 5.2.1",
       "sourcePage": 316,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "purple-worm",
@@ -1862,7 +1862,7 @@
       "challengeRating": "4",
       "source": "SRD 5.2.1",
       "sourcePage": 318,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "young-red-dragon",
@@ -1873,7 +1873,7 @@
       "challengeRating": "10",
       "source": "SRD 5.2.1",
       "sourcePage": 318,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "adult-red-dragon",
@@ -1884,7 +1884,7 @@
       "challengeRating": "17",
       "source": "SRD 5.2.1",
       "sourcePage": 318,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ancient-red-dragon",
@@ -1895,7 +1895,7 @@
       "challengeRating": "24",
       "source": "SRD 5.2.1",
       "sourcePage": 319,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "remorhaz",
@@ -2038,7 +2038,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 324,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "young-silver-dragon",
@@ -2049,7 +2049,7 @@
       "challengeRating": "9",
       "source": "SRD 5.2.1",
       "sourcePage": 324,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "adult-silver-dragon",
@@ -2060,7 +2060,7 @@
       "challengeRating": "16",
       "source": "SRD 5.2.1",
       "sourcePage": 324,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ancient-silver-dragon",
@@ -2071,7 +2071,7 @@
       "challengeRating": "23",
       "source": "SRD 5.2.1",
       "sourcePage": 325,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "skeleton",
@@ -2467,7 +2467,7 @@
       "challengeRating": "2",
       "source": "SRD 5.2.1",
       "sourcePage": 339,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "young-white-dragon",
@@ -2478,7 +2478,7 @@
       "challengeRating": "6",
       "source": "SRD 5.2.1",
       "sourcePage": 340,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "adult-white-dragon",
@@ -2489,7 +2489,7 @@
       "challengeRating": "13",
       "source": "SRD 5.2.1",
       "sourcePage": 340,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "ancient-white-dragon",
@@ -2500,7 +2500,7 @@
       "challengeRating": "20",
       "source": "SRD 5.2.1",
       "sourcePage": 341,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "wight",
@@ -2566,7 +2566,7 @@
       "challengeRating": "6",
       "source": "SRD 5.2.1",
       "sourcePage": 343,
-      "coverageStatus": "Missing"
+      "coverageStatus": "Complete"
     },
     {
       "slug": "xorn",
