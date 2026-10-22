@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { HOME_REFERENCE_INDEX, type HomeReferenceSection } from '@/data/homeReferenceIndex.generated';
 import { HOME_ICONS } from '@/features/catalog/utils/codexIcons';
@@ -80,25 +81,61 @@ function useAnimatedPlaceholder(isActive: boolean) {
   return isActive && !reducedMotion ? placeholder : STATIC_PLACEHOLDER;
 }
 
+function useHeroReveal() {
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const content = contentRef.current;
+    if (!content || prefersReducedMotion()) return undefined;
+
+    content.classList.add('is-intro-ready');
+    const frame = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => content.classList.add('is-intro-visible'));
+    });
+    const fallback = window.setTimeout(() => content.classList.add('is-intro-visible'), 1200);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(fallback);
+    };
+  }, []);
+
+  return contentRef;
+}
+
 function useOneTimeReveal() {
   const sectionRef = useRef<HTMLElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const section = sectionRef.current;
     if (!section) return undefined;
-    if (prefersReducedMotion() || !('IntersectionObserver' in window)) {
-      section.classList.add('is-revealed');
+    const revealItems = Array.from(section.querySelectorAll<HTMLElement>('[data-home-reveal]'));
+    if (prefersReducedMotion() || !('IntersectionObserver' in window)) return undefined;
+
+    section.classList.add('is-reveal-ready');
+    try {
+      const groups = new Map<string, HTMLElement[]>();
+      revealItems.forEach((item) => {
+        const group = item.dataset.homeReveal ?? 'default';
+        groups.set(group, [...(groups.get(group) ?? []), item]);
+      });
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const trigger = entry.target as HTMLElement;
+          const group = trigger.dataset.homeReveal ?? 'default';
+          groups.get(group)?.forEach((item) => item.classList.add('is-revealed'));
+          observer.unobserve(trigger);
+        });
+      }, { threshold: 0.16, rootMargin: '0px 0px -6% 0px' });
+
+      groups.forEach((items) => observer.observe(items[0]));
+      return () => observer.disconnect();
+    } catch {
+      section.classList.remove('is-reveal-ready');
       return undefined;
     }
-
-    section.classList.add('is-observed');
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      section.classList.add('is-revealed');
-      observer.disconnect();
-    }, { threshold: 0.12 });
-    observer.observe(section);
-    return () => observer.disconnect();
   }, []);
 
   return sectionRef;
@@ -111,7 +148,13 @@ function normalizeSearch(value: string) {
 export function HomePage() {
   const [search, setSearch] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
+  const [resultsOpen, setResultsOpen] = useState(false);
+  const [resultsPosition, setResultsPosition] = useState<{ top: number; left: number; width: number; maxHeight: number } | null>(null);
+  const searchRootRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
   const placeholder = useAnimatedPlaceholder(!searchFocused && !search);
+  const heroContentRef = useHeroReveal();
   const referenceSectionRef = useOneTimeReveal();
 
   const counts = useMemo(() => Object.fromEntries(sectionOrder.map((section) => [
@@ -127,46 +170,143 @@ export function HomePage() {
       .slice(0, 10);
   }, [search]);
 
+  const updateResultsPosition = () => {
+    const input = searchInputRef.current;
+    if (!input) return;
+    const rect = input.getBoundingClientRect();
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+    setResultsPosition({
+      top: rect.bottom + 8,
+      left: rect.left,
+      width: rect.width,
+      maxHeight: Math.max(96, Math.min(432, viewportHeight - rect.bottom - 20)),
+    });
+  };
+
+  const closeResults = () => setResultsOpen(false);
+
+  const focusSearchResult = (index: number) => {
+    const links = resultsRef.current?.querySelectorAll<HTMLAnchorElement>('.home-global-search__result');
+    links?.[index]?.focus();
+  };
+
+  useEffect(() => {
+    if (!resultsOpen) return undefined;
+    const handleViewportChange = () => updateResultsPosition();
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (searchRootRef.current?.contains(target) || resultsRef.current?.contains(target)) return;
+      closeResults();
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setSearch('');
+      closeResults();
+      searchInputRef.current?.focus();
+    };
+
+    window.addEventListener('resize', handleViewportChange);
+    window.addEventListener('scroll', handleViewportChange, true);
+    window.visualViewport?.addEventListener('resize', handleViewportChange);
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('resize', handleViewportChange);
+      window.removeEventListener('scroll', handleViewportChange, true);
+      window.visualViewport?.removeEventListener('resize', handleViewportChange);
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [resultsOpen]);
+
+  const resultsPanel = resultsOpen && search.trim() && resultsPosition ? createPortal(
+    <div
+      ref={resultsRef}
+      id="home-global-search-results"
+      className="home-global-search__results"
+      aria-live="polite"
+      style={resultsPosition}
+      onKeyDown={(event) => {
+        const links = Array.from(resultsRef.current?.querySelectorAll<HTMLAnchorElement>('.home-global-search__result') ?? []);
+        const currentIndex = links.indexOf(document.activeElement as HTMLAnchorElement);
+        if (event.key === 'ArrowDown' && links.length) {
+          event.preventDefault();
+          links[(currentIndex + 1) % links.length].focus();
+        } else if (event.key === 'ArrowUp' && links.length) {
+          event.preventDefault();
+          links[(currentIndex - 1 + links.length) % links.length].focus();
+        } else if (event.key === 'Tab' && event.shiftKey && currentIndex === 0) {
+          event.preventDefault();
+          searchInputRef.current?.focus();
+        } else if (event.key === 'Tab' && !event.shiftKey && currentIndex === links.length - 1) {
+          event.preventDefault();
+          closeResults();
+          document.querySelector<HTMLAnchorElement>('.home-reference-card')?.focus();
+        }
+      }}
+    >
+      {searchResults.length ? searchResults.map((entry) => (
+        <Link key={entry.path} to={entry.path} className="home-global-search__result" onClick={closeResults}>
+          <span>
+            <strong>{entry.nameUk}</strong>
+            {entry.nameOriginal ? <small>{entry.nameOriginal}</small> : null}
+          </span>
+          <em>{entry.sectionLabel}</em>
+        </Link>
+      )) : <p>Нічого не знайдено. Уточніть запит.</p>}
+    </div>,
+    document.body,
+  ) : null;
+
   return (
     <div className="codex-home-v2 codex-home-redesign">
       <section className="home-codex-hero" aria-labelledby="home-title">
         <img className="home-codex-hero__art" src="/images/home/kodex_maistra_hero.webp" alt="" aria-hidden="true" decoding="async" fetchPriority="high" />
-        <div className="home-codex-hero__content">
+        <div ref={heroContentRef} className="home-codex-hero__content">
           <p className="home-codex-hero__eyebrow">Довідкова система D&amp;D 2024</p>
           <h1 id="home-title">Кодекс Майстра</h1>
           <p className="home-codex-hero__subtitle">Український довідник Dungeons &amp; Dragons</p>
 
-          <div className="home-global-search" role="search">
+          <div ref={searchRootRef} className="home-global-search" role="search">
             <label htmlFor="home-global-search">Пошук у всіх розділах довідника</label>
             <span className="home-global-search__icon" aria-hidden="true">⌕</span>
             <input
+              ref={searchInputRef}
               id="home-global-search"
               type="search"
               value={search}
               placeholder={placeholder}
               autoComplete="off"
               aria-controls="home-global-search-results"
-              aria-expanded={Boolean(search.trim())}
-              onFocus={() => setSearchFocused(true)}
+              aria-expanded={resultsOpen && Boolean(search.trim())}
+              onFocus={() => {
+                setSearchFocused(true);
+                if (search.trim()) {
+                  updateResultsPosition();
+                  setResultsOpen(true);
+                }
+              }}
               onBlur={() => setSearchFocused(false)}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) => {
+                const nextSearch = event.target.value;
+                setSearch(nextSearch);
+                if (nextSearch.trim()) {
+                  updateResultsPosition();
+                  setResultsOpen(true);
+                } else {
+                  closeResults();
+                }
+              }}
               onKeyDown={(event) => {
-                if (event.key === 'Escape') setSearch('');
+                if (event.key === 'Escape') {
+                  setSearch('');
+                  closeResults();
+                } else if ((event.key === 'ArrowDown' || (event.key === 'Tab' && !event.shiftKey)) && resultsOpen && searchResults.length) {
+                  event.preventDefault();
+                  focusSearchResult(0);
+                }
               }}
             />
-            {search.trim() ? (
-              <div id="home-global-search-results" className="home-global-search__results" aria-live="polite">
-                {searchResults.length ? searchResults.map((entry) => (
-                  <Link key={entry.path} to={entry.path} className="home-global-search__result">
-                    <span>
-                      <strong>{entry.nameUk}</strong>
-                      {entry.nameOriginal ? <small>{entry.nameOriginal}</small> : null}
-                    </span>
-                    <em>{entry.sectionLabel}</em>
-                  </Link>
-                )) : <p>Нічого не знайдено. Уточніть запит.</p>}
-              </div>
-            ) : null}
           </div>
 
           <dl className="home-codex-kpi" aria-label="Кількість матеріалів у довіднику">
@@ -180,8 +320,10 @@ export function HomePage() {
         </div>
       </section>
 
+      {resultsPanel}
+
       <section ref={referenceSectionRef} className="home-reference" aria-labelledby="home-reference-title">
-        <header className="home-reference__header home-reveal home-reveal--header">
+        <header className="home-reference__header home-reveal home-reveal--header" data-home-reveal="header">
           <p>Навігація кодексом</p>
           <h2 id="home-reference-title">Довідник</h2>
           <span>Усе необхідне для створення персонажа, підготовки та проведення гри.</span>
@@ -189,7 +331,7 @@ export function HomePage() {
 
         <div className="home-bento">
           {(['bestiary', 'spells'] as const).map((section) => (
-            <Link key={section} to={sectionMeta[section].path} className={`home-reference-card home-reference-card--feature home-reveal home-reveal--row-one home-reference-card--${section}`}>
+            <Link key={section} to={sectionMeta[section].path} className={`home-reference-card home-reference-card--feature home-reveal home-reveal--row-one home-reference-card--${section}`} data-home-reveal="features">
               <img src={sectionArt[section]} alt="" aria-hidden="true" loading="lazy" decoding="async" />
               <span className="home-reference-card__shade" aria-hidden="true" />
               <span className="home-reference-card__content">
@@ -202,7 +344,7 @@ export function HomePage() {
           ))}
 
           {(['races', 'classes', 'feats', 'items'] as const).map((section) => (
-            <Link key={section} to={sectionMeta[section].path} className="home-reference-card home-reference-card--compact home-reveal home-reveal--row-two">
+            <Link key={section} to={sectionMeta[section].path} className="home-reference-card home-reference-card--compact home-reveal home-reveal--row-two" data-home-reveal="compact">
               <img src={compactSectionIcons[section]} alt="" aria-hidden="true" loading="lazy" decoding="async" />
               <span className="home-reference-card__content">
                 <strong>{sectionMeta[section].title}</strong>
@@ -213,7 +355,7 @@ export function HomePage() {
           ))}
 
           {(['rules', 'conditions'] as const).map((section) => (
-            <Link key={section} to={sectionMeta[section].path} className={`home-reference-card home-reference-card--wide home-reveal home-reveal--row-three home-reference-card--${section}`}>
+            <Link key={section} to={sectionMeta[section].path} className={`home-reference-card home-reference-card--wide home-reveal home-reveal--row-three home-reference-card--${section}`} data-home-reveal="bottom">
               <img src={sectionArt[section]} alt="" aria-hidden="true" loading="lazy" decoding="async" />
               <span className="home-reference-card__shade" aria-hidden="true" />
               <span className="home-reference-card__content">
