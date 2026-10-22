@@ -9,6 +9,9 @@ import { preloadAdminRoute, preloadCatalogRoute, preloadDetailRoute } from './ro
 const AdminPage = lazy(() => preloadAdminRoute().then((module) => ({ default: module.AdminPage })));
 const ContentDetailPage = lazy(() => preloadDetailRoute().then((module) => ({ default: module.ContentDetailPage })));
 const HomePage = lazy(() => import('@/pages/HomePage').then((module) => ({ default: module.HomePage })));
+const AnimationPreviewPage = import.meta.env.DEV
+  ? lazy(() => import('@/pages/dev/AnimationPreviewPage'))
+  : null;
 const LoginPage = lazy(() => import('@/pages/LoginPage').then((module) => ({ default: module.LoginPage })));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage })));
 const SectionPage = lazy(() => preloadCatalogRoute().then((module) => ({ default: module.SectionPage })));
@@ -32,6 +35,9 @@ export function App() {
     <Routes>
       <Route element={<AppLayout />}>
         <Route index element={<Suspense fallback={<RouteFallback />}><HomePage /></Suspense>} />
+        {import.meta.env.DEV && AnimationPreviewPage && (
+          <Route path="/animation-preview" element={<Suspense fallback={<RouteFallback />}><AnimationPreviewPage /></Suspense>} />
+        )}
         <Route path={appRoutes.races} element={<Suspense fallback={<RouteFallback />}><SectionPage section="races" /></Suspense>} />
         <Route path={appRoutes.raceDetail} element={<Suspense fallback={<RouteFallback />}><ContentDetailPage entity="race" /></Suspense>} />
         <Route path={appRoutes.classes} element={<Suspense fallback={<RouteFallback />}><SectionPage section="classes" /></Suspense>} />

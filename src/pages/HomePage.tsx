@@ -81,12 +81,12 @@ function useAnimatedPlaceholder(isActive: boolean) {
   return isActive && !reducedMotion ? placeholder : STATIC_PLACEHOLDER;
 }
 
-function useHeroReveal() {
+function useHeroReveal(enabled = true) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     const content = contentRef.current;
-    if (!content || prefersReducedMotion()) return undefined;
+    if (!enabled || !content || prefersReducedMotion()) return undefined;
 
     content.classList.add('is-intro-ready');
     const frame = window.requestAnimationFrame(() => {
@@ -98,17 +98,17 @@ function useHeroReveal() {
       window.cancelAnimationFrame(frame);
       window.clearTimeout(fallback);
     };
-  }, []);
+  }, [enabled]);
 
   return contentRef;
 }
 
-function useOneTimeReveal() {
+function useOneTimeReveal(enabled = true) {
   const sectionRef = useRef<HTMLElement>(null);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
-    if (!section) return undefined;
+    if (!enabled || !section) return undefined;
     const revealItems = Array.from(section.querySelectorAll<HTMLElement>('[data-home-reveal]'));
     if (prefersReducedMotion() || !('IntersectionObserver' in window)) return undefined;
 
@@ -136,7 +136,7 @@ function useOneTimeReveal() {
       section.classList.remove('is-reveal-ready');
       return undefined;
     }
-  }, []);
+  }, [enabled]);
 
   return sectionRef;
 }
@@ -145,7 +145,7 @@ function normalizeSearch(value: string) {
   return value.trim().toLocaleLowerCase('uk').replace(/[’']/g, 'ʼ');
 }
 
-export function HomePage() {
+export function HomePage({ externalMotion = false }: { externalMotion?: boolean }) {
   const [search, setSearch] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
   const [resultsOpen, setResultsOpen] = useState(false);
@@ -153,9 +153,9 @@ export function HomePage() {
   const searchRootRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const placeholder = useAnimatedPlaceholder(!searchFocused && !search);
-  const heroContentRef = useHeroReveal();
-  const referenceSectionRef = useOneTimeReveal();
+  const placeholder = useAnimatedPlaceholder(!externalMotion && !searchFocused && !search);
+  const heroContentRef = useHeroReveal(!externalMotion);
+  const referenceSectionRef = useOneTimeReveal(!externalMotion);
 
   const counts = useMemo(() => Object.fromEntries(sectionOrder.map((section) => [
     section,

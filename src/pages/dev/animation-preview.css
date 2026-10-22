@@ -1,0 +1,77 @@
+/* Design-time references and attribution: docs/animation-preview.md. */
+.animation-preview {
+  --preview-easing: cubic-bezier(0, 0, 0.3, 1);
+  color: var(--archive-text);
+  background: var(--archive-bg-deep);
+  scroll-margin-top: var(--archive-topbar-height);
+}
+.animation-preview__controls {
+  position: sticky;
+  top: var(--archive-topbar-height);
+  z-index: 20;
+  border-bottom: 1px solid var(--archive-border);
+  padding: 0.65rem var(--archive-page-padding);
+  background: var(--archive-surface-inset);
+}
+.animation-preview__actions,
+.animation-preview__variants { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; }
+.animation-preview__actions > strong { margin-right: auto; font-family: var(--heading-font); }
+.animation-preview__actions small { display: block; color: var(--archive-muted); font: 0.7rem system-ui; }
+.animation-preview__controls button {
+  min-height: 2.75rem;
+  border: 1px solid var(--archive-border);
+  border-radius: var(--archive-radius);
+  padding: 0.45rem 0.65rem;
+  color: var(--archive-text);
+  background: var(--archive-surface);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.animation-preview__controls button:is(:hover, [aria-pressed='true']) { border-color: var(--archive-gold); color: var(--archive-gold-bright); background: var(--archive-surface-raised); }
+.animation-preview__controls button:focus-visible { outline: 2px solid var(--archive-gold-bright); outline-offset: 3px; }
+.animation-preview__controls p { margin: 0.35rem 0 0; color: var(--archive-muted); font-size: 0.75rem; line-height: 1.5; }
+.animation-preview .home-reference { scroll-margin-top: calc(var(--archive-topbar-height) + 13rem); }
+
+.animation-preview .home-codex-hero[data-preview-playing] .home-codex-hero__content > * {
+  animation: preview-entrance var(--preview-hero-duration) var(--preview-easing) var(--preview-delay, 0ms) both;
+}
+.animation-preview [data-preview-reveal='pending'] { opacity: 0; transform: translateY(var(--preview-translate)); }
+.animation-preview [data-preview-reveal='visible'] {
+  animation: preview-entrance var(--preview-bento-duration) var(--preview-easing) var(--preview-delay, 0ms) both;
+}
+.animation-preview [data-preview-reveal]:focus-visible { opacity: 1; transform: none; animation: none; }
+.animation-preview[data-variant='atmospheric'] .home-codex-hero[data-preview-playing] .home-codex-hero__art {
+  animation: preview-art 600ms var(--preview-easing) both;
+}
+/* One pointer-safe decorative layer; preserve the homepage's contrast overlays. */
+.animation-preview[data-variant='atmospheric'] .home-codex-hero__content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 42%, rgb(213 168 94 / 7%), transparent 62%), radial-gradient(125% 125% at 50% 90%, transparent 40%, rgb(23 29 36 / 12%) 100%);
+}
+.animation-preview[data-variant='atmospheric'] .home-codex-hero[data-preview-playing] .home-codex-hero__content::before {
+  animation: preview-atmosphere 600ms var(--preview-easing) both;
+}
+@keyframes preview-entrance {
+  from { opacity: 0; transform: translateY(var(--preview-translate)); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes preview-art { from { opacity: 0.65; } to { opacity: 1; } }
+@keyframes preview-atmosphere { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 767px) {
+  .animation-preview__actions > strong { width: 100%; }
+  .animation-preview__controls { position: relative; top: auto; }
+  .animation-preview .home-reference { scroll-margin-top: calc(var(--archive-topbar-height) + 1rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* This boundary also disables inherited decorative hover transitions. */
+  .animation-preview *, .animation-preview *::before, .animation-preview *::after { animation: none !important; transition: none !important; }
+  .animation-preview [data-preview-reveal],
+  .animation-preview .home-codex-hero__content > * { opacity: 1; transform: none; }
+  .animation-preview .home-reference-card:hover > img { transform: none; }
+}
