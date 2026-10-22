@@ -51,11 +51,11 @@ export const CODEX_ICONS = {
 } as const;
 
 export const HOME_ICONS = {
-  races: '/icons/home/races.webp',
-  classes: '/icons/home/classes.webp',
-  feats: '/icons/home/feats.webp',
+  races: '/icons/home/rasy.webp',
+  classes: '/icons/home/klasy.webp',
+  feats: '/icons/home/rysy.webp',
   spells: '/icons/home/spells.webp',
-  items: '/icons/home/items.webp',
+  items: '/icons/home/predmety.webp',
   conditions: '/icons/home/conditions.webp',
   rules: '/icons/home/rules.webp',
   bestiary: '/icons/home/bestiary.webp',
