@@ -1,6 +1,7 @@
 import { SRD_52_SOURCE } from './source';
 import type { OfficialMonsterAbility, OfficialMonsterEntry } from './types';
 import { officialBeasts } from './bestiary/beasts';
+import { BESTIARY_DESCRIPTIONS } from './bestiary/descriptions';
 import { officialElementalsConstructsOozesPlants } from './bestiary/elementals-constructs-oozes-plants';
 import { officialDragons } from './bestiary/dragons';
 import { officialFiends } from './bestiary/fiends';
@@ -107,7 +108,7 @@ const aboleth: OfficialMonsterEntry = {
   relationships: { conditionSlugs: ['charmed', 'grappled'], ruleSlugs: ['initiative', 'saving-throws', 'difficulty-class', 'conditions', 'healing', 'damage-rolls'] }, sourcePage: 258,
 };
 
-export const officialBestiary: OfficialMonsterEntry[] = [
+const bestiaryEntries: OfficialMonsterEntry[] = [
   bandit,
   goblinBoss,
   wolf,
@@ -123,6 +124,11 @@ export const officialBestiary: OfficialMonsterEntry[] = [
   ...officialUndead,
   ...officialDragons,
 ];
+
+export const officialBestiary: OfficialMonsterEntry[] = bestiaryEntries.map((entry) => ({
+  ...entry,
+  description: entry.description ?? BESTIARY_DESCRIPTIONS[entry.slug],
+}));
 
 export function bestiaryBySlug(slug?: string) {
   return officialBestiary.find((entry) => entry.slug === slug);

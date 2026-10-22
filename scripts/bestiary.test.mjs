@@ -21,6 +21,7 @@ function loadLocalRules(path) {
 
 const rulesRoot = resolve('src/data/rules');
 const { officialBestiary: entries } = loadLocalRules(resolve(rulesRoot, 'bestiary.ts'));
+const { BESTIARY_DESCRIPTIONS: editorialDescriptions } = loadLocalRules(resolve(rulesRoot, 'bestiary/descriptions'));
 const { officialConditions: conditions } = loadLocalRules(resolve(rulesRoot, 'conditions.ts'));
 const { officialItems: items } = loadLocalRules(resolve(rulesRoot, 'items'));
 const { officialRules: rules } = loadLocalRules(resolve(rulesRoot, 'rules.ts'));
@@ -80,22 +81,36 @@ test('runtime Bestiary identities map to Complete manifest entries', () => {
   assert.equal(bestiaryManifest.monsters.filter(entry => entry.coverageStatus === 'Missing').length, 0);
 });
 
-test('sample editorial descriptions follow the approved data and style constraints', () => {
+test('all Bestiary entries have concise original editorial descriptions', () => {
   const describedEntries = entries.filter(entry => entry.description);
-  assert.deepEqual(new Set(describedEntries.map(entry => entry.slug)), new Set(sampleDescriptionSlugs));
-  assert.equal(describedEntries.length, 10);
-  assert.deepEqual(new Set(describedEntries.map(entry => entry.creatureType)), new Set([
-    'Звір', 'Гуманоїд', 'Нежить', 'Погань', 'Аберрація', 'Елементаль', 'Конструкт', 'Монстр', 'Дракон', 'Рослина',
-  ]));
+  assert.equal(describedEntries.length, 330);
+  assert.equal(Object.keys(editorialDescriptions).length, 320);
+  assert.ok(sampleDescriptionSlugs.every(slug => !(slug in editorialDescriptions)), 'approved sample descriptions must remain canonical entry data');
+  assert.deepEqual(new Set(Object.keys(editorialDescriptions)), new Set(entries.filter(entry => !sampleDescriptionSlugs.includes(entry.slug)).map(entry => entry.slug)));
+  assert.equal(new Set(describedEntries.map(entry => entry.description)).size, describedEntries.length, 'editorial descriptions must be unique');
 
+  const descriptionIssues = [];
+  const editorialSentences = [];
+  const normalizeApostrophes = value => value.replace(/[’']/gu, "'");
   for (const entry of describedEntries) {
     const words = entry.description.match(/[\p{L}’'-]+/gu) ?? [];
     const sentences = entry.description.split(/[.!?]+/u).map(value => value.trim()).filter(Boolean);
-    assert.ok(words.length >= 40 && words.length <= 90, `${entry.slug}: expected 40-90 words, got ${words.length}`);
-    assert.ok(sentences.length >= 2 && sentences.length <= 4, `${entry.slug}: expected 2-4 sentences, got ${sentences.length}`);
-    assert.doesNotMatch(entry.description, /\d|\b[кd]\d+\b|(?:^|[^\p{L}])(?:КЗ|СК|CR|хіт(?:и|ів)?)(?=$|[^\p{L}])/iu, `${entry.slug}: description duplicates numeric mechanics`);
+    editorialSentences.push(...sentences.map(sentence => sentence.toLocaleLowerCase('uk-UA')));
+    if (!normalizeApostrophes(entry.description).startsWith(normalizeApostrophes(entry.nameUk))) descriptionIssues.push(`${entry.slug}: description does not start with the Ukrainian name`);
+    if (words.length < 40 || words.length > 90) descriptionIssues.push(`${entry.slug}: ${words.length} words`);
+    if (sentences.length < 2 || sentences.length > 4) descriptionIssues.push(`${entry.slug}: ${sentences.length} sentences`);
+    if (/\d|\b[кd]\d+\b|(?:^|[^\p{L}])(?:КЗ|СК|CR|хіт(?:и|ів)?)(?=$|[^\p{L}])/iu.test(entry.description)) descriptionIssues.push(`${entry.slug}: numeric mechanic`);
+    if (/(?:TODO|TBD|placeholder|не вказано|null|undefined|\[object Object\])/iu.test(entry.description)) descriptionIssues.push(`${entry.slug}: placeholder or raw value`);
+    if (/(?:TTG(?:\.club)?|D&D Beyond|Monster Manual|Монстрячий довідник)/iu.test(entry.description)) descriptionIssues.push(`${entry.slug}: editorial source`);
   }
+  if (new Set(editorialSentences).size !== editorialSentences.length) descriptionIssues.push('duplicate editorial sentence');
+  assert.deepEqual(descriptionIssues, []);
+});
 
+test('approved sample descriptions remain grounded in their stat blocks', () => {
+  assert.deepEqual(new Set(sampleDescriptionSlugs.map(slug => bySlug[slug].creatureType)), new Set([
+    'Звір', 'Гуманоїд', 'Нежить', 'Погань', 'Аберрація', 'Елементаль', 'Конструкт', 'Монстр', 'Дракон', 'Рослина',
+  ]));
   assert.ok(bySlug.wolf.traits.some(value => value.id === 'wolf-pack-tactics'));
   assert.deepEqual(bySlug.bandit.gear.map(value => value.itemSlug), ['leather-armor', 'light-crossbow', 'scimitar']);
   assert.ok(bySlug.ghost.actions.some(value => value.id === 'ghost-possession'));

@@ -19,6 +19,7 @@
 - Шоста запланована партія завершена: додано **37** stat blocks; runtime містить усі **37/37 Monstrosities** SRD 5.2.1.
 - Сьома запланована партія завершена: додано **48** stat blocks; runtime містить усі **29/29 Fiends і 19/19 Undead** SRD 5.2.1.
 - Восьма фінальна партія завершена: додано **45** stat blocks; runtime містить усі **45/45 Dragons** SRD 5.2.1, а повне покриття Bestiary становить **330/330**.
+- Редакційне покриття завершене: **330/330** істот мають короткий український опис; **10** затверджених зразків збережено без змін, для решти **320** додано власні тексти «Кодексу Майстра».
 
 Повний машинозчитуваний перелік із canonical English name, slug, size, type, CR і сторінкою SRD збережено в `docs/bestiary-manifest.json`. До підрахунку включено лише записи з повноцінним stat block; згадки істот у правилах не враховано.
 
@@ -260,18 +261,18 @@ Renderer використовує ці поля як компактні scan fac
 
 ## Описи та lore
 
-- Істот із заповненим `description`: **0 із 330**.
-- Істот без description: **330 із 330**.
+- Істот із заповненим `description`: **330 із 330**.
+- Істот без description: **0 із 330**.
 - Artwork: **0 із 330**.
-- Monster A-Z у SRD 5.2.1 є stat-block reference і не надає окремих повних lore-блоків для імпортованої Beast-партії. Перевірка дозволених fallback-джерел не дала послідовного повного відкритого lore-набору, придатного для точного перенесення всієї партії.
-- Для Humanoids додатково перевірено TTG fallback. Доступні сторінки належать до MM Basic/2025 і в окремих записах мають механічні значення, що не збігаються зі SRD 5.2.1; змішувати цей lore із canonical SRD-партією небезпечно. Тому description не додано.
-- Для третьої партії перевірка TTG fallback повторно підтвердила MM Basic/2025 походження й фактичні розбіжності зі SRD 5.2.1. Description не додано, щоб не змішувати різні source identities.
-- Для четвертої партії TTG fallback також повернув MM Basic/2025 сторінки. Description не додано, оскільки їх не можна атрибутувати canonical SRD 5.2.1 записам без змішування source identities.
-- Для п'ятої партії перевірено SRD 5.2.1, D&D 2024 Basic Rules і дозволений fallback. Окремого сумісного lore-шару для точного перенесення не підтверджено; description не вигадано.
-- Для сьомої партії перевірено SRD 5.2.1, D&D 2024 Basic Rules і дозволений fallback. TTG-сторінки належать до `MM Basic`, тому їхній lore не змішано з SRD source identity.
-- Для восьмої партії окремий сумісний lore-шар із тією самою source identity не підтверджено; опис не вигадано й механічний stat block не дублюється як lore.
-- Lore не вигадується, а внутрішній fallback не показується як джерело в UI. Тому `description` навмисно лишається порожнім.
-- Поточна модель і renderer підтримують відсутній опис, один абзац і кілька абзаців.
+- Початкові **10** описів затверджено як еталон тону. Для решти **320** створено власні редакційні тексти, а не переклад чи реконструкцію Monster Manual, D&D Beyond, TTG.club або сторонніх wiki.
+- Кожен текст має **2-4 короткі речення** та **40-90 слів**. Він пояснює зовнішній образ або природу істоти, типову роль чи поведінку та практично важливу загрозу, підтверджену чинним stat block.
+- Описи не повторюють КЗ, хіти, CR, формули шкоди, СК та інші числові параметри. Механічні подробиці залишаються у stat block, а `description` працює як швидкий редакційний вступ.
+- Тексти зберігаються у централізованих статичних мапах за групами істот. Runtime застосовує їх лише як fallback для записів без власного `description`, тому затверджені описи не перезаписуються, а механічні дані не дублюються.
+- Автоматичний аудит перевіряє повне покриття, унікальність, довжину, кількість речень, відсутність placeholder-маркерів, raw values і згадок редакційних джерел. Тексти не формуються runtime-шаблоном.
+- Ручна вибіркова перевірка охопила щонайменше по п'ять Beasts, Humanoids, Undead, Fiends, Aberrations, Monstrosities і Dragons, а також представників Elementals, Constructs, Oozes, Plants, Giants, Celestials і Fey. Сумнівні або непідтверджені розширені lore-факти вилучено; описи спираються на identity, очевидні загальні властивості та механіки конкретного запису.
+- Контрольна вибірка: Allosaurus, Giant Octopus, Mammoth, Piranha, Swarm of Ravens; Assassin, Druid, Guard Captain, Archmage, Vampire Familiar; Mummy, Shadow, Wight, Lich, Vampire; Balor, Night Hag, Oni, Quasit, Rakshasa; Chuul, Cloaker, Gibbering Mouther, Otyugh, Roper; Basilisk, Hydra, Medusa, Mimic, Tarrasque; Young Black Dragon, Adult Blue Dragon, Ancient Green Dragon, Dragon Turtle, Pseudodragon; Air Elemental, Animated Rug of Smothering, Black Pudding, Troll і Solar.
+- Історичні примітки в розділах імпортних партій нижче фіксують стан на момент механічного імпорту, коли редакційні описи ще не додавалися.
+- Поточна модель і renderer підтримують один або кілька абзаців і, як і раніше, не створюють порожню секцію для відсутнього значення.
 
 ## Relationships
 
@@ -327,7 +328,7 @@ Bestiary можна вважати завершеним, коли:
 3. Traits та всі action groups містять повний source-backed mechanical text без placeholders.
 4. Structured attack/save/damage/recharge/usage/spellcasting data не втрачає механіку з SRD.
 5. Усі точні Spells, Conditions, Items і Rules relationships валідні; dead або thematic links відсутні.
-6. Description додається лише там, де є допустимий source-backed lore.
+6. Кожен runtime-запис має власний короткий редакційний `description`, що не суперечить stat block і не копіює захищений lore-текст.
 7. Тести перевіряють не лише identity, а й механічну повноту запису.
 8. Catalog/detail UI не показує `null`, `undefined`, `[object Object]`, порожні блоки чи зламані посилання.
 
@@ -343,7 +344,8 @@ Data model готова представляти всі класи механі�
 - українська морфологія типів шкоди й conditions зберігається у source data, formatter її не вигадує;
 - універсального importer немає; кожна завершена партія сформована з окремим source extraction та перевірена per-entry;
 - generic Gear `Wand` у Mage/Archmage не має однозначного canonical Item target, тому показується без fake relationship;
-- manifest із 330 identities не змінював canonical перелік; coverage-status оновлено для всіх 330 перевірених істот.
+- manifest із 330 identities не змінював canonical перелік; coverage-status оновлено для всіх 330 перевірених істот;
+- розширений світобудівний lore навмисно не реконструюється: описи обмежені підтвердженими рисами та практичним контекстом для Майстра.
 
 ## Джерело
 
