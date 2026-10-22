@@ -87,16 +87,18 @@ function useHeroReveal(enabled = true) {
   useLayoutEffect(() => {
     const content = contentRef.current;
     if (!enabled || !content || prefersReducedMotion()) return undefined;
-
-    content.classList.add('is-intro-ready');
-    const frame = window.requestAnimationFrame(() => {
-      window.requestAnimationFrame(() => content.classList.add('is-intro-visible'));
-    });
-    const fallback = window.setTimeout(() => content.classList.add('is-intro-visible'), 1200);
+    const hero = content.closest<HTMLElement>('.home-codex-hero');
+    const children = Array.from(content.children) as HTMLElement[];
+    children.forEach((child, index) => child.style.setProperty('--home-reveal-delay', `${index * 105}ms`));
+    if (hero) {
+      hero.removeAttribute('data-home-hero-playing');
+      void hero.offsetWidth;
+      hero.setAttribute('data-home-hero-playing', '');
+    }
 
     return () => {
-      window.cancelAnimationFrame(frame);
-      window.clearTimeout(fallback);
+      hero?.removeAttribute('data-home-hero-playing');
+      children.forEach((child) => child.style.removeProperty('--home-reveal-delay'));
     };
   }, [enabled]);
 
@@ -111,31 +113,47 @@ function useOneTimeReveal(enabled = true) {
     if (!enabled || !section) return undefined;
     const revealItems = Array.from(section.querySelectorAll<HTMLElement>('[data-home-reveal]'));
     if (prefersReducedMotion() || !('IntersectionObserver' in window)) return undefined;
-
-    section.classList.add('is-reveal-ready');
-    try {
-      const groups = new Map<string, HTMLElement[]>();
-      revealItems.forEach((item) => {
-        const group = item.dataset.homeReveal ?? 'default';
-        groups.set(group, [...(groups.get(group) ?? []), item]);
+    let observer: IntersectionObserver | undefined;
+    const clear = () => revealItems.forEach((item) => {
+      item.removeAttribute('data-home-reveal-state');
+      item.style.removeProperty('--home-reveal-delay');
+    });
+    const rowFor = (item: HTMLElement) => item.offsetTop;
+    const revealRow = (target: HTMLElement) => {
+      const row = rowFor(target);
+      revealItems.filter((item) => rowFor(item) === row).forEach((item, index) => {
+        if (item.dataset.homeRevealState === 'visible') return;
+        item.style.setProperty('--home-reveal-delay', `${index * 105}ms`);
+        item.dataset.homeRevealState = 'visible';
+        observer?.unobserve(item);
       });
-
-      const observer = new IntersectionObserver((entries) => {
+    };
+    const focusReveal = (event: FocusEvent) => {
+      const item = (event.target as HTMLElement).closest<HTMLElement>('[data-home-reveal]');
+      if (item) revealRow(item);
+    };
+    try {
+      clear();
+      void section.offsetWidth;
+      observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const trigger = entry.target as HTMLElement;
-          const group = trigger.dataset.homeReveal ?? 'default';
-          groups.get(group)?.forEach((item) => item.classList.add('is-revealed'));
-          observer.unobserve(trigger);
+          if (entry.isIntersecting) revealRow(entry.target as HTMLElement);
         });
-      }, { threshold: 0.16, rootMargin: '0px 0px -6% 0px' });
-
-      groups.forEach((items) => observer.observe(items[0]));
-      return () => observer.disconnect();
+      }, { threshold: 0.12, rootMargin: '0px 0px -24px 0px' });
+      revealItems.forEach((item) => {
+        item.dataset.homeRevealState = 'pending';
+        observer?.observe(item);
+      });
+      section.addEventListener('focusin', focusReveal);
     } catch {
-      section.classList.remove('is-reveal-ready');
-      return undefined;
+      observer?.disconnect();
+      clear();
     }
+    return () => {
+      observer?.disconnect();
+      section.removeEventListener('focusin', focusReveal);
+      clear();
+    };
   }, [enabled]);
 
   return sectionRef;

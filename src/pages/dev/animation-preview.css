@@ -1,9 +1,14 @@
 /* Design-time references and attribution: docs/animation-preview.md. */
 .animation-preview {
-  --preview-easing: cubic-bezier(0, 0, 0.3, 1);
+  --home-reveal-easing: cubic-bezier(0, 0, 0.3, 1);
   color: var(--archive-text);
   background: var(--archive-bg-deep);
   scroll-margin-top: var(--archive-topbar-height);
+}
+.animation-preview .codex-home-redesign {
+  --home-hero-duration: var(--preview-hero-duration);
+  --home-bento-duration: var(--preview-bento-duration);
+  --home-reveal-translate: var(--preview-translate);
 }
 .animation-preview__controls {
   position: sticky;
@@ -34,15 +39,15 @@
 .animation-preview .home-reference { scroll-margin-top: calc(var(--archive-topbar-height) + 13rem); }
 
 .animation-preview .home-codex-hero[data-preview-playing] .home-codex-hero__content > * {
-  animation: preview-entrance var(--preview-hero-duration) var(--preview-easing) var(--preview-delay, 0ms) both;
+  animation: home-cinematic-entrance var(--home-hero-duration) var(--home-reveal-easing) var(--preview-delay, 0ms) both;
 }
-.animation-preview [data-preview-reveal='pending'] { opacity: 0; transform: translateY(var(--preview-translate)); }
+.animation-preview [data-preview-reveal='pending'] { opacity: 0; transform: translateY(var(--home-reveal-translate)); }
 .animation-preview [data-preview-reveal='visible'] {
-  animation: preview-entrance var(--preview-bento-duration) var(--preview-easing) var(--preview-delay, 0ms) both;
+  animation: home-cinematic-entrance var(--home-bento-duration) var(--home-reveal-easing) var(--preview-delay, 0ms) both;
 }
 .animation-preview [data-preview-reveal]:focus-visible { opacity: 1; transform: none; animation: none; }
 .animation-preview[data-variant='atmospheric'] .home-codex-hero[data-preview-playing] .home-codex-hero__art {
-  animation: preview-art 600ms var(--preview-easing) both;
+  animation: preview-art 600ms var(--home-reveal-easing) both;
 }
 /* One pointer-safe decorative layer; preserve the homepage's contrast overlays. */
 .animation-preview[data-variant='atmospheric'] .home-codex-hero__content::before {
@@ -54,11 +59,7 @@
   background: radial-gradient(ellipse at 50% 42%, rgb(213 168 94 / 7%), transparent 62%), radial-gradient(125% 125% at 50% 90%, transparent 40%, rgb(23 29 36 / 12%) 100%);
 }
 .animation-preview[data-variant='atmospheric'] .home-codex-hero[data-preview-playing] .home-codex-hero__content::before {
-  animation: preview-atmosphere 600ms var(--preview-easing) both;
-}
-@keyframes preview-entrance {
-  from { opacity: 0; transform: translateY(var(--preview-translate)); }
-  to { opacity: 1; transform: translateY(0); }
+  animation: preview-atmosphere 600ms var(--home-reveal-easing) both;
 }
 @keyframes preview-art { from { opacity: 0.65; } to { opacity: 1; } }
 @keyframes preview-atmosphere { from { opacity: 0; } to { opacity: 1; } }
