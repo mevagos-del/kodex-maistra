@@ -70,6 +70,8 @@ try {
     await page.waitForURL(`${base}/`);
     await page.reload();
     await page.locator('.home-codex-hero h1').waitFor();
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await page.waitForTimeout(250);
     const homepageAnimation = await page.locator('.home-codex-hero h1').evaluate((node) => ({
       active: node.getAnimations().map((animation) => animation.effect.getTiming().duration),
       cssDuration: getComputedStyle(node).animationDuration,
@@ -81,6 +83,19 @@ try {
     assert.equal(await page.locator('.animation-preview').count(), 0);
     assert.equal(await page.locator('[data-preview-playing], [data-preview-reveal]').count(), 0);
     assert.equal(await page.locator('.home-codex-hero h1').evaluate((node) => getComputedStyle(node).opacity), '1');
+    const headerHeroGap = await page.evaluate(() => {
+      const header = document.querySelector('.archive-topbar');
+      const hero = document.querySelector('.home-codex-hero');
+      return hero.getBoundingClientRect().top - header.getBoundingClientRect().bottom;
+    });
+    assert.ok(Math.abs(headerHeroGap) <= 1, `${width}: header-to-hero gap is ${headerHeroGap}px`);
+    const indicator = page.locator('.home-scroll-indicator');
+    assert.equal(await indicator.getAttribute('aria-hidden'), null, `${width}: scroll indicator starts visible`);
+    await indicator.click();
+    await page.waitForTimeout(900);
+    assert.ok(await page.locator('.home-reference').evaluate((node) => Math.abs(node.getBoundingClientRect().top - 62) < 8), `${width}: indicator scrolls to reference`);
+    await page.locator('.home-section-divider__line').waitFor();
+    assert.equal(await page.locator('.home-section-divider__line').getAttribute('data-reveal-state'), 'visible');
     for (const card of await page.locator('.home-reference-card').all()) {
       await card.scrollIntoViewIfNeeded();
       await page.waitForTimeout(750);
@@ -89,13 +104,22 @@ try {
     }
     await page.locator('#home-global-search').fill('дракон');
     assert.ok(await page.locator('.home-global-search__result').count() > 0, `${width}: search works after reveal`);
+    assert.equal(await indicator.getAttribute('aria-hidden'), 'true', `${width}: indicator hides while search is open`);
     await page.locator('#home-global-search').press('Escape');
     assert.equal(await page.locator('.home-global-search__results').count(), 0);
+    await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
+    await page.waitForTimeout(250);
+    assert.equal(await indicator.getAttribute('aria-hidden'), 'true', `${width}: indicator hides at page bottom`);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+    await page.waitForTimeout(250);
+    assert.equal(await indicator.getAttribute('aria-hidden'), null, `${width}: indicator returns when scrolling up`);
+    assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${width}: homepage has no horizontal overflow`);
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.reload();
     await page.locator('.home-codex-hero h1').waitFor();
     assert.equal(await page.locator('.home-codex-hero').evaluate((node) => node.getAnimations({ subtree: true }).length), 0);
     assert.equal(await page.locator('.home-codex-hero h1').evaluate((node) => getComputedStyle(node).opacity), '1');
+    assert.equal(await page.locator('.home-scroll-indicator svg').evaluate((node) => node.getAnimations().length), 0);
     await page.emulateMedia({ reducedMotion: 'no-preference' });
     assert.equal(await page.locator('meta[name="robots"][content*="noindex"]').count(), 0);
     assert.deepEqual(errors, []);

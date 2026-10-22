@@ -145,6 +145,7 @@
 }
 
 .archive-shell .app-main { width: 100%; max-width: none; min-width: 0; padding-inline: 0; }
+.archive-shell .app-main:has(.codex-home-redesign) { padding-top: 0; }
 .archive-shell .site-footer { margin: 0; border-top: 1px solid rgb(184 132 61 / 12%); background: #06080b; }
 
 /* Legacy detail stages used viewport geometry; constrain them to the shell content box. */

@@ -1,6 +1,8 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
+import { HomeScrollIndicator } from '@/components/home/HomeScrollIndicator';
+import { HomeSectionDivider } from '@/components/home/HomeSectionDivider';
 import { HOME_REFERENCE_INDEX, type HomeReferenceSection } from '@/data/homeReferenceIndex.generated';
 import { HOME_ICONS } from '@/features/catalog/utils/codexIcons';
 import './home.css';
@@ -278,7 +280,7 @@ export function HomePage({ externalMotion = false }: { externalMotion?: boolean 
 
   return (
     <div className="codex-home-v2 codex-home-redesign">
-      <section className="home-codex-hero" aria-labelledby="home-title">
+      <section className="home-codex-hero" aria-labelledby="home-title" data-home-scroll-section>
         <img className="home-codex-hero__art" src="/images/home/kodex_maistra_hero.webp" alt="" aria-hidden="true" decoding="async" fetchPriority="high" />
         <div ref={heroContentRef} className="home-codex-hero__content">
           <p className="home-codex-hero__eyebrow">Довідкова система D&amp;D 2024</p>
@@ -340,7 +342,9 @@ export function HomePage({ externalMotion = false }: { externalMotion?: boolean 
 
       {resultsPanel}
 
-      <section ref={referenceSectionRef} className="home-reference" aria-labelledby="home-reference-title">
+      {!externalMotion ? <HomeSectionDivider /> : null}
+
+      <section ref={referenceSectionRef} className="home-reference" aria-labelledby="home-reference-title" data-home-scroll-section>
         <header className="home-reference__header home-reveal home-reveal--header" data-home-reveal="header">
           <p>Навігація кодексом</p>
           <h2 id="home-reference-title">Довідник</h2>
@@ -386,6 +390,8 @@ export function HomePage({ externalMotion = false }: { externalMotion?: boolean 
           ))}
         </div>
       </section>
+
+      {!externalMotion ? <HomeScrollIndicator searchOpen={resultsOpen && Boolean(search.trim())} /> : null}
     </div>
   );
 }
