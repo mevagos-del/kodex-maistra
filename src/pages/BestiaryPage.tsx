@@ -1,12 +1,12 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { filterBestiary } from '@/data/rules/bestiary';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { CODEX_ICONS } from '@/features/catalog/utils/codexIcons';
+import { useRouteSessionState } from '@/features/navigation/useRouteSessionState';
 import './bestiary.css';
 
 export function BestiaryPage() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useRouteSessionState('bestiary-search', '');
   const entries = filterBestiary(search);
 
   return <main className="catalog-archive-page bestiary-page">

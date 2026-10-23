@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { coreSections } from '@/data/navigation';
 import { globalSearch } from '@/features/catalog/api/catalogFilters';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
@@ -8,6 +8,7 @@ import { ItemsArchiveCatalog } from '@/features/catalog/components/ItemsArchiveC
 import { useCatalogList } from '@/features/catalog/hooks/useCatalogData';
 import type { ItemEntry } from '@/features/catalog/types';
 import type { CoreSectionSlug, EntityType } from '@/types/content';
+import { useRouteSessionState } from '@/features/navigation/useRouteSessionState';
 
 type SectionPageProps = { section: CoreSectionSlug };
 
@@ -28,7 +29,7 @@ function materialCountLabel(count: number) {
 
 export function SectionPage({ section }: SectionPageProps) {
   const entity = sectionToEntity[section];
-  const [searchState, setSearchState] = useState({ section, value: '' });
+  const [searchState, setSearchState] = useRouteSessionState(`${section}-search`, { section, value: '' });
   const search = searchState.section === section ? searchState.value : '';
   const meta = coreSections.find((item) => item.slug === section);
   const catalog = useCatalogList(entity);

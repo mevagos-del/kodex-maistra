@@ -1,5 +1,5 @@
 .catalog-archive-page.feats-page { overflow: clip; }
-.feat-filters { margin-block: 12px 18px; color: var(--archive-text); }
+.feat-filters { margin-block: 10px 14px; color: var(--archive-text); }
 .feat-filters summary, .feat-spell-list summary { cursor: pointer; color: var(--archive-gold-bright); padding-block: 8px; }
 .feat-filters > div { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
 .feat-filters label { display: grid; gap: 6px; font-size: .85rem; color: var(--archive-muted); }
@@ -8,7 +8,7 @@
 .feat-alphabet a { min-width: 36px; min-height: 36px; display: grid; place-items: center; color: var(--archive-gold-bright); text-decoration: none; border-radius: var(--archive-radius); }
 .feat-alphabet a:hover { background: var(--archive-surface-raised); }
 .feat-group > h2 { scroll-margin-top: 140px; color: var(--archive-gold); font-family: var(--heading-font); margin: 24px 0 8px; }
-.feat-record { display: grid; grid-template-columns: minmax(180px, .8fr) minmax(0, 1.5fr); gap: 24px; padding: 16px 12px; border-bottom: 1px solid var(--archive-border); border-radius: var(--archive-radius); text-decoration: none; color: var(--archive-text); transition: background-color var(--archive-fast); }
+.feat-record { display: grid; grid-template-columns: minmax(180px, .8fr) minmax(0, 1.5fr); gap: 20px; padding: var(--archive-reference-row-padding-block) 10px; border-bottom: 1px solid var(--archive-border); border-radius: var(--archive-radius); text-decoration: none; color: var(--archive-text); transition: background-color var(--archive-fast); }
 .feat-record:hover { background: var(--archive-surface-raised); }
 .feat-record h3 { margin: 0 0 4px; color: var(--archive-gold-bright); font: 700 var(--archive-title-section) var(--heading-font); }
 .feat-record small { color: var(--archive-muted); font-size: .8rem; }

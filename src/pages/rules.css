@@ -9,10 +9,10 @@
 .rules-filters button.is-active { color: var(--archive-gold-bright); border-color: var(--archive-border-strong); border-bottom-color: var(--archive-gold); background: rgb(213 168 94 / 7%); }
 .rules-filters button:is(:hover, .is-active) img { opacity: 1; }
 .rules-filters button:focus-visible, .rules-page a:focus-visible, .rule-detail a:focus-visible { outline: 2px solid var(--archive-gold); outline-offset: 3px; }
-.rules-catalog { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; width: 100%; max-width: 1120px; margin-inline: auto; }
+.rules-catalog { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; width: 100%; max-width: var(--archive-reference-list-max); margin-inline: auto; }
 .rules-group > h2 { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 0; padding: 0 6px 8px; border-bottom: 1px solid var(--archive-border-strong); color: var(--archive-gold-bright); font: 700 var(--archive-title-section) var(--heading-font); }
 .rules-group > h2 span { min-width: 2ch; color: var(--archive-muted); font: 600 var(--archive-text-meta) var(--body-font); text-align: right; }
-.rule-record { position: relative; display: grid; grid-template-columns: 38px minmax(0, 1fr) auto 14px; gap: 11px; align-items: center; min-height: 68px; padding: 9px 8px; border-bottom: 1px solid var(--archive-border); border-radius: var(--archive-radius); color: var(--archive-text); text-decoration: none; transition: background-color var(--archive-fast), border-color var(--archive-fast); }
+.rule-record { position: relative; display: grid; grid-template-columns: 38px minmax(0, 1fr) auto 14px; gap: 10px; align-items: center; min-height: 60px; padding: 7px 8px; border-bottom: 1px solid var(--archive-border); border-radius: var(--archive-radius); color: var(--archive-text); text-decoration: none; transition: background-color var(--archive-fast), border-color var(--archive-fast); }
 .rule-record:hover { background: rgb(213 168 94 / 4%); border-color: var(--archive-border-strong); }
 .rule-record__icon { width: 38px; height: 38px; display: grid; place-items: center; }
 .rule-record__icon img { width: 32px; height: 32px; object-fit: contain; }
@@ -26,7 +26,7 @@
 .rule-record:hover .rule-record__chevron { transform: translateX(2px); }
 .rules-empty { max-width: 1120px; margin-inline: auto; padding: 28px 6px; color: var(--archive-muted); }
 
-.rule-detail { position: relative; z-index: 1; width: min(960px, calc(100vw - 48px)); margin: 24px auto 64px; color: var(--archive-text); }
+.rule-detail { position: relative; z-index: 1; width: min(var(--archive-reference-reading-max), calc(100vw - (2 * var(--archive-reference-padding-inline)))); margin: 18px auto 56px; color: var(--archive-text); }
 .rule-detail__header, .rule-section { background: radial-gradient(circle at 0 0, rgba(202,147,67,.055), transparent 36%), var(--archive-surface); border: 1px solid var(--archive-border); border-radius: 12px; box-shadow: var(--archive-shadow-panel); }
 .rule-detail__header { padding: 14px 18px 16px; }
 .rule-detail__header > a { color: var(--archive-muted); text-decoration: none; }

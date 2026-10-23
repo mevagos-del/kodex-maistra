@@ -38,11 +38,11 @@ export function App() {
         {import.meta.env.DEV && AnimationPreviewPage && (
           <Route path="/animation-preview" element={<Suspense fallback={<RouteFallback />}><AnimationPreviewPage /></Suspense>} />
         )}
-        <Route path={appRoutes.races} element={<Suspense fallback={<RouteFallback />}><SectionPage section="races" /></Suspense>} />
+        <Route path={appRoutes.races} element={<Suspense fallback={<RouteFallback />}><SectionPage key="races" section="races" /></Suspense>} />
         <Route path={appRoutes.raceDetail} element={<Suspense fallback={<RouteFallback />}><ContentDetailPage entity="race" /></Suspense>} />
-        <Route path={appRoutes.classes} element={<Suspense fallback={<RouteFallback />}><SectionPage section="classes" /></Suspense>} />
+        <Route path={appRoutes.classes} element={<Suspense fallback={<RouteFallback />}><SectionPage key="classes" section="classes" /></Suspense>} />
         <Route path={appRoutes.classDetail} element={<Suspense fallback={<RouteFallback />}><ContentDetailPage entity="class" /></Suspense>} />
-        <Route path={appRoutes.items} element={<Suspense fallback={<RouteFallback />}><SectionPage section="items" /></Suspense>} />
+        <Route path={appRoutes.items} element={<Suspense fallback={<RouteFallback />}><SectionPage key="items" section="items" /></Suspense>} />
         <Route path={appRoutes.itemDetail} element={<Suspense fallback={<RouteFallback />}><ContentDetailPage entity="item" /></Suspense>} />
         <Route path={appRoutes.spells} element={<Suspense fallback={<RouteFallback />}><SpellsPage /></Suspense>} />
         <Route path={appRoutes.spellDetail} element={<Suspense fallback={<RouteFallback />}><SpellDetailPage /></Suspense>} />

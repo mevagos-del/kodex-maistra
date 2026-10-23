@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import type { ItemEntry } from '../types';
 import { capitalizeItemTerm, itemMasteryLabel } from '../utils/itemTerminology';
 import { itemCategoryIconForLabel } from '../utils/codexIcons';
+import { useRouteSessionState } from '@/features/navigation/useRouteSessionState';
 
 const categoryOrder = ['Зброя', 'Обладунки', 'Пригодницьке спорядження', 'Інструменти', 'Магічні предмети'];
 const categoryDescriptions: Record<string, string> = {
@@ -36,14 +37,10 @@ function summary(entry: ItemEntry) {
 type Props = { entries: ItemEntry[]; search: string };
 
 export function ItemsArchiveCatalog({ entries, search }: Props) {
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({ Зброя: true });
-  const [subcategory, setSubcategory] = useState('');
-  const [rarity, setRarity] = useState('');
-  const [magical, setMagical] = useState('');
-  const [attunement, setAttunement] = useState('');
-  const [weaponCategory, setWeaponCategory] = useState('');
-  const [armorCategory, setArmorCategory] = useState('');
-  const [activeLetters, setActiveLetters] = useState<Record<string, string>>({});
+  const [state, setState] = useRouteSessionState('items-catalog', {
+    expanded: { Зброя: true } as Record<string, boolean>, subcategory: '', rarity: '', magical: '', attunement: '', weaponCategory: '', armorCategory: '', activeLetters: {} as Record<string, string>,
+  });
+  const { expanded, subcategory, rarity, magical, attunement, weaponCategory, armorCategory, activeLetters } = state;
   const filtered = useMemo(() => entries.filter((entry) => itemMatchesSearch(entry, search))
     .filter((entry) => !subcategory || entry.subcategory === subcategory)
     .filter((entry) => !rarity || entry.rarity === rarity)
@@ -58,12 +55,12 @@ export function ItemsArchiveCatalog({ entries, search }: Props) {
     <details className="item-archive-filters">
       <summary>Фільтри</summary>
       <div className="item-archive-filter-grid">
-        <label>Підтип<select value={subcategory} onChange={(event)=>setSubcategory(event.target.value)}><option value="">Усі</option>{options('subcategory').map((value)=><option key={value}>{value}</option>)}</select></label>
-        <label>Рідкість<select value={rarity} onChange={(event)=>setRarity(event.target.value)}><option value="">Усі</option>{options('rarity').map((value)=><option key={value}>{value}</option>)}</select></label>
-        <label>Магічність<select value={magical} onChange={(event)=>setMagical(event.target.value)}><option value="">Усі</option><option value="false">Немагічні</option><option value="true">Магічні</option></select></label>
-        <label>Налаштування<select value={attunement} onChange={(event)=>setAttunement(event.target.value)}><option value="">Усі</option><option value="false">Не потрібне</option><option value="true">Потрібне</option></select></label>
-        <label>Категорія зброї<select value={weaponCategory} onChange={(event)=>setWeaponCategory(event.target.value)}><option value="">Усі</option>{options('weapon_category').map((value)=><option key={value}>{value}</option>)}</select></label>
-        <label>Категорія обладунку<select value={armorCategory} onChange={(event)=>setArmorCategory(event.target.value)}><option value="">Усі</option>{options('armor_category').map((value)=><option key={value}>{value}</option>)}</select></label>
+        <label>Підтип<select value={subcategory} onChange={(event)=>setState((value)=>({ ...value, subcategory:event.target.value }))}><option value="">Усі</option>{options('subcategory').map((value)=><option key={value}>{value}</option>)}</select></label>
+        <label>Рідкість<select value={rarity} onChange={(event)=>setState((value)=>({ ...value, rarity:event.target.value }))}><option value="">Усі</option>{options('rarity').map((value)=><option key={value}>{value}</option>)}</select></label>
+        <label>Магічність<select value={magical} onChange={(event)=>setState((value)=>({ ...value, magical:event.target.value }))}><option value="">Усі</option><option value="false">Немагічні</option><option value="true">Магічні</option></select></label>
+        <label>Налаштування<select value={attunement} onChange={(event)=>setState((value)=>({ ...value, attunement:event.target.value }))}><option value="">Усі</option><option value="false">Не потрібне</option><option value="true">Потрібне</option></select></label>
+        <label>Категорія зброї<select value={weaponCategory} onChange={(event)=>setState((value)=>({ ...value, weaponCategory:event.target.value }))}><option value="">Усі</option>{options('weapon_category').map((value)=><option key={value}>{value}</option>)}</select></label>
+        <label>Категорія обладунку<select value={armorCategory} onChange={(event)=>setState((value)=>({ ...value, armorCategory:event.target.value }))}><option value="">Усі</option>{options('armor_category').map((value)=><option key={value}>{value}</option>)}</select></label>
       </div>
     </details>
     <div className="item-archive-categories">
@@ -80,7 +77,7 @@ export function ItemsArchiveCatalog({ entries, search }: Props) {
           return result;
         }, new Map<string, ItemEntry[]>());
         return <section key={category} className="item-archive-category">
-          <button type="button" className="item-archive-category__toggle" aria-expanded={open} onClick={()=>setExpanded((state)=>({...state,[category]:!state[category]}))}>
+          <button type="button" className="item-archive-category__toggle" aria-expanded={open} onClick={()=>setState((value)=>({...value,expanded:{...value.expanded,[category]:!value.expanded[category]}}))}>
             <span className="item-archive-category__heading">
               {categoryIcon ? <img className="reference-icon reference-icon--category" src={categoryIcon} alt="" aria-hidden="true" /> : null}
               <span><strong>{category}</strong><small>{categoryDescriptions[category]}</small></span>
@@ -88,7 +85,7 @@ export function ItemsArchiveCatalog({ entries, search }: Props) {
           </button>
           {open ? <div className="item-archive-category__content">
             {items.length ? <>
-              <nav className="item-archive-alphabet" aria-label={`Алфавіт категорії ${category}`}>{Array.from(groups.keys()).map((letter)=><a className={activeLetters[category] === letter ? 'is-active' : undefined} aria-current={activeLetters[category] === letter ? 'location' : undefined} onClick={()=>setActiveLetters((state)=>({...state,[category]:letter}))} key={letter} href={`#items-${category}-${letter}`}>{letter}</a>)}</nav>
+              <nav className="item-archive-alphabet" aria-label={`Алфавіт категорії ${category}`}>{Array.from(groups.keys()).map((letter)=><a className={activeLetters[category] === letter ? 'is-active' : undefined} aria-current={activeLetters[category] === letter ? 'location' : undefined} onClick={()=>setState((value)=>({...value,activeLetters:{...value.activeLetters,[category]:letter}}))} key={letter} href={`#items-${category}-${letter}`}>{letter}</a>)}</nav>
               {Array.from(groups.entries()).map(([letter, group])=><section key={letter} id={`items-${category}-${letter}`} className="item-archive-letter-group"><h2>{letter}</h2><div>{group.map((entry)=><Link className="item-archive-row" key={entry.id} to={`/items/${entry.slug}`}><span><strong>{entry.title_ua}</strong><small>{entry.title_original}</small></span><span>{summary(entry)}</span><span aria-hidden="true">›</span></Link>)}</div></section>)}
             </> : <p className="item-archive-empty">Немає предметів за вибраними умовами.</p>}
           </div> : null}

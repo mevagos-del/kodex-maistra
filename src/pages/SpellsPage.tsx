@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { filterSpells, officialSpells, spellClasses, spellFiltersFromSearchParams, spellFiltersToSearchParams, spellLevelLabel, type SpellFilters } from '@/data/rules/spells';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
+import { useRouteSessionState } from '@/features/navigation/useRouteSessionState';
 import './spells.css';
 
 type View = 'list' | 'table';
@@ -18,7 +19,7 @@ export function SpellsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [view, setView] = useState<View>(initialView);
   const [filters, setFilters] = useState<SpellFilters>(() => spellFiltersFromSearchParams(searchParams));
-  const [sort, setSort] = useState<{ key: 'name' | 'level'; descending: boolean }>({ key: 'name', descending: false });
+  const [sort, setSort] = useRouteSessionState<{ key: 'name' | 'level'; descending: boolean }>('spells-sort', { key: 'name', descending: false });
   const query = searchParams.toString();
   useEffect(() => setFilters(spellFiltersFromSearchParams(new URLSearchParams(query))), [query]);
   function updateFilters(next: SpellFilters) {

@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { conditionSource, officialConditions } from '@/data/rules/conditions';
 import { officialSpells, spellLevelLabel } from '@/data/rules/spells';
@@ -6,19 +5,19 @@ import { spellConditionApplications } from '@/data/rules/spellConditions';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { ConditionIcon } from '@/features/catalog/components/ConditionIcon';
 import { ConditionText } from '@/features/catalog/components/ConditionText';
+import { DetailBackButton } from '@/features/navigation/DetailBackButton';
 import './spells.css';
 import './conditions.css';
 
 export function ConditionDetailPage() {
   const { slug } = useParams();
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [slug]);
   const condition = officialConditions.find(entry => entry.slug === slug);
   if (!condition) return <article className="spell-detail"><h1>Стан не знайдено</h1><Link to="/conditions">До списку станів</Link></article>;
   const spells = officialSpells.filter(spell => spellConditionApplications[spell.slug]?.includes(condition.slug)).sort((a, b) => a.level - b.level || a.nameUk.localeCompare(b.nameUk, 'uk'));
   const text = (value: string) => <ConditionText slugs={condition.relatedConditions}>{value}</ConditionText>;
   return <article className="spell-detail condition-detail">
     <ArchiveAtmosphere />
-    <header className="spell-detail__header"><Link to="/conditions">‹ Стани</Link>
+    <header className="spell-detail__header"><DetailBackButton fallback="/conditions" />
       <div className="condition-detail__identity"><ConditionIcon slug={condition.slug} /><div><h1>{condition.nameUk}</h1><p>{condition.nameEn}</p></div></div>
       <span>{conditionSource.edition} · Офіційний · {conditionSource.title}</span>
     </header>

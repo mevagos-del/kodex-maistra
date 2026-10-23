@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { eligibleFeatSpells, eligibleFeatWeapons, featAbilities, featCategories, featPublicSource, officialFeats, prerequisiteLabel } from '@/data/rules/feats';
 import { officialClasses } from '@/data/rules/classes';
@@ -7,12 +6,12 @@ import { officialSpells, spellClasses, spellLevelLabel } from '@/data/rules/spel
 import { officialConditions } from '@/data/rules/conditions';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { ConditionText } from '@/features/catalog/components/ConditionText';
+import { DetailBackButton } from '@/features/navigation/DetailBackButton';
 import './spells.css';
 import './feats.css';
 
 export function FeatDetailPage() {
   const { slug } = useParams();
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [slug]);
   const entry = officialFeats.find(feat => feat.slug === slug);
   if (!entry) return <article className="spell-detail"><h1>Рису не знайдено</h1><Link to="/feats">До списку рис</Link></article>;
   const classes = officialClasses.filter(item => entry.classSlugs.includes(item.slug));
@@ -23,7 +22,7 @@ export function FeatDetailPage() {
   const publicSource = featPublicSource(entry);
   return <article className="spell-detail feat-detail">
     <ArchiveAtmosphere />
-    <header className="spell-detail__header"><Link to="/feats">‹ Риси</Link><h1>{entry.nameUk}</h1><p>{entry.nameEn}</p><span>{featCategories[entry.category]} · {source.edition} · {publicSource.title}</span><p className="feat-repeatability">{entry.repeatable ? 'Цю рису можна брати більше одного разу.' : 'Цю рису можна взяти лише один раз.'}{entry.repeatRestriction && ` ${entry.repeatRestriction}`}</p></header>
+    <header className="spell-detail__header"><DetailBackButton fallback="/feats" /><h1>{entry.nameUk}</h1><p>{entry.nameEn}</p><span>{featCategories[entry.category]} · {source.edition} · {publicSource.title}</span><p className="feat-repeatability">{entry.repeatable ? 'Цю рису можна брати більше одного разу.' : 'Цю рису можна взяти лише один раз.'}{entry.repeatRestriction && ` ${entry.repeatRestriction}`}</p></header>
     {entry.prerequisites.length > 0 && <section><h2>Передумови</h2><ul>{entry.prerequisites.map((value, index) => <li key={`${value.kind}-${index}`}>{prerequisiteLabel(value)}</li>)}</ul></section>}
     {entry.effects.length > 0 && <section><h2>Ефект</h2>{entry.effects.map(effect => <div className="feat-effect" key={effect.title}><h3>{effect.title}</h3><p><ConditionText slugs={entry.conditions}>{effect.text}</ConditionText></p></div>)}</section>}
     {increase && <section><h2>Підвищення характеристики</h2><dl className="spell-facts"><div><dt>Характеристики на вибір</dt><dd>{increase.choices.map(key => featAbilities[key]).join(', ')}</dd></div><div><dt>Підвищення</dt><dd>Одну на +{increase.amount}{increase.alternative && ` або ${increase.alternative.count === 2 ? 'дві' : increase.alternative.count} на +${increase.alternative.amount} кожну`}</dd></div><div><dt>Максимальне значення</dt><dd>{increase.maximum}</dd></div></dl></section>}

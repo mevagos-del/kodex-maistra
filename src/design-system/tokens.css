@@ -34,6 +34,34 @@
   --archive-radius-panel: 0.75rem;
   --archive-radius-card: 0.625rem;
   --archive-detail-sidebar-width: 16.25rem;
+
+  /* Reference pages stay dense while wide displays gain useful horizontal room. */
+  --archive-reference-max: 94rem;
+  --archive-reference-detail-max: 90rem;
+  --archive-reference-list-max: 80rem;
+  --archive-reference-reading-max: 68rem;
+  --archive-reference-padding-inline: clamp(1rem, 2.2vw, 2.5rem);
+  --archive-reference-section-gap: clamp(0.75rem, 1vw, 1rem);
+  --archive-reference-card-gap: clamp(0.625rem, 0.9vw, 1rem);
+  --archive-reference-panel-padding: clamp(0.75rem, 0.9vw, 1rem);
+  --archive-reference-row-padding-block: 0.625rem;
+  --archive-reference-title: clamp(2.25rem, 2.8vw, 3.125rem);
+  --archive-reference-section-title: clamp(1.125rem, 1.1vw, 1.3rem);
+  --archive-reference-control-height: 2.375rem;
+  --archive-reading-measure: 72ch;
+  --archive-rule-measure: 78ch;
+}
+
+@media (min-width: 120rem) {
+  :root { --archive-reference-max: 108rem; --archive-reference-detail-max: 100rem; }
+}
+
+@media (min-width: 160rem) {
+  :root { --archive-reference-max: 120rem; --archive-reference-detail-max: 108rem; }
+}
+
+@media (min-width: 200rem) {
+  :root { --archive-reference-max: 128rem; --archive-reference-detail-max: 116rem; }
 }
 
 @media (max-width: 1023px) {
@@ -53,5 +81,8 @@
     --archive-title-section: 1.125rem;
     --archive-text-body: 0.9375rem;
     --archive-radius-panel: 0.625rem;
+    --archive-reference-padding-inline: 0.75rem;
+    --archive-reference-control-height: 2.75rem;
+    --archive-reference-title: clamp(2rem, 10vw, 2.75rem);
   }
 }

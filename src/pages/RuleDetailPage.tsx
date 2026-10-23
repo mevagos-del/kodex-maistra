@@ -1,13 +1,12 @@
-import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ruleBySlug } from '@/data/rules/rules';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { RULE_REFERENCE_ICONS } from '@/features/catalog/utils/codexIcons';
+import { DetailBackButton } from '@/features/navigation/DetailBackButton';
 import './rules.css';
 
 export function RuleDetailPage() {
   const { slug } = useParams();
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [slug]);
   const entry = ruleBySlug(slug);
   if (!entry) return <main className="rule-detail"><h1>Правило не знайдено</h1><Link to="/rules">До списку правил</Link></main>;
 
@@ -19,7 +18,7 @@ export function RuleDetailPage() {
   return <main className="rule-detail">
     <ArchiveAtmosphere />
     <header className="rule-detail__header">
-      <Link to="/rules">‹ Правила</Link>
+      <DetailBackButton fallback="/rules" />
       <div className="rule-detail__identity"><span aria-hidden="true"><img src={RULE_REFERENCE_ICONS[entry.iconKey]} alt="" /></span><div><h1>{entry.nameUk}</h1><small>{entry.nameOriginal}</small><strong>{entry.shortDescription}</strong></div></div>
     </header>
     <nav className="rule-local-nav" aria-label="Розділи правила">{navigation.map(([id, label]) => <a href={`#${id}`} key={id}>{label}</a>)}</nav>

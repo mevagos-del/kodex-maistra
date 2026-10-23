@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { filterRules, ruleCategories, type RuleCategory } from '@/data/rules/rules';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { RULE_REFERENCE_ICONS } from '@/features/catalog/utils/codexIcons';
+import { useRouteSessionState } from '@/features/navigation/useRouteSessionState';
 import './rules.css';
 
 const categoryIconKeys: Record<RuleCategory, keyof typeof RULE_REFERENCE_ICONS> = {
@@ -17,8 +18,8 @@ const categoryIconKeys: Record<RuleCategory, keyof typeof RULE_REFERENCE_ICONS> 
 };
 
 export function RulesPage() {
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState<RuleCategory | ''>('');
+  const [filters, setFilters] = useRouteSessionState<{ search: string; category: RuleCategory | '' }>('rules-filters', { search: '', category: '' });
+  const { search, category } = filters;
   const entries = filterRules(search, category);
   const availableCategories = useMemo(() => (
     (Object.entries(ruleCategories) as [RuleCategory, string][])
@@ -33,8 +34,7 @@ export function RulesPage() {
   const totalCount = useMemo(() => filterRules('', '').length, []);
 
   const handleSearch = (value: string) => {
-    setSearch(value);
-    if (value.trim()) setCategory('');
+    setFilters((state) => ({ search: value, category: value.trim() ? '' : state.category }));
   };
 
   return <main className="catalog-archive-page rules-page">
@@ -48,12 +48,12 @@ export function RulesPage() {
     </header>
 
     <nav className="rules-filters" aria-label="Категорії правил">
-      <button type="button" className={category === '' ? 'is-active' : ''} aria-pressed={category === ''} onClick={() => setCategory('')}>
+      <button type="button" className={category === '' ? 'is-active' : ''} aria-pressed={category === ''} onClick={() => setFilters((state) => ({ ...state, category: '' }))}>
         <img src={RULE_REFERENCE_ICONS.rules} alt="" />
         <span>Усі</span>
         <small>{totalCount}</small>
       </button>
-      {availableCategories.map(({ key, label, count, icon }) => <button type="button" key={key} className={category === key ? 'is-active' : ''} aria-pressed={category === key} onClick={() => setCategory(key)}>
+      {availableCategories.map(({ key, label, count, icon }) => <button type="button" key={key} className={category === key ? 'is-active' : ''} aria-pressed={category === key} onClick={() => setFilters((state) => ({ ...state, category: key }))}>
         <img src={icon} alt="" />
         <span>{label}</span>
         <small>{count}</small>

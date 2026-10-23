@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { preloadCatalogRoute } from '@/app/routePreload';
+import { NavigationProvider } from '@/features/navigation/NavigationProvider';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
@@ -74,7 +75,7 @@ export function AppLayout() {
       {sidebarOpen ? <button type="button" className="archive-sidebar-backdrop" onClick={closeSidebar} aria-label="Закрити меню" /> : null}
       <div className="archive-shell__frame">
         <Header onToggleSidebar={() => setSidebarOpen((open) => !open)} sidebarExpanded={sidebarOpen} toggleButtonRef={toggleButtonRef} />
-        <main className="app-main"><Outlet /></main>
+        <NavigationProvider><main className="app-main"><Outlet /></main></NavigationProvider>
         <Footer />
       </div>
     </div>

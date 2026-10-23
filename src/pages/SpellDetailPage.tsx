@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { officialSpells, spellClasses, spellLevelLabel, spellMechanicRows, spellMitigationRows } from '@/data/rules/spells';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { officialConditions, type ConditionSlug } from '@/data/rules/conditions';
 import { conditionTextMatches, spellConditionApplications } from '@/data/rules/spellConditions';
 import { ConditionText } from '@/features/catalog/components/ConditionText';
+import { DetailBackButton } from '@/features/navigation/DetailBackButton';
 import './spells.css';
 
 function Rows({ rows, slugs }: { rows: { label: string; value: string }[]; slugs: readonly ConditionSlug[] }) {
@@ -12,7 +12,6 @@ function Rows({ rows, slugs }: { rows: { label: string; value: string }[]; slugs
 }
 export function SpellDetailPage() {
   const { slug } = useParams();
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [slug]);
   const spell = officialSpells.find((entry) => entry.slug === slug);
   if (!spell) return <div className="spell-detail"><h1>Закляття не знайдено</h1><Link to="/spells">До списку заклять</Link></div>;
   const facts = [
@@ -35,7 +34,7 @@ export function SpellDetailPage() {
   const mitigation = spellMitigationRows(spell);
   return <article className="spell-detail">
     <ArchiveAtmosphere />
-    <header className="spell-detail__header"><Link to="/spells">‹ Закляття</Link><h1>{spell.nameUk}</h1><p>{spell.nameEn}</p><span>{spellLevelLabel(spell.level)} · {spell.school} · {spell.edition} · Офіційний</span></header>
+    <header className="spell-detail__header"><DetailBackButton fallback="/spells" /><h1>{spell.nameUk}</h1><p>{spell.nameEn}</p><span>{spellLevelLabel(spell.level)} · {spell.school} · {spell.edition} · Офіційний</span></header>
     <section><h2>Основні параметри</h2><Rows rows={facts} slugs={[]} /></section>
     <section><h2>Опис</h2>{spell.sourceText.split('\n\n').map((paragraph) => <p key={paragraph}><ConditionText slugs={references.filter(key => key !== 'invisible' || /стан[\p{L}\s,]{0,40}Невидим/iu.test(paragraph))}>{paragraph}</ConditionText></p>)}</section>
     {mechanics.length > 0 && <section><h2>Що відбувається</h2><Rows rows={mechanics} slugs={references} /></section>}

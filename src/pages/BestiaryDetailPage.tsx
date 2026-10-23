@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { bestiaryBySlug } from '@/data/rules/bestiary';
 import { officialConditions } from '@/data/rules/conditions';
@@ -7,6 +7,7 @@ import { officialRules } from '@/data/rules/rules';
 import type { OfficialMonsterAction, OfficialMonsterRuleBlock } from '@/data/rules/types';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { BESTIARY_ICONS } from '@/features/catalog/utils/codexIcons';
+import { DetailBackButton } from '@/features/navigation/DetailBackButton';
 import { formatAttackMetadata, formatDamageText, formatMonsterActionScanFacts, formatMonsterDamageInstance, formatMonsterGear, formatMonsterLimitedUse, formatMonsterRecharge, formatMonsterSavingThrow, formatMonsterSavingThrowOutcomes, formatMonsterSpellcastingGroupLabel, formatMonsterSpellReference, normalizeMonsterDamageInstances, normalizeMonsterMechanicSteps, parseDiceFormula, rollDiceFormula, splitBestiaryDescription, splitBestiarySpeed } from '@/features/catalog/utils/bestiaryMechanics';
 import { segmentBestiaryReferences, type BestiaryInlineReference } from '@/features/catalog/utils/bestiaryReferences';
 import './bestiary.css';
@@ -96,7 +97,6 @@ function ActionList({ entries, references }: { entries: OfficialMonsterAction[];
 
 export function BestiaryDetailPage() {
   const { slug } = useParams();
-  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, [slug]);
   const entry = bestiaryBySlug(slug);
   if (!entry) return <main className="bestiary-detail"><h1>Істоту не знайдено</h1><Link to="/bestiary">До Бестіарію</Link></main>;
 
@@ -154,7 +154,7 @@ export function BestiaryDetailPage() {
   return <main className="bestiary-detail">
     <ArchiveAtmosphere />
     <header className="bestiary-detail__header">
-      <div className="bestiary-detail__heading"><Link to="/bestiary">‹ Бестіарій</Link><h1>{entry.nameUk}</h1><small>{entry.nameOriginal}</small>
+      <div className="bestiary-detail__heading"><DetailBackButton fallback="/bestiary" /><h1>{entry.nameUk}</h1><small>{entry.nameOriginal}</small>
         <p>{entry.size} {entry.creatureType}{entry.subtype ? ` (${entry.subtype})` : ''}{entry.alignment ? `, ${entry.alignment}` : ''}</p>
         <div className="bestiary-detail__header-meta"><strong>ПО {entry.challengeRating}</strong><span>{entry.experiencePoints.toLocaleString('uk-UA')} досвіду</span></div>
       </div>

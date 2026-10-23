@@ -334,7 +334,7 @@ function ClassDetailContent({ entry, imageUrl }: { entry: ClassEntry; imageUrl: 
   const featuresNumber = progressionNumber + 1;
 
   return (
-    <DetailLayout variant="class" sidebar={<DetailSidebar variant="class" imageUrl={imageUrl} imageAlt={entry.title_ua} hideImage={!imageUrl} hideImageOnError label="Клас" title={entry.title_ua} originalTitle={entry.title_original} description={entry.short_description} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} />}>
+    <DetailLayout variant="class" backFallback="/classes" sidebar={<DetailSidebar variant="class" imageUrl={imageUrl} imageAlt={entry.title_ua} hideImage={!imageUrl} hideImageOnError label="Клас" title={entry.title_ua} originalTitle={entry.title_original} description={entry.short_description} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} />}>
       <section id="class-passport" className="detail-v2-panel codex-detail-section">
         <h2 className="codex-detail-title"><span>1.</span> Паспорт класу</h2>
         <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="class" />
@@ -375,7 +375,7 @@ function ItemDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ItemE
   ];
 
   return (
-    <DetailLayout variant="item" sidebar={<DetailSidebar variant="item" imageUrl={imageUrl} imageAlt={entry.title_ua} fallbackImageUrl={fallbackImageUrl} hideImage label="Предмет" title={entry.title_ua} originalTitle={entry.title_original} description={null} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} />}>
+    <DetailLayout variant="item" backFallback="/items" sidebar={<DetailSidebar variant="item" imageUrl={imageUrl} imageAlt={entry.title_ua} fallbackImageUrl={fallbackImageUrl} hideImage label="Предмет" title={entry.title_ua} originalTitle={entry.title_original} description={null} tags={[]} quickTitle="" quickItems={[]} badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]} navigation={navigation} />}>
       <section id="item-passport" className="detail-v2-panel codex-detail-section">
         <h2 className="codex-detail-title"><span>1.</span> Паспорт предмета</h2>
         <MechanicInfoGrid items={mainInfoBlocks(entry)} variant="item" itemType={entry.item_type} itemCategory={entry.category} />
@@ -459,6 +459,7 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
   return (
     <DetailLayout
       variant="race"
+      backFallback={`/${sectionSlug}`}
       sidebar={
         <DetailSidebar
           imageUrl={imageUrl}

@@ -1,13 +1,13 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { filterConditions } from '@/data/rules/conditions';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { ConditionIcon } from '@/features/catalog/components/ConditionIcon';
 import { RuleText } from '@/features/catalog/components/RuleText';
+import { useRouteSessionState } from '@/features/navigation/useRouteSessionState';
 import './conditions.css';
 
 export function ConditionsPage() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useRouteSessionState('conditions-search', '');
   const entries = filterConditions(search);
   return <div className="catalog-archive-page conditions-page">
     <ArchiveAtmosphere />

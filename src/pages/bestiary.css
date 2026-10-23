@@ -1,6 +1,6 @@
 .bestiary-page { overflow: clip; }
-.bestiary-list { width: min(100%, 1080px); display: grid; margin-inline: auto; }
-.bestiary-record { display: grid; grid-template-columns: 42px minmax(10rem, 1fr) minmax(12rem, 1.2fr) 58px 14px; gap: 12px; align-items: center; min-height: 70px; padding: 10px 8px; border-bottom: 1px solid var(--archive-border); border-radius: var(--archive-radius); color: var(--archive-text); text-decoration: none; transition: background-color var(--archive-fast), border-color var(--archive-fast); }
+.bestiary-list { width: min(100%, var(--archive-reference-list-max)); display: grid; margin-inline: auto; }
+.bestiary-record { display: grid; grid-template-columns: 42px minmax(10rem, 1fr) minmax(12rem, 1.2fr) 58px 14px; gap: 11px; align-items: center; min-height: 62px; padding: var(--archive-reference-row-padding-block) 8px; border-bottom: 1px solid var(--archive-border); border-radius: var(--archive-radius); color: var(--archive-text); text-decoration: none; transition: background-color var(--archive-fast), border-color var(--archive-fast); }
 .bestiary-record:hover { border-color: var(--archive-border-strong); background: rgb(213 168 94 / 4%); }
 .bestiary-record:focus-visible, .bestiary-detail a:focus-visible, .bestiary-detail button:focus-visible { outline: 2px solid var(--archive-gold); outline-offset: 3px; }
 .bestiary-record__icon { width: 42px; height: 42px; display: grid; place-items: center; }
@@ -13,7 +13,7 @@
 .bestiary-record__chevron { color: var(--archive-gold); font-size: 1.25rem; }
 .bestiary-empty { width: min(100%, 1080px); margin: 24px auto; color: var(--archive-muted); }
 
-.bestiary-detail { position: relative; z-index: 1; width: min(1280px, calc(100vw - (2 * var(--archive-page-padding)))); margin: 24px auto 64px; color: var(--archive-text); font-size: var(--archive-text-body); }
+.bestiary-detail { position: relative; z-index: 1; width: min(var(--archive-reference-detail-max), calc(100vw - (2 * var(--archive-reference-padding-inline)))); margin: 18px auto 56px; color: var(--archive-text); font-size: var(--archive-text-body); }
 .bestiary-detail__header { padding: 4px 2px 18px; border-bottom: 1px solid var(--archive-border-strong); }
 .bestiary-detail__heading { min-width: 0; }
 .bestiary-detail__heading > a { color: var(--archive-muted); text-decoration: none; font-size: .8rem; }
@@ -104,7 +104,7 @@
 .bestiary-detail__art { width: 100%; aspect-ratio: 4 / 5; display: block; object-fit: cover; border-radius: var(--archive-radius-panel); }
 .bestiary-detail__lore, .bestiary-related { padding: 15px 2px 0; border-top: 1px solid var(--archive-border); }
 .bestiary-detail__lore p, .bestiary-related p { margin: 0; color: var(--archive-text-soft); line-height: 1.65; }
-.bestiary-detail__lore p { font-size: .92rem; }
+.bestiary-detail__lore p { max-inline-size: var(--archive-reading-measure); font-size: .92rem; }
 .bestiary-detail__lore p + p, .bestiary-related p + p { margin-top: 9px; }
 .bestiary-related { color: var(--archive-muted); font-size: .8rem; }
 .bestiary-related > h2 { margin-bottom: 8px; font-size: 1rem; }
