@@ -487,7 +487,6 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
           description={entry.short_description}
           badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]}
           navigation={raceNavigation}
-          imagePosition={officialAssets?.position}
         />
       }
     >

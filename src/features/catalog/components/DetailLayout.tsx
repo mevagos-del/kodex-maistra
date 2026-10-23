@@ -22,7 +22,7 @@ export function DetailLayout({ sidebar, children, variant, backFallback }: Detai
   if (variant) {
     return (
       <div className={`detail-codex-stage detail-codex-stage--${variant}${variant === 'race' ? ' race-detail-stage' : ''}`}>
-        <ArchiveAtmosphere />
+        {variant === 'race' ? null : <ArchiveAtmosphere />}
         {backFallback ? <DetailBackButton fallback={backFallback} /> : null}
         {layout}
       </div>

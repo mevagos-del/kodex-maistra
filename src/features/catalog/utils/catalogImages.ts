@@ -4,52 +4,52 @@ export const OFFICIAL_RACE_ASSETS_BY_SLUG = {
   aasimar: {
     cardImage: '/images/catalog/races/card/aasimar_race_card.webp',
     bannerImage: '/images/catalog/races/banners/Aasimar_Banner.webp',
-    position: { desktop: '72% 48%', tablet: '74% 48%', mobile: '72% 42%' },
+    cardPosition: '50% center',
   },
   dragonborn: {
     cardImage: '/images/catalog/races/card/dragonborn_race_card.webp',
     bannerImage: '/images/catalog/races/banners/dragonborn_banner.webp',
-    position: { desktop: '72% 45%', tablet: '74% 44%', mobile: '76% 38%' },
+    cardPosition: '46% center',
   },
   dwarf: {
     cardImage: '/images/catalog/races/card/dwarf_race_card.webp',
     bannerImage: '/images/catalog/races/banners/dwarf-banner.webp',
-    position: { desktop: '72% 45%', tablet: '74% 44%', mobile: '74% 40%' },
+    cardPosition: '50% center',
   },
   elf: {
     cardImage: '/images/catalog/races/card/elf_race_card.webp',
     bannerImage: '/images/catalog/races/banners/Elf_Banner.webp',
-    position: { desktop: '73% 44%', tablet: '75% 43%', mobile: '76% 38%' },
+    cardPosition: '48% center',
   },
   gnome: {
     cardImage: '/images/catalog/races/card/gnome_race_card.webp',
     bannerImage: '/images/catalog/races/banners/Gnome_Banner.webp',
-    position: { desktop: '72% 50%', tablet: '74% 48%', mobile: '76% 44%' },
+    cardPosition: '50% center',
   },
   goliath: {
     cardImage: '/images/catalog/races/card/Goliath_race_card.webp',
     bannerImage: '/images/catalog/races/banners/goliath_banner.webp',
-    position: { desktop: '73% 42%', tablet: '75% 40%', mobile: '77% 34%' },
+    cardPosition: '49% center',
   },
   halfling: {
     cardImage: '/images/catalog/races/card/halfling_race_card.webp',
     bannerImage: '/images/catalog/races/banners/Halfling_Banner.webp',
-    position: { desktop: '72% 51%', tablet: '74% 49%', mobile: '76% 45%' },
+    cardPosition: '50% center',
   },
   human: {
     cardImage: '/images/catalog/races/card/human_race_card.webp',
     bannerImage: '/images/catalog/races/banners/Human_Banner.webp',
-    position: { desktop: '73% 45%', tablet: '75% 44%', mobile: '76% 39%' },
+    cardPosition: '46% center',
   },
   orc: {
     cardImage: '/images/catalog/races/card/orc_race_card.webp',
     bannerImage: '/images/catalog/races/banners/Orc_Banner.webp',
-    position: { desktop: '73% 44%', tablet: '75% 42%', mobile: '77% 37%' },
+    cardPosition: '50% center',
   },
   tiefling: {
     cardImage: '/images/catalog/races/card/tiefling_race_card.webp',
     bannerImage: '/images/catalog/races/banners/tiefling_banner.webp',
-    position: { desktop: '73% 42%', tablet: '75% 40%', mobile: '77% 32%' },
+    cardPosition: '47% center',
   },
 } as const;
 

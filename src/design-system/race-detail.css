@@ -40,18 +40,26 @@ html:has(.race-detail-stage) {
 }
 
 .archive-shell .race-detail-hero__media img {
+  position: absolute;
+  top: 0;
+  right: 0;
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: none;
   height: 100%;
-  object-fit: cover;
-  object-position: var(--race-hero-position-desktop, 72% 45%);
+  object-fit: contain;
+}
+
+.archive-shell .race-detail-hero__media {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 22%) 15%, #000 38%, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 22%) 15%, #000 38%, #000 100%);
 }
 
 .archive-shell .race-detail-hero__shade {
   z-index: 1;
   background:
-    linear-gradient(180deg, rgb(7 10 14 / 14%) 0%, transparent 45%, var(--race-detail-background) 100%),
-    linear-gradient(90deg, rgb(7 10 14 / 96%) 0%, rgb(7 10 14 / 92%) 28%, rgb(7 10 14 / 54%) 53%, rgb(7 10 14 / 9%) 79%);
+    linear-gradient(180deg, rgb(7 10 14 / 5%) 0%, transparent 50%, rgb(7 10 14 / 42%) 75%, var(--race-detail-background) 100%),
+    linear-gradient(90deg, rgb(7 10 14 / 98%) 0%, rgb(7 10 14 / 94%) 30%, rgb(7 10 14 / 55%) 49%, rgb(7 10 14 / 6%) 74%);
   pointer-events: none;
 }
 
@@ -129,7 +137,7 @@ html:has(.race-detail-stage) {
   top: 3.625rem;
   z-index: 22;
   min-width: 0;
-  margin-top: -2rem;
+  margin-top: -1.35rem;
   padding: 0 1rem;
 }
 
@@ -137,13 +145,12 @@ html:has(.race-detail-stage) {
   display: flex;
   min-width: 0;
   margin: 0;
-  padding: 0.35rem;
+  padding: 0.15rem 0.25rem;
   overflow-x: auto;
   list-style: none;
-  border-top: 1px solid rgb(198 139 58 / 24%);
-  border-bottom: 1px solid rgb(198 139 58 / 22%);
-  background: rgb(7 10 14 / 92%);
-  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgb(198 139 58 / 18%);
+  background: rgb(7 10 14 / 88%);
+  backdrop-filter: blur(10px);
   scrollbar-width: thin;
 }
 
@@ -155,13 +162,13 @@ html:has(.race-detail-stage) {
 .archive-shell .race-detail-nav a {
   position: relative;
   display: flex;
-  min-height: 2.45rem;
+  min-height: 2rem;
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  padding: 0.45rem 0.8rem;
+  padding: 0.3rem 0.7rem;
   color: rgb(235 224 204 / 72%);
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 700;
   text-decoration: none;
   transition: color 160ms ease, background-color 160ms ease;
@@ -170,7 +177,7 @@ html:has(.race-detail-stage) {
 .archive-shell .race-detail-nav a::after {
   position: absolute;
   right: 0.75rem;
-  bottom: -0.35rem;
+  bottom: -0.15rem;
   left: 0.75rem;
   height: 2px;
   content: '';
@@ -190,7 +197,7 @@ html:has(.race-detail-stage) {
 .archive-shell .race-detail-nav a:focus-visible,
 .archive-shell .race-detail-nav a[aria-current='location'] {
   color: #f0d18b;
-  background: rgb(198 139 58 / 7%);
+  background: transparent;
 }
 
 .archive-shell .race-detail-nav a[aria-current='location']::after {
@@ -213,11 +220,11 @@ html:has(.race-detail-stage) {
 
 .archive-shell .race-detail-overview {
   display: grid;
-  gap: 0.9rem;
-  padding: 1rem 1.25rem;
-  border-top: 1px solid rgb(198 139 58 / 26%);
-  border-bottom: 1px solid rgb(198 139 58 / 18%);
-  background: linear-gradient(180deg, rgb(12 17 23 / 52%), rgb(6 9 13 / 38%));
+  gap: 0.7rem;
+  padding: 0.8rem 1rem;
+  border-top: 1px solid rgb(198 139 58 / 20%);
+  border-bottom: 1px solid rgb(198 139 58 / 12%);
+  background: linear-gradient(180deg, rgb(12 17 23 / 34%), rgb(6 9 13 / 20%));
 }
 
 .archive-shell .race-detail-overview .race-section-title {
@@ -236,8 +243,8 @@ html:has(.race-detail-stage) {
   gap: 0.7rem;
   align-items: center;
   min-width: 0;
-  padding: 0.4rem clamp(0.6rem, 2vw, 1.25rem);
-  border-right: 1px solid rgb(198 139 58 / 20%);
+  padding: 0.3rem clamp(0.55rem, 1.6vw, 1rem);
+  border-right: 1px solid rgb(198 139 58 / 14%);
 }
 
 .archive-shell .race-detail-overview__fact:first-child {
@@ -310,10 +317,6 @@ html:has(.race-detail-stage) {
     min-height: clamp(17rem, 36vw, 20rem);
   }
 
-  .archive-shell .race-detail-hero__media img {
-    object-position: var(--race-hero-position-tablet, 74% 44%);
-  }
-
   .archive-shell .race-detail-hero__content {
     min-height: clamp(17rem, 36vw, 20rem);
     padding: 1.75rem 1.5rem 4.25rem;
@@ -354,13 +357,13 @@ html:has(.race-detail-stage) {
   }
 
   .archive-shell .race-detail-hero__media img {
-    object-position: var(--race-hero-position-mobile, 76% 40%);
+    right: -8%;
   }
 
   .archive-shell .race-detail-hero__shade {
     background:
-      linear-gradient(180deg, rgb(7 10 14 / 8%) 0%, rgb(7 10 14 / 12%) 48%, var(--race-detail-background) 100%),
-      linear-gradient(90deg, rgb(7 10 14 / 74%) 0%, rgb(7 10 14 / 36%) 46%, transparent 75%);
+      linear-gradient(180deg, rgb(7 10 14 / 4%) 0%, rgb(7 10 14 / 8%) 48%, var(--race-detail-background) 100%),
+      linear-gradient(90deg, rgb(7 10 14 / 76%) 0%, rgb(7 10 14 / 28%) 44%, transparent 72%);
   }
 
   .archive-shell .race-detail-hero__content {
@@ -398,16 +401,16 @@ html:has(.race-detail-stage) {
 
   .archive-shell .race-detail-nav {
     top: 3.5rem;
-    margin-top: -1.9rem;
+    margin-top: -1.35rem;
     padding-inline: var(--archive-page-padding);
   }
 
   .archive-shell .race-detail-nav ol {
-    padding: 0.25rem;
+    padding: 0.125rem 0.2rem;
   }
 
   .archive-shell .race-detail-nav a {
-    min-height: 2.6rem;
+    min-height: 2.15rem;
     padding-inline: 0.65rem;
     font-size: 0.78rem;
   }
@@ -461,6 +464,152 @@ html:has(.race-detail-stage) {
 
   .archive-shell .race-detail-nav a,
   .archive-shell .race-detail-nav a::after {
+    transition: none;
+  }
+}
+
+/* Race pages use a clean graphite surface instead of the global dust overlay. */
+.archive-shell .catalog-archive-page--races {
+  background:
+    radial-gradient(circle at 82% 5%, rgb(196 137 61 / 5%), transparent 24rem),
+    linear-gradient(180deg, rgb(13 17 22 / 98%), rgb(6 8 11 / 100%));
+}
+
+/* Race catalog artwork and metadata form one continuous card surface. */
+.archive-shell .catalog-archive-page--races .catalog-card--race {
+  aspect-ratio: 4 / 3;
+  border-color: rgb(194 138 61 / 26%);
+  background: #080b0e;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 18%);
+  transform: none;
+  transition: border-color 180ms ease, filter 180ms ease;
+}
+
+.archive-shell .catalog-archive-page--races .catalog-card--race:hover,
+.archive-shell .catalog-archive-page--races .catalog-card--race:focus-within {
+  border-color: rgb(211 158 78 / 58%);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 18%);
+  transform: none;
+}
+
+.archive-shell .catalog-archive-page--races .catalog-card--race .catalog-card__main-link {
+  position: relative;
+  display: block;
+  min-height: 100%;
+  overflow: hidden;
+}
+
+.archive-shell .catalog-archive-page--races .catalog-card--race .catalog-card__main-link::after {
+  position: absolute;
+  inset: 24% 0 0;
+  z-index: 1;
+  content: '';
+  background: linear-gradient(180deg, transparent 0%, rgb(6 9 13 / 28%) 34%, rgb(6 9 13 / 91%) 78%, #06090d 100%);
+  pointer-events: none;
+}
+
+.archive-shell .catalog-archive-page--races .catalog-card--race .catalog-card__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: cover;
+  object-position: var(--race-card-position, 50% center);
+  filter: saturate(0.92) contrast(1.01);
+  transform: none;
+  transition: filter 180ms ease;
+}
+
+.archive-shell .catalog-archive-page--races .catalog-card--race:hover .catalog-card__image,
+.archive-shell .catalog-archive-page--races .catalog-card--race:focus-within .catalog-card__image {
+  filter: saturate(0.96) contrast(1.05) brightness(1.02);
+  transform: none;
+}
+
+.archive-shell .catalog-archive-page--races .catalog-card--race .catalog-card__header {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  display: block;
+  min-height: 0;
+  padding: 3.75rem 0.9rem 0.8rem;
+  background: transparent;
+}
+
+.archive-shell .catalog-archive-page--races .catalog-card--race .catalog-card__header h3 {
+  color: #f0d18b;
+  font-size: clamp(1rem, 1.25vw, 1.125rem);
+  text-shadow: 0 1px 8px rgb(0 0 0 / 76%);
+}
+
+.archive-shell .catalog-archive-page--races .catalog-card--race .original-title {
+  margin-top: 0.15rem;
+  color: rgb(239 229 210 / 70%);
+  font-size: 0.7rem;
+}
+
+.archive-shell .catalog-archive-page--races .catalog-card--race .catalog-card__meta {
+  margin: 0.45rem 0 0;
+  padding: 0;
+  border: 0;
+  color: rgb(211 164 91 / 88%);
+  font-size: 0.625rem;
+}
+
+/* Keep race sections text-first and remove the old ornamental outer frame. */
+.archive-shell .detail-v2-shell--race .race-detail-section {
+  overflow: visible;
+  padding: 0.875rem 1rem;
+  border: 0;
+  border-top: 1px solid rgb(194 138 61 / 18%);
+  border-radius: 0;
+  background: linear-gradient(180deg, rgb(12 17 23 / 30%), transparent 72%);
+  box-shadow: none;
+}
+
+.archive-shell .detail-v2-shell--race .race-detail-section::before,
+.archive-shell .detail-v2-shell--race .race-detail-section::after {
+  content: none;
+}
+
+.archive-shell .detail-v2-shell--race .race-section-title {
+  margin: 0;
+  padding: 0 0 0.5rem;
+  border-bottom-color: rgb(194 138 61 / 14%);
+  font-size: clamp(1.1rem, 1.7vw, 1.3rem) !important;
+  text-shadow: none;
+}
+
+.archive-shell .detail-v2-shell--race .race-traits-panel {
+  background: linear-gradient(180deg, rgb(12 17 23 / 26%), transparent 44%);
+}
+
+@media (max-width: 767px) {
+  .archive-shell .catalog-archive-page--races .catalog-archive-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .archive-shell .catalog-archive-page--races .catalog-card--race .catalog-card__header {
+    padding: 2.9rem 0.7rem 0.65rem;
+  }
+
+  .archive-shell .catalog-archive-page--races .catalog-card--race .catalog-card__header h3 {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .archive-shell .catalog-archive-page--races .catalog-archive-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archive-shell .catalog-archive-page--races .catalog-card--race,
+  .archive-shell .catalog-archive-page--races .catalog-card--race .catalog-card__image {
     transition: none;
   }
 }

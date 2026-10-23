@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
+import type { CSSProperties } from 'react';
 import { preloadDetailRoute } from '@/app/routePreload';
 import { getDefaultImageUrl } from '@/lib/storage';
 import type { CatalogEntry } from '../types';
 import { sectionSlugForEntity } from '../api/catalogApi';
-import { resolveCatalogImageUrl } from '../utils/catalogImages';
+import { localOfficialRaceAssets, resolveCatalogImageUrl } from '../utils/catalogImages';
 
 type CatalogCardProps = {
   entry: CatalogEntry;
@@ -25,11 +26,22 @@ export function CatalogCard({ entry, compact = false, priority = false }: Catalo
   const sectionSlug = sectionSlugForEntity(entry.entityType);
   const imageUrl = catalogCardImage(entry, sectionSlug);
   const editionLabel = entry.rules_version === '2024' ? 'D&D 2024' : null;
+  const isRace = entry.entityType === 'race';
+  const raceAssets = isRace ? localOfficialRaceAssets(entry.slug) : undefined;
+  const cardStyle = raceAssets?.cardPosition
+    ? ({ '--race-card-position': raceAssets.cardPosition } as CSSProperties)
+    : undefined;
+  const cardClassName = [
+    'catalog-card',
+    compact ? 'catalog-card-compact' : '',
+    isRace ? 'catalog-card--race' : '',
+  ].filter(Boolean).join(' ');
 
   return (
     <article
-      className={compact ? 'catalog-card catalog-card-compact' : 'catalog-card'}
+      className={cardClassName}
       data-entry-slug={entry.slug}
+      style={cardStyle}
     >
       <Link
         to={`/${sectionSlug}/${entry.slug}`}

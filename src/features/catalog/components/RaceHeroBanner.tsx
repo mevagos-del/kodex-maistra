@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useState } from 'react';
 
 export type RaceNavigationItem = {
   href: string;
@@ -16,17 +16,6 @@ type RaceHeroBannerProps = {
   description?: string | null;
   badges: string[];
   navigation: RaceNavigationItem[];
-  imagePosition?: {
-    desktop: string;
-    tablet: string;
-    mobile: string;
-  };
-};
-
-type RaceHeroStyle = CSSProperties & {
-  '--race-hero-position-desktop'?: string;
-  '--race-hero-position-tablet'?: string;
-  '--race-hero-position-mobile'?: string;
 };
 
 function sectionId(href: string) {
@@ -43,7 +32,6 @@ export function RaceHeroBanner({
   description,
   badges,
   navigation,
-  imagePosition,
 }: RaceHeroBannerProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const [activeHref, setActiveHref] = useState(navigation[0]?.href ?? '');
@@ -70,17 +58,10 @@ export function RaceHeroBanner({
     return () => observer.disconnect();
   }, [navigation]);
 
-  const style: RaceHeroStyle = imagePosition ? {
-    '--race-hero-position-desktop': imagePosition.desktop,
-    '--race-hero-position-tablet': imagePosition.tablet,
-    '--race-hero-position-mobile': imagePosition.mobile,
-  } : {};
-
   return (
     <div className="race-detail-header">
       <section
         className={`race-detail-hero race-detail-hero--${slug}${imageFailed || !imageUrl ? ' race-detail-hero--without-image' : ''}`}
-        style={style}
         aria-labelledby="race-detail-title"
       >
         <div className="race-detail-hero__media" aria-hidden={imageFailed || !imageUrl}>

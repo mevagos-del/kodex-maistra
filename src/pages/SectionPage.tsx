@@ -38,7 +38,7 @@ export function SectionPage({ section }: SectionPageProps) {
 
   return (
     <div className={`catalog-archive-page catalog-archive-page--${section}`}>
-      <ArchiveAtmosphere />
+      {section === 'races' ? null : <ArchiveAtmosphere />}
       <header className="catalog-archive-header">
         <div className="catalog-archive-header__copy">
           <p>Довідник</p>
