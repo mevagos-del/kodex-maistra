@@ -6,7 +6,6 @@ export const dwarf = defineRace({
   nameUk: 'Дворф',
   nameOriginal: 'Dwarf',
   source: SRD_52_SOURCE,
-  imageUrl: '/images/catalog/races/dwarf.webp',
   creatureType: 'Гуманоїд',
   size: 'Середній',
   speed: '30 фт',

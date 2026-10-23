@@ -10,6 +10,8 @@ import { ClassStartSection } from '@/features/catalog/components/ClassStartSecti
 import { MechanicInfoGrid } from '@/features/catalog/components/MechanicInfoGrid';
 import { ProgressionTable } from '@/features/catalog/components/ProgressionTable';
 import { QuickScanSection } from '@/features/catalog/components/QuickScanSection';
+import { RaceHeroBanner } from '@/features/catalog/components/RaceHeroBanner';
+import { RaceOverview } from '@/features/catalog/components/RaceOverview';
 import { RaceTraitSection } from '@/features/catalog/components/RaceTraitSection';
 import { SubraceSelector } from '@/features/catalog/components/SubraceSelector';
 import { SourceFooter } from '@/features/catalog/components/SourceFooter';
@@ -28,7 +30,7 @@ import {
 import { formatValueSafely, isUsefulValue, referenceLevel, sourceRuleText } from '@/features/catalog/utils/detailContent';
 import { resolveClassFeatureCards } from '@/features/catalog/utils/classFeatureResolver';
 import { parseSubclasses } from '@/features/catalog/utils/subclassData';
-import { resolveCatalogImageUrl } from '@/features/catalog/utils/catalogImages';
+import { localOfficialRaceAssets, resolveCatalogImageUrl } from '@/features/catalog/utils/catalogImages';
 import { capitalizeItemTerm, itemMasteryLabel, itemWeaponPropertyLabel } from '@/features/catalog/utils/itemTerminology';
 import type { EntityType } from '@/types/content';
 
@@ -443,58 +445,55 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
     return <ItemDetailContent entry={entry} imageUrl={imageUrl} fallbackImageUrl={defaultImageUrl} />;
   }
 
-  const infoBlocks = mainInfoBlocks(entry);
   const raceDescription = splitRaceDescription(entry.full_description_markdown, entry.title_ua);
   const raceTraits = referenceCards(entry.race_traits, 'Риса');
   const hasRaceVariants = isUsefulValue(entry.subraces);
-  const traitSectionNumber = hasRaceVariants ? 3 : 2;
-  const descriptionSectionNumber = traitSectionNumber + (raceTraits.length > 0 ? 1 : 0);
+  const hasRaceTraits = raceTraits.length > 0;
+  const traitSectionNumber = 2;
+  const subraceSectionNumber = hasRaceTraits ? 3 : 2;
   const raceNavigation = [
-    { href: '#race-main', label: 'Паспорт раси', number: 1 },
-    ...(hasRaceVariants ? [{ href: '#race-subraces', label: 'Варіанти / походження', number: 2 }] : []),
-    ...(raceTraits.length > 0 ? [{ href: '#race-traits', label: 'Риси раси', number: traitSectionNumber }] : []),
-    ...(raceDescription?.description ? [{ href: '#race-description', label: 'Опис', number: descriptionSectionNumber }] : []),
+    { href: '#race-overview', label: 'Огляд', number: 1 },
+    ...(hasRaceTraits ? [{ href: '#race-traits', label: 'Особливості', number: traitSectionNumber }] : []),
+    ...(hasRaceVariants ? [{ href: '#race-subraces', label: 'Підраси', number: subraceSectionNumber }] : []),
   ];
+  const officialAssets = entry.content_type === 'official' ? localOfficialRaceAssets(entry.slug) : undefined;
+  const heroImageUrl = officialAssets?.bannerImage ?? imageUrl;
+  const overviewFacts = [
+    entry.creature_type ? { label: 'Тип істоти', value: localizeRaceValue(entry.creature_type) } : null,
+    entry.size ? { label: 'Розмір', value: localizeRaceValue(entry.size) } : null,
+    entry.speed ? { label: 'Швидкість', value: localizeRaceValue(entry.speed) } : null,
+  ].filter((fact): fact is { label: string; value: string } => fact !== null);
+  const overviewDetails = [
+    entry.languages.length > 0 ? { label: 'Мови', value: entry.languages.map(localizeRaceValue).join(', ') } : null,
+    entry.lifespan ? { label: 'Тривалість життя', value: entry.lifespan } : null,
+    entry.alignment_or_behavior ? { label: 'Поведінка', value: entry.alignment_or_behavior } : null,
+  ].filter((fact): fact is { label: string; value: string } => fact !== null);
+  const extendedDescription = raceDescription.description?.trim() === entry.short_description?.trim()
+    ? null
+    : raceDescription.description;
 
   return (
     <DetailLayout
       variant="race"
       backFallback={`/${sectionSlug}`}
       sidebar={
-        <DetailSidebar
-          imageUrl={imageUrl}
-          imageAlt={entry.title_ua}
+        <RaceHeroBanner
+          slug={entry.slug}
+          imageUrl={heroImageUrl}
+          imageAlt={`${entry.title_ua} — художня ілюстрація`}
           label={entityLabels[entity]}
           title={entry.title_ua}
           originalTitle={entry.title_original}
           description={entry.short_description}
-          tags={[]}
-          quickTitle=""
-          quickItems={[]}
           badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]}
           navigation={raceNavigation}
-          hideImage={!imageUrl}
-          hideImageOnError
-          variant="race"
+          imagePosition={officialAssets?.position}
         />
       }
     >
-      <section id="race-main" className="detail-v2-panel race-detail-section">
-        <h2 className="race-section-title"><span>1.</span> Паспорт раси</h2>
-        <MechanicInfoGrid items={infoBlocks} variant="race" />
-      </section>
-
-      <SubraceSelector id="race-subraces" sectionNumber={2} value={entry.subraces} />
+      <RaceOverview facts={overviewFacts} details={overviewDetails} description={extendedDescription} />
       <RaceTraitSection id="race-traits" sectionNumber={traitSectionNumber} cards={raceTraits} />
-
-      {raceDescription.description ? (
-        <section id="race-description" className="detail-v2-description-panel race-detail-section">
-          <h2 className="race-section-title"><span>{descriptionSectionNumber}.</span> Опис</h2>
-          <div className="markdown-content">
-            <ReactMarkdown>{raceDescription.description}</ReactMarkdown>
-          </div>
-        </section>
-      ) : null}
+      <SubraceSelector id="race-subraces" sectionNumber={subraceSectionNumber} value={entry.subraces} />
 
       {entry.source?.title ? <footer id="race-source" className="race-attribution">Джерело: {entry.source.title}</footer> : null}
     </DetailLayout>

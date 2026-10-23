@@ -6,7 +6,6 @@ export const elf = defineRace({
   nameUk: 'Ельф',
   nameOriginal: 'Elf',
   source: SRD_52_SOURCE,
-  imageUrl: '/images/catalog/races/elf.webp',
   creatureType: 'Гуманоїд',
   size: 'Середній',
   speed: '30 фт',

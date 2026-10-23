@@ -108,7 +108,7 @@ export function RaceTraitSection({ cards, id, sectionNumber }: RaceTraitSectionP
 
   return (
     <section id={id} className="detail-v2-panel race-traits-panel race-detail-section">
-      <h2 className="race-section-title"><span>{sectionNumber}.</span> Риси раси</h2>
+      <h2 className="race-section-title"><span>{sectionNumber}.</span> Особливості</h2>
       <div className="race-trait-list">
         {cards.map((card, index) => {
           const effect = card.rows.find((row) => row.label === 'Механічний ефект');

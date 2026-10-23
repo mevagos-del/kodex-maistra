@@ -155,7 +155,7 @@ export function SubraceSelector({ value, id, sectionNumber }: SubraceSelectorPro
   return (
     <section id={id} className={`detail-v2-panel subrace-section${sectionNumber ? ' race-detail-section' : ''}`} aria-labelledby="subrace-selector-title">
       <div className="subrace-section__header">
-        <h3 id="subrace-selector-title" className={sectionNumber ? 'race-section-title' : undefined}>{sectionNumber ? <span>{sectionNumber}.</span> : null} Варіанти / походження</h3>
+        <h3 id="subrace-selector-title" className={sectionNumber ? 'race-section-title' : undefined}>{sectionNumber ? <span>{sectionNumber}.</span> : null} Підраси</h3>
         <p>Показано лише особливості вибраного варіанта або походження.</p>
       </div>
 

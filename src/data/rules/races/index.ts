@@ -9,6 +9,7 @@ import { halfling } from './halfling';
 import { human } from './human';
 import { orc } from './orc';
 import { tiefling } from './tiefling';
+import { OFFICIAL_RACE_SHORT_DESCRIPTIONS } from './descriptions';
 
 export const OFFICIAL_2024_RACE_SLUGS = [
   'aasimar',
@@ -37,5 +38,8 @@ const officialRaceBySlug: Record<(typeof OFFICIAL_2024_RACE_SLUGS)[number], Offi
 };
 
 export const officialRaces: OfficialRaceEntry[] = OFFICIAL_2024_RACE_SLUGS.map(
-  (slug) => officialRaceBySlug[slug],
+  (slug) => ({
+    ...officialRaceBySlug[slug],
+    shortDescription: OFFICIAL_RACE_SHORT_DESCRIPTIONS[slug],
+  }),
 );

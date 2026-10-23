@@ -6,7 +6,6 @@ export const human = defineRace({
   nameUk: 'Людина',
   nameOriginal: 'Human',
   source: SRD_52_SOURCE,
-  imageUrl: '/images/catalog/races/human.webp',
   creatureType: 'Гуманоїд',
   size: 'Малий або Середній',
   speed: '30 фт',
