@@ -1,0 +1,131 @@
+.archive-shell .catalog-archive-page--races {
+  background: #080b0f;
+  background-image: none;
+}
+
+body:has(.catalog-archive-page--races)::before {
+  display: none;
+}
+
+.catalog-archive-page--races::before,
+.catalog-archive-page--races::after {
+  content: none;
+}
+
+.race-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: var(--archive-reference-card-gap);
+}
+
+.race-catalog-card {
+  position: relative;
+  height: clamp(21.875rem, 25.35vw, 23.75rem);
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgb(194 138 61 / 26%);
+  border-radius: var(--archive-radius-card);
+  background: #080b0e;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 18%);
+  transition: border-color 180ms ease, filter 180ms ease;
+}
+
+.race-catalog-card:hover,
+.race-catalog-card:focus-within {
+  border-color: rgb(211 158 78 / 58%);
+}
+
+.race-catalog-card__link {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+}
+
+.race-catalog-card__link:focus-visible {
+  outline: 2px solid rgb(224 193 118 / 76%);
+  outline-offset: -3px;
+}
+
+.race-catalog-card__art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--race-card-position, 50% center);
+  filter: saturate(0.92) contrast(1.01);
+  transition: filter 180ms ease;
+}
+
+.race-catalog-card:hover .race-catalog-card__art,
+.race-catalog-card:focus-within .race-catalog-card__art {
+  filter: saturate(0.96) contrast(1.05) brightness(1.02);
+}
+
+.race-catalog-card__gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0 52%, rgb(6 9 13 / 10%) 60%, rgb(6 9 13 / 54%) 78%, rgb(6 9 13 / 94%) 100%);
+  pointer-events: none;
+}
+
+.race-catalog-card__copy {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 3.75rem 0.9rem 0.8rem;
+}
+
+.race-catalog-card__copy h2 {
+  margin: 0;
+  color: #f0d18b;
+  font-family: var(--archive-font-display);
+  font-size: clamp(1rem, 1.25vw, 1.125rem);
+  line-height: 1.15;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 76%);
+}
+
+.race-catalog-card__copy p {
+  margin: 0.15rem 0 0;
+  color: rgb(239 229 210 / 70%);
+  font-size: 0.7rem;
+  line-height: 1.3;
+}
+
+.race-catalog-card__copy span {
+  display: block;
+  margin-top: 0.45rem;
+  color: rgb(211 164 91 / 88%);
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 900px) {
+  .race-catalog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 430px) {
+  .race-catalog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .race-catalog-card__copy {
+    padding: 3rem 0.75rem 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .race-catalog-card,
+  .race-catalog-card__art {
+    transition: none;
+  }
+}

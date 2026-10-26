@@ -5,7 +5,7 @@ import { ArchiveAtmosphere } from './ArchiveAtmosphere';
 type DetailLayoutProps = {
   sidebar: ReactNode;
   children: ReactNode;
-  variant?: 'race' | 'class' | 'item';
+  variant?: 'class' | 'item';
   backFallback?: string;
 };
 
@@ -21,8 +21,8 @@ export function DetailLayout({ sidebar, children, variant, backFallback }: Detai
 
   if (variant) {
     return (
-      <div className={`detail-codex-stage detail-codex-stage--${variant}${variant === 'race' ? ' race-detail-stage' : ''}`}>
-        {variant === 'race' ? null : <ArchiveAtmosphere />}
+      <div className={`detail-codex-stage detail-codex-stage--${variant}`}>
+        <ArchiveAtmosphere />
         {backFallback ? <DetailBackButton fallback={backFallback} /> : null}
         {layout}
       </div>

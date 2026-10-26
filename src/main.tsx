@@ -7,7 +7,8 @@ import { registerServiceWorker } from './lib/registerServiceWorker';
 import './styles/global.css';
 import './design-system/tokens.css';
 import './design-system/archive-shell.css';
-import './design-system/race-detail.css';
+import './features/catalog/races/styles/race-catalog.css';
+import './features/catalog/races/styles/race-detail.css';
 import './design-system/motion.css';
 
 createRoot(document.getElementById('root')!).render(

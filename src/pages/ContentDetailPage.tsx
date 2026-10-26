@@ -10,10 +10,7 @@ import { ClassStartSection } from '@/features/catalog/components/ClassStartSecti
 import { MechanicInfoGrid } from '@/features/catalog/components/MechanicInfoGrid';
 import { ProgressionTable } from '@/features/catalog/components/ProgressionTable';
 import { QuickScanSection } from '@/features/catalog/components/QuickScanSection';
-import { RaceHeroBanner } from '@/features/catalog/components/RaceHeroBanner';
-import { RaceOverview } from '@/features/catalog/components/RaceOverview';
-import { RaceTraitSection } from '@/features/catalog/components/RaceTraitSection';
-import { SubraceSelector } from '@/features/catalog/components/SubraceSelector';
+import { RaceDetailView } from '@/features/catalog/races/components/RaceDetailView';
 import { SourceFooter } from '@/features/catalog/components/SourceFooter';
 import { SubclassSelector } from '@/features/catalog/components/SubclassSelector';
 import { sectionSlugForEntity } from '@/features/catalog/api/catalogApi';
@@ -27,21 +24,15 @@ import {
   registryIconForLabel,
   weaponMasteryIconForName,
 } from '@/features/catalog/utils/codexIcons';
-import { formatValueSafely, isUsefulValue, referenceLevel, sourceRuleText } from '@/features/catalog/utils/detailContent';
+import { formatValueSafely, referenceLevel, sourceRuleText } from '@/features/catalog/utils/detailContent';
 import { resolveClassFeatureCards } from '@/features/catalog/utils/classFeatureResolver';
 import { parseSubclasses } from '@/features/catalog/utils/subclassData';
-import { localOfficialRaceAssets, resolveCatalogImageUrl } from '@/features/catalog/utils/catalogImages';
+import { resolveCatalogImageUrl } from '@/features/catalog/utils/catalogImages';
 import { capitalizeItemTerm, itemMasteryLabel, itemWeaponPropertyLabel } from '@/features/catalog/utils/itemTerminology';
 import type { EntityType } from '@/types/content';
 
 type ContentDetailPageProps = {
   entity: EntityType;
-};
-
-const entityLabels: Record<EntityType, string> = {
-  race: 'Раса',
-  class: 'Клас',
-  item: 'Предмет',
 };
 
 function booleanLabel(value: boolean) {
@@ -67,30 +58,8 @@ function addInfo(blocks: Array<{ label: string; value: string }>, label: string,
   if (value) blocks.push({ label, value });
 }
 
-const raceTermLabels: Record<string, string> = {
-  humanoid: 'Гуманоїд', 'гуманоїд': 'Гуманоїд', medium: 'Середній', 'середній': 'Середній',
-  small: 'Малий', 'малий': 'Малий', common: 'Спільна', 'спільна': 'Спільна',
-  dwarvish: 'Дворфійська', 'дворфійська': 'Дворфійська', elvish: 'Ельфійська', 'ельфійська': 'Ельфійська',
-};
-
-function localizeRaceValue(value: string) {
-  const normalized = value.trim().toLowerCase();
-  return raceTermLabels[normalized] ?? value.replace(/\b(feet|foot|ft\.?)\b/gi, 'фт');
-}
-
 function mainInfoBlocks(entry: CatalogEntry) {
   const blocks: Array<{ label: string; value: string }> = [];
-
-  if (entry.entityType === 'race') {
-    blocks.push({ label: 'Версія правил', value: rulesVersionLabel(entry.rules_version) });
-    blocks.push({ label: 'Тип контенту', value: contentTypeLabel(entry.content_type) });
-    addInfo(blocks, 'Тип істоти', entry.creature_type ? localizeRaceValue(entry.creature_type) : null);
-    addInfo(blocks, 'Розмір', entry.size ? localizeRaceValue(entry.size) : null);
-    addInfo(blocks, 'Швидкість', entry.speed ? localizeRaceValue(entry.speed) : null);
-    addInfo(blocks, 'Мови', entry.languages.map(localizeRaceValue).join(', '));
-    addInfo(blocks, 'Тривалість життя', entry.lifespan);
-    addInfo(blocks, 'Поведінка', entry.alignment_or_behavior);
-  }
 
   if (entry.entityType === 'class') {
     addInfo(blocks, 'Кістка хітів', entry.hit_die);
@@ -391,18 +360,6 @@ function ItemDetailContent({ entry, imageUrl, fallbackImageUrl }: { entry: ItemE
   );
 }
 
-function splitRaceDescription(markdown: string | null, title: string) {
-  if (!markdown?.trim()) return { description: null, creation: null };
-  const marker = /^#{1,6}\s+Під час створення персонажа\s*$/im;
-  const match = marker.exec(markdown);
-  const rawDescription = match ? markdown.slice(0, match.index).trim() : markdown.trim();
-  const creation = match ? markdown.slice(match.index + match[0].length).trim() || null : null;
-  const lines = rawDescription.split(/\r?\n/);
-  const firstHeading = lines[0]?.replace(/^#{1,6}\s+/, '').trim().toLowerCase();
-  if (firstHeading === title.trim().toLowerCase()) lines.shift();
-  return { description: lines.join('\n').trim() || null, creation };
-}
-
 export function ContentDetailPage({ entity }: ContentDetailPageProps) {
   const { slug } = useParams();
   const { data: entry, isLoading, errorMessage } = useCatalogEntry(entity, slug);
@@ -445,56 +402,5 @@ export function ContentDetailPage({ entity }: ContentDetailPageProps) {
     return <ItemDetailContent entry={entry} imageUrl={imageUrl} fallbackImageUrl={defaultImageUrl} />;
   }
 
-  const raceDescription = splitRaceDescription(entry.full_description_markdown, entry.title_ua);
-  const raceTraits = referenceCards(entry.race_traits, 'Риса');
-  const hasRaceVariants = isUsefulValue(entry.subraces);
-  const hasRaceTraits = raceTraits.length > 0;
-  const traitSectionNumber = 2;
-  const subraceSectionNumber = hasRaceTraits ? 3 : 2;
-  const raceNavigation = [
-    { href: '#race-overview', label: 'Огляд', number: 1 },
-    ...(hasRaceTraits ? [{ href: '#race-traits', label: 'Особливості', number: traitSectionNumber }] : []),
-    ...(hasRaceVariants ? [{ href: '#race-subraces', label: 'Підраси', number: subraceSectionNumber }] : []),
-  ];
-  const officialAssets = entry.content_type === 'official' ? localOfficialRaceAssets(entry.slug) : undefined;
-  const heroImageUrl = officialAssets?.bannerImage ?? imageUrl;
-  const overviewFacts = [
-    entry.creature_type ? { label: 'Тип істоти', value: localizeRaceValue(entry.creature_type) } : null,
-    entry.size ? { label: 'Розмір', value: localizeRaceValue(entry.size) } : null,
-    entry.speed ? { label: 'Швидкість', value: localizeRaceValue(entry.speed) } : null,
-  ].filter((fact): fact is { label: string; value: string } => fact !== null);
-  const overviewDetails = [
-    entry.languages.length > 0 ? { label: 'Мови', value: entry.languages.map(localizeRaceValue).join(', ') } : null,
-    entry.lifespan ? { label: 'Тривалість життя', value: entry.lifespan } : null,
-    entry.alignment_or_behavior ? { label: 'Поведінка', value: entry.alignment_or_behavior } : null,
-  ].filter((fact): fact is { label: string; value: string } => fact !== null);
-  const extendedDescription = raceDescription.description?.trim() === entry.short_description?.trim()
-    ? null
-    : raceDescription.description;
-
-  return (
-    <DetailLayout
-      variant="race"
-      backFallback={`/${sectionSlug}`}
-      sidebar={
-        <RaceHeroBanner
-          slug={entry.slug}
-          imageUrl={heroImageUrl}
-          imageAlt={`${entry.title_ua} — художня ілюстрація`}
-          label={entityLabels[entity]}
-          title={entry.title_ua}
-          originalTitle={entry.title_original}
-          description={entry.short_description}
-          badges={[rulesVersionLabel(entry.rules_version), contentTypeLabel(entry.content_type)]}
-          navigation={raceNavigation}
-        />
-      }
-    >
-      <RaceOverview facts={overviewFacts} details={overviewDetails} description={extendedDescription} />
-      <RaceTraitSection id="race-traits" sectionNumber={traitSectionNumber} cards={raceTraits} />
-      <SubraceSelector id="race-subraces" sectionNumber={subraceSectionNumber} value={entry.subraces} />
-
-      {entry.source?.title ? <footer id="race-source" className="race-attribution">Джерело: {entry.source.title}</footer> : null}
-    </DetailLayout>
-  );
+  return <RaceDetailView entry={entry} fallbackImageUrl={defaultImageUrl} />;
 }

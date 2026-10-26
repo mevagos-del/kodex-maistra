@@ -5,8 +5,9 @@ import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphe
 import { CatalogCard } from '@/features/catalog/components/CatalogCard';
 import { EmptyState } from '@/features/catalog/components/EmptyState';
 import { ItemsArchiveCatalog } from '@/features/catalog/components/ItemsArchiveCatalog';
+import { RaceCatalogCard } from '@/features/catalog/races/components/RaceCatalogCard';
 import { useCatalogList } from '@/features/catalog/hooks/useCatalogData';
-import type { ItemEntry } from '@/features/catalog/types';
+import type { ItemEntry, RaceEntry } from '@/features/catalog/types';
 import type { CoreSectionSlug, EntityType } from '@/types/content';
 import { useRouteSessionState } from '@/features/navigation/useRouteSessionState';
 
@@ -73,6 +74,12 @@ export function SectionPage({ section }: SectionPageProps) {
           <div className="archive-status-panel">Не вдалося завантажити матеріали: {catalog.errorMessage}</div>
         ) : section === 'items' ? (
           <ItemsArchiveCatalog entries={catalog.data.filter((entry): entry is ItemEntry => entry.entityType === 'item')} search={search} />
+        ) : section === 'races' && filteredEntries.length > 0 ? (
+          <div className="race-catalog-grid">
+            {filteredEntries
+              .filter((entry): entry is RaceEntry => entry.entityType === 'race')
+              .map((entry, index) => <RaceCatalogCard key={entry.id} entry={entry} priority={index === 0} />)}
+          </div>
         ) : filteredEntries.length > 0 ? (
           <div className="catalog-archive-grid">
             {filteredEntries.map((entry, index) => <CatalogCard key={entry.id} entry={entry} priority={index === 0} />)}

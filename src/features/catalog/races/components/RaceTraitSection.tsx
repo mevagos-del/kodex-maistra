@@ -1,6 +1,6 @@
-import type { ReferenceCard } from '../api/detailReference';
-import { traitIconForTitle } from '../utils/codexIcons';
-import { RuleText } from './RuleText';
+import type { ReferenceCard } from '../../api/detailReference';
+import { traitIconForTitle } from '../../utils/codexIcons';
+import { RuleText } from '../../components/RuleText';
 
 type RaceTraitSectionProps = {
   cards: ReferenceCard[];
@@ -107,27 +107,27 @@ export function RaceTraitSection({ cards, id, sectionNumber }: RaceTraitSectionP
   if (cards.length === 0) return null;
 
   return (
-    <section id={id} className="detail-v2-panel race-traits-panel race-detail-section">
-      <h2 className="race-section-title"><span>{sectionNumber}.</span> Особливості</h2>
-      <div className="race-trait-list">
+    <section id={id} className="race-archive-section race-archive-traits">
+      <h2 className="race-archive-section__title"><span>{sectionNumber}.</span> Особливості</h2>
+      <div className="race-archive-traits__list">
         {cards.map((card, index) => {
           const effect = card.rows.find((row) => row.label === 'Механічний ефект');
           const ruleText = normalizeText(effect?.value ?? card.description ?? '');
           const scanLine = traitScanLine(card, ruleText);
 
           return (
-            <article id={card.anchorId} key={`${card.title}-${index}`} className="race-trait-card">
-              <header className="race-trait-card__header">
-                <div className="race-trait-card__mark race-trait-icon trait-icon-medallion" aria-hidden="true">
-                  <img className="codex-icon codex-icon--trait" src={traitIconForTitle(card.title)} alt="" />
+            <article id={card.anchorId} key={`${card.title}-${index}`} className="race-archive-trait">
+              <header className="race-archive-trait__header">
+                <div className="race-archive-trait__icon" aria-hidden="true">
+                  <img src={traitIconForTitle(card.title)} alt="" />
                 </div>
                 <h3>{card.title}</h3>
               </header>
-              {ruleText ? <p className="race-trait-card__description"><RuleText>{ruleText}</RuleText></p> : null}
+              {ruleText ? <p className="race-archive-trait__description"><RuleText>{ruleText}</RuleText></p> : null}
               {scanLine.length > 0 ? (
-                <dl className="race-trait-card__scan-line" aria-label="Короткі параметри риси">
+                <dl className="race-archive-trait__scan" aria-label="Короткі параметри риси">
                   {scanLine.map((fact) => (
-                    <div key={`${fact.label}-${fact.value}`} className="race-trait-scan-fact">
+                    <div key={`${fact.label}-${fact.value}`}>
                       <dt>{fact.label}:</dt>
                       <dd><RuleText>{fact.value}</RuleText></dd>
                     </div>
@@ -135,15 +135,15 @@ export function RaceTraitSection({ cards, id, sectionNumber }: RaceTraitSectionP
                 </dl>
               ) : null}
               {card.options && card.options.length > 0 ? (
-                <details className="codex-rule-options">
+                <details className="race-archive-trait__options">
                   <summary>Доступні варіанти</summary>
-                  <div className="codex-rule-option-list">
+                  <div className="race-archive-trait__option-list">
                     {card.options.map((option) => (
-                      <article className="codex-rule-option" key={option.anchorId ?? option.title}>
+                      <article className="race-archive-trait__option" key={option.anchorId ?? option.title}>
                         <h4>{option.title}</h4>
                         <p><RuleText>{option.description ?? 'Опис не вказано у доступному джерелі.'}</RuleText></p>
                         {option.rows.length > 0 ? (
-                          <dl className="codex-rule-scan codex-rule-option-scan">
+                          <dl className="race-archive-trait__option-scan">
                             {option.rows.slice(0, 3).map((fact) => (
                               <div key={`${fact.label}-${fact.value}`}>
                                 <dt>{fact.label}:</dt>
