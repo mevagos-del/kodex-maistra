@@ -1,5 +1,7 @@
 import type { ReferenceInfo } from '../api/detailReference';
 import { TagList } from './TagList';
+import { useSectionScroll } from '@/features/navigation/useSectionScroll';
+import './DetailSidebar.mobile.css';
 
 type SidebarNavigationItem = {
   href: string;
@@ -43,6 +45,8 @@ export function DetailSidebar({
   hideImageOnError = false,
 }: DetailSidebarProps) {
   const isCodexSidebar = Boolean(variant);
+  const { activeHref, setActiveHref } = useSectionScroll(navigation);
+  const activeLabel = navigation.find((item) => item.href === activeHref)?.label;
 
   return (
     <div className={`detail-v2-sidebar${isCodexSidebar ? ` codex-identity-sidebar codex-identity-sidebar--${variant}` : ''}${variant === 'race' ? ' race-identity-sidebar' : ''}`}>
@@ -89,7 +93,7 @@ export function DetailSidebar({
           <ol>
             {navigation.map((item) => (
               <li key={item.href}>
-                <a href={item.href}>
+                <a href={item.href} aria-current={activeHref === item.href ? 'location' : undefined} onClick={() => setActiveHref(item.href)}>
                   <span aria-hidden="true">{String(item.number).padStart(2, '0')}</span>
                   {item.label}
                 </a>
@@ -101,12 +105,12 @@ export function DetailSidebar({
 
       {navigation.length > 0 ? (
         <details className="detail-v2-section-menu">
-          <summary>Розділи сторінки</summary>
+          <summary>Розділи сторінки{activeLabel ? ` · ${activeLabel}` : ''}</summary>
           <nav aria-label="Перехід по розділах на мобільному">
             <ol>
               {navigation.map((item) => (
                 <li key={item.href}>
-                  <a href={item.href} onClick={(event) => event.currentTarget.closest('details')?.removeAttribute('open')}>
+                  <a href={item.href} aria-current={activeHref === item.href ? 'location' : undefined} onClick={(event) => { setActiveHref(item.href); event.currentTarget.closest('details')?.removeAttribute('open'); }}>
                     <span aria-hidden="true">{String(item.number).padStart(2, '0')}</span>
                     {item.label}
                   </a>

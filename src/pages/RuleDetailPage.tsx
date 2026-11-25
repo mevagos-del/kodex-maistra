@@ -3,6 +3,7 @@ import { ruleBySlug } from '@/data/rules/rules';
 import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { RULE_REFERENCE_ICONS } from '@/features/catalog/utils/codexIcons';
 import { DetailBackButton } from '@/features/navigation/DetailBackButton';
+import { SectionScrollNav } from '@/features/navigation/SectionScrollNav';
 import './rules.css';
 
 export function RuleDetailPage() {
@@ -21,7 +22,7 @@ export function RuleDetailPage() {
       <DetailBackButton fallback="/rules" />
       <div className="rule-detail__identity"><span aria-hidden="true"><img src={RULE_REFERENCE_ICONS[entry.iconKey]} alt="" /></span><div><h1>{entry.nameUk}</h1><small>{entry.nameOriginal}</small><strong>{entry.shortDescription}</strong></div></div>
     </header>
-    <nav className="rule-local-nav" aria-label="Розділи правила">{navigation.map(([id, label]) => <a href={`#${id}`} key={id}>{label}</a>)}</nav>
+    <SectionScrollNav className="rule-local-nav" label="Розділи правила" items={navigation.map(([id, label]) => ({ href: `#${id}`, label }))} />
 
     <div className="rule-detail__content">
       <section id="mechanics" className="rule-section rule-section--primary">

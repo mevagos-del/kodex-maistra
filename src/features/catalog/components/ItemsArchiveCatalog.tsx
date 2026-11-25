@@ -4,6 +4,7 @@ import type { ItemEntry } from '../types';
 import { capitalizeItemTerm, itemMasteryLabel } from '../utils/itemTerminology';
 import { itemCategoryIconForLabel } from '../utils/codexIcons';
 import { useRouteSessionState } from '@/features/navigation/useRouteSessionState';
+import { searchReferences } from '../utils/referenceSearch';
 
 const categoryOrder = ['Зброя', 'Обладунки', 'Пригодницьке спорядження', 'Інструменти', 'Магічні предмети'];
 const categoryDescriptions: Record<string, string> = {
@@ -13,19 +14,6 @@ const categoryDescriptions: Record<string, string> = {
   'Інструменти': 'Ремісничі, музичні та спеціальні',
   'Магічні предмети': 'Перевірені записи з відкритих правил',
 };
-
-function normalize(value: string) {
-  return value.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('uk-UA');
-}
-
-function itemMatchesSearch(entry: ItemEntry, search: string) {
-  const query = normalize(search);
-  if (!query) return true;
-  return normalize([
-    entry.title_ua, entry.title_original ?? '', entry.slug, entry.category ?? '', entry.subcategory ?? '', entry.item_type ?? '',
-    entry.weapon_category ?? '', entry.weapon_mode ?? '', entry.armor_category ?? '', entry.mastery ?? '', ...entry.weapon_properties,
-  ].join(' ')).includes(query);
-}
 
 function summary(entry: ItemEntry) {
   if (entry.item_type === 'зброя') return [entry.subcategory && capitalizeItemTerm(entry.subcategory), entry.damage && `${entry.damage} ${entry.damage_type ?? ''}`.trim(), entry.mastery ? itemMasteryLabel(entry.mastery) : null].filter(Boolean).join(' · ');
@@ -41,7 +29,7 @@ export function ItemsArchiveCatalog({ entries, search }: Props) {
     expanded: { Зброя: true } as Record<string, boolean>, subcategory: '', rarity: '', magical: '', attunement: '', weaponCategory: '', armorCategory: '', activeLetters: {} as Record<string, string>,
   });
   const { expanded, subcategory, rarity, magical, attunement, weaponCategory, armorCategory, activeLetters } = state;
-  const filtered = useMemo(() => entries.filter((entry) => itemMatchesSearch(entry, search))
+  const filtered = useMemo(() => searchReferences(entries, search, (entry) => ({ nameUk: entry.title_ua, nameOriginal: entry.title_original, slug: entry.slug }))
     .filter((entry) => !subcategory || entry.subcategory === subcategory)
     .filter((entry) => !rarity || entry.rarity === rarity)
     .filter((entry) => !magical || String(entry.is_magical) === magical)
@@ -65,7 +53,8 @@ export function ItemsArchiveCatalog({ entries, search }: Props) {
     </details>
     <div className="item-archive-categories">
       {categoryOrder.map((category) => {
-        const items = filtered.filter((entry)=>entry.category===category).sort((a,b)=>a.title_ua.localeCompare(b.title_ua,'uk'));
+        const items = filtered.filter((entry)=>entry.category===category);
+        if (!searching) items.sort((a,b)=>a.title_ua.localeCompare(b.title_ua,'uk'));
         if ((searching || subcategory || rarity || magical || attunement || weaponCategory || armorCategory) && items.length === 0) return null;
         const open = searching || Boolean(expanded[category]);
         const categoryIcon = itemCategoryIconForLabel(category);

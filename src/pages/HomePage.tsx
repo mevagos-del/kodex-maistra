@@ -5,6 +5,7 @@ import { HomeScrollIndicator } from '@/components/home/HomeScrollIndicator';
 import { HomeSectionDivider } from '@/components/home/HomeSectionDivider';
 import { HOME_REFERENCE_INDEX, type HomeReferenceSection } from '@/data/homeReferenceIndex.generated';
 import { HOME_ICONS } from '@/features/catalog/utils/codexIcons';
+import { searchReferences } from '@/features/catalog/utils/referenceSearch';
 import './home.css';
 
 const STATIC_PLACEHOLDER = 'Пошук у довіднику…';
@@ -161,10 +162,6 @@ function useOneTimeReveal(enabled = true) {
   return sectionRef;
 }
 
-function normalizeSearch(value: string) {
-  return value.trim().toLocaleLowerCase('uk').replace(/[’']/g, 'ʼ');
-}
-
 export function HomePage({ externalMotion = false }: { externalMotion?: boolean }) {
   const [search, setSearch] = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
@@ -183,11 +180,9 @@ export function HomePage({ externalMotion = false }: { externalMotion?: boolean 
   ])) as Record<HomeReferenceSection, number>, []);
 
   const searchResults = useMemo(() => {
-    const query = normalizeSearch(search);
-    if (!query) return [];
-    return HOME_REFERENCE_INDEX
-      .filter((entry) => normalizeSearch(`${entry.nameUk} ${entry.nameOriginal} ${entry.slug} ${'keywords' in entry ? entry.keywords : ''}`).includes(query))
-      .slice(0, 10);
+    return searchReferences(HOME_REFERENCE_INDEX, search, (entry) => ({
+      nameUk: entry.nameUk, nameOriginal: entry.nameOriginal, slug: entry.slug,
+    })).slice(0, 10);
   }, [search]);
 
   const updateResultsPosition = () => {

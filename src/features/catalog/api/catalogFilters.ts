@@ -1,5 +1,6 @@
 import type { EntityType } from '@/types/content';
 import type { CatalogEntry, CatalogFilters } from '../types';
+import { searchReferences } from '../utils/referenceSearch';
 
 export const defaultCatalogFilters: CatalogFilters = {
   search: '',
@@ -20,49 +21,7 @@ export const defaultCatalogFilters: CatalogFilters = {
   requiresAttunement: '',
 };
 
-function normalize(value: string) {
-  return value.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('uk-UA');
-}
-
-const entitySearchAliases: Record<EntityType, string> = {
-  race: 'раса раси вид species race',
-  class: 'клас класи class',
-  item: 'предмет предмети спорядження item',
-};
-
-const contentTypeSearchAliases: Record<CatalogEntry['content_type'], string> = {
-  official: 'офіційний official',
-  homebrew: 'авторський homebrew',
-  campaign: 'кампанія campaign',
-  draft: 'чернетка draft',
-};
-
-function includesSearch(entry: CatalogEntry, search: string) {
-  const query = normalize(search);
-  if (!query) return true;
-
-  const haystack = [
-    entry.title_ua,
-    entry.title_original ?? '',
-    entry.slug,
-    entitySearchAliases[entry.entityType],
-    contentTypeSearchAliases[entry.content_type],
-    entry.short_description ?? '',
-    ...(entry.tags ?? []),
-    ...(entry.entityType === 'item' ? [
-      entry.category ?? '', entry.subcategory ?? '', entry.item_type ?? '', entry.weapon_category ?? '', entry.weapon_mode ?? '',
-      entry.armor_category ?? '', entry.mastery ?? '', ...entry.weapon_properties,
-    ] : []),
-  ]
-    .join(' ');
-  const normalizedHaystack = normalize(haystack);
-
-  if (query.length <= 3) {
-    return normalizedHaystack.split(/\s+/).some((token) => token.startsWith(query));
-  }
-
-  return normalizedHaystack.includes(query);
-}
+const identity = (entry: CatalogEntry) => ({ nameUk: entry.title_ua, nameOriginal: entry.title_original, slug: entry.slug });
 
 function matchesBooleanFilter(value: boolean, filterValue: string) {
   if (!filterValue) return true;
@@ -70,8 +29,7 @@ function matchesBooleanFilter(value: boolean, filterValue: string) {
 }
 
 export function filterCatalogEntries(entries: CatalogEntry[], filters: CatalogFilters, entity: EntityType) {
-  return entries.filter((entry) => {
-    if (!includesSearch(entry, filters.search)) return false;
+  return searchReferences(entries, filters.search, identity).filter((entry) => {
     if (filters.rulesVersion && entry.rules_version !== filters.rulesVersion) return false;
     if (filters.contentType && entry.content_type !== filters.contentType) return false;
     if (filters.tag && !entry.tags.includes(filters.tag)) return false;
@@ -112,5 +70,5 @@ export function arrayOptionValues(entries: CatalogEntry[], reader: (entry: Catal
 }
 
 export function globalSearch(entries: CatalogEntry[], search: string) {
-  return entries.filter((entry) => includesSearch(entry, search));
+  return searchReferences(entries, search, identity);
 }

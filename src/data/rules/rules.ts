@@ -3,6 +3,8 @@ export const ruleCategories = {
   spellcasting: 'Заклинання', weapons: 'Зброя', defense: 'Захист', other: 'Інше',
 } as const;
 
+import { searchReferences } from '@/features/catalog/utils/referenceSearch';
+
 export type RuleCategory = keyof typeof ruleCategories;
 export type RuleIconKey =
   | 'action' | 'advantage' | 'attack' | 'bonusAction' | 'concentration' | 'cover'
@@ -96,12 +98,7 @@ export const officialRules: RuleEntry[] = [
 export const ruleBySlug = (slug: string | undefined) => officialRules.find(entry => entry.slug === slug);
 
 export function filterRules(search: string, category = ''): RuleEntry[] {
-  const query = search.trim().toLocaleLowerCase('uk');
-  return officialRules.filter(entry => {
-    if (category && entry.category !== category) return false;
-    if (!query) return true;
-    return [entry.nameUk, entry.nameOriginal, entry.slug, ruleCategories[entry.category], entry.shortDescription, ...entry.keywords]
-      .join(' ').toLocaleLowerCase('uk').includes(query);
-  });
+  return searchReferences(officialRules.filter(entry => !category || entry.category === category), search,
+    (entry) => ({ nameUk: entry.nameUk, nameOriginal: entry.nameOriginal, slug: entry.slug }));
 }
 

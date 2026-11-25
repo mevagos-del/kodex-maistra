@@ -2,6 +2,8 @@ import type { ReferenceCard } from '../api/detailReference';
 import { CODEX_ICONS } from '../utils/codexIcons';
 import { createReferenceAnchors, formatLabelUk, formatValueSafely, referenceLevel } from '../utils/detailContent';
 import { classProgressionVisibleKeys, normalizeClassProgressionRows } from '../utils/classProgression';
+import { useHorizontalScrollState } from '@/features/navigation/useSectionScroll';
+import './ProgressionTable.css';
 
 type ProgressionTableProps = { id: string; number: number; value: unknown; features: ReferenceCard[]; onFeatureNavigate?: (anchor: string) => void };
 
@@ -48,6 +50,7 @@ function numericLevel(value: unknown) {
 }
 
 export function ProgressionTable({ id, number, value, features, onFeatureNavigate }: ProgressionTableProps) {
+  const { ref, edges } = useHorizontalScrollState<HTMLDivElement>();
   const sourceRows = normalizeClassProgressionRows(value);
   const rowsByLevel = new Map<number, Record<string, unknown>>();
   for (const row of sourceRows) {
@@ -74,7 +77,8 @@ export function ProgressionTable({ id, number, value, features, onFeatureNavigat
   return (
     <section id={id} className="detail-v2-panel codex-detail-section">
       <h2 className="codex-detail-title"><img className="codex-icon codex-title-icon" src={CODEX_ICONS.combatTracker} alt="" /><span>{number}.</span> Таблиця прогресії</h2>
-      <div className="codex-progression-wrap">
+      <div className="codex-progression-frame" data-scroll-left={edges.left} data-scroll-right={edges.right}>
+      <div ref={ref} className="codex-progression-wrap" tabIndex={0} aria-label="Таблиця прогресії, прокручується горизонтально">
           <table className="codex-progression-table">
             <thead><tr>{visibleKeys.map((key) => <th key={key}>{labelForKey(key)}</th>)}</tr></thead>
             <tbody>{rows.map((row, index) => {
@@ -106,6 +110,8 @@ export function ProgressionTable({ id, number, value, features, onFeatureNavigat
             })}</tbody>
           </table>
         </div>
+        <span className="codex-progression-frame__hint" aria-hidden="true">→</span>
+      </div>
     </section>
   );
 }

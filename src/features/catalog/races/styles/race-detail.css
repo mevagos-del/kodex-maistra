@@ -196,6 +196,12 @@ body:has(.race-archive-page)::before {
   outline: 2px solid rgb(218 174 99 / 72%);
   outline-offset: -2px;
 }
+@media (max-width: 900px) {
+  .race-archive-nav ol { overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
+  .race-archive-nav[data-scroll-right='true'] ol { mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 18px), transparent 100%); }
+  .race-archive-nav[data-scroll-left='true'][data-scroll-right='false'] ol { mask-image: linear-gradient(to right, transparent 0%, #000 18px, #000 100%); }
+  .race-archive-nav[data-scroll-left='true'][data-scroll-right='true'] ol { mask-image: linear-gradient(to right, transparent 0%, #000 18px, #000 calc(100% - 18px), transparent 100%); }
+}
 
 .race-archive-content {
   display: grid;

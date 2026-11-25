@@ -19,14 +19,15 @@ export function SpellsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [view, setView] = useState<View>(initialView);
   const [filters, setFilters] = useState<SpellFilters>(() => spellFiltersFromSearchParams(searchParams));
-  const [sort, setSort] = useRouteSessionState<{ key: 'name' | 'level'; descending: boolean }>('spells-sort', { key: 'name', descending: false });
+  const [sort, setSort] = useRouteSessionState<{ key: 'name' | 'level'; descending: boolean; explicit?: boolean }>('spells-sort', { key: 'name', descending: false });
   const query = searchParams.toString();
   useEffect(() => setFilters(spellFiltersFromSearchParams(new URLSearchParams(query))), [query]);
   function updateFilters(next: SpellFilters) {
     setFilters(next);
     setSearchParams(spellFiltersToSearchParams(next), { replace: true });
   }
-  const entries = filterSpells(officialSpells, filters).sort((a, b) => {
+  const entries = filterSpells(officialSpells, filters);
+  if (!filters.search.trim() || sort.explicit) entries.sort((a, b) => {
     const names = a.nameUk.localeCompare(b.nameUk, 'uk');
     return (sort.key === 'level' ? a.level - b.level || names : names) * (sort.descending ? -1 : 1);
   });
@@ -35,7 +36,7 @@ export function SpellsPage() {
     try { localStorage.setItem(preferenceKey, value); } catch { /* The view still works without storage. */ }
   }
   function changeSort(key: 'name' | 'level') {
-    setSort({ key, descending: sort.key === key && !sort.descending });
+    setSort({ key, descending: sort.key === key && !sort.descending, explicit: true });
   }
   function select(key: Exclude<keyof SpellFilters, 'search'>, label: string, options: [string, string][]) {
     return <label>{label}<select value={filters[key]} onChange={(event) => updateFilters({ ...filters, [key]: event.target.value })}>

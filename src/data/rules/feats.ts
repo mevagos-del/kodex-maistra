@@ -1,6 +1,7 @@
 import type { ConditionSlug } from './conditions';
 import type { SpellEntry, SpellClass } from './spells';
 import type { OfficialItemEntry } from './types';
+import { searchReferences } from '@/features/catalog/utils/referenceSearch';
 
 export const featCategories = { origin: 'Походження', general: 'Загальна', fightingStyle: 'Бойовий стиль', epicBoon: 'Епічне благословення' } as const;
 export type FeatCategory = keyof typeof featCategories;
@@ -334,11 +335,10 @@ export function prerequisiteLabel(value: FeatPrerequisite): string {
 }
 export function featPrerequisites(entry: FeatEntry): string { return entry.prerequisites.map(prerequisiteLabel).join('; '); }
 export function filterFeats(query = '', category = '', prerequisite = '') {
-  const search = query.trim().toLocaleLowerCase('uk');
-  return officialFeats.filter(entry => (!search || [entry.nameUk, entry.nameEn, entry.slug].some(value => value.toLocaleLowerCase('uk').includes(search)))
-    && (!category || entry.category === category)
-    && (!prerequisite || (prerequisite === 'none' ? !entry.prerequisites.length : entry.prerequisites.some(value => value.kind === prerequisite))))
-    .sort((a, b) => a.nameUk.localeCompare(b.nameUk, 'uk'));
+  const entries = searchReferences(officialFeats, query, (entry) => ({ nameUk: entry.nameUk, nameOriginal: entry.nameEn, slug: entry.slug }))
+    .filter(entry => (!category || entry.category === category)
+    && (!prerequisite || (prerequisite === 'none' ? !entry.prerequisites.length : entry.prerequisites.some(value => value.kind === prerequisite))));
+  return query.trim() ? entries : entries.sort((a, b) => a.nameUk.localeCompare(b.nameUk, 'uk'));
 }
 export function groupFeats(entries: FeatEntry[]) {
   return Array.from(new Set(entries.map(entry => entry.nameUk[0]))).map(letter => ({ letter, entries: entries.filter(entry => entry.nameUk[0] === letter) }));

@@ -1,4 +1,6 @@
 export const conditionSlugs = ['blinded', 'charmed', 'deafened', 'exhaustion', 'frightened', 'grappled', 'incapacitated', 'invisible', 'paralyzed', 'petrified', 'poisoned', 'prone', 'restrained', 'stunned', 'unconscious'] as const;
+import { searchReferences } from '@/features/catalog/utils/referenceSearch';
+
 export type ConditionSlug = typeof conditionSlugs[number];
 type RulePoint = { title: string; text: string };
 export type ConditionEntry = {
@@ -131,8 +133,7 @@ export const officialConditions: ConditionEntry[] = [
 ];
 
 export function filterConditions(query: string) {
-  const normalized = query.trim().toLocaleLowerCase('uk');
-  return officialConditions.filter(entry => `${entry.nameUk} ${entry.nameEn} ${entry.slug}`.toLocaleLowerCase('uk').includes(normalized));
+  return searchReferences(officialConditions, query, (entry) => ({ nameUk: entry.nameUk, nameOriginal: entry.nameEn, slug: entry.slug }));
 }
 export function conditionIcon(slug: ConditionSlug) {
   return `/icons/conditions/condition-${slug}.webp`;

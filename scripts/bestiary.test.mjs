@@ -15,7 +15,8 @@ function loadLocalRules(path) {
   const compiled = ts.transpileModule(readFileSync(filename, 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText;
-  new Function('require', 'exports', compiled)(specifier => loadLocalRules(resolve(dirname(filename), specifier)), exports);
+  new Function('require', 'exports', compiled)(specifier => loadLocalRules(specifier === '@/features/catalog/utils/referenceSearch'
+    ? resolve('src/features/catalog/utils/referenceSearch.ts') : resolve(dirname(filename), specifier)), exports);
   return exports;
 }
 
@@ -35,6 +36,16 @@ const {
 } = loadLocalRules(resolve('src/features/catalog/utils/bestiaryMechanics.ts'));
 const { segmentBestiaryReferences } = loadLocalRules(resolve('src/features/catalog/utils/bestiaryReferences.ts'));
 const { BESTIARY_ICONS } = loadLocalRules(resolve('src/features/catalog/utils/codexIcons.ts'));
+const {
+  bestiaryChallengeRatingOptions,
+  bestiaryCreatureTypeOptions,
+  bestiarySizeFilterValues,
+  bestiarySizeOptions,
+  filterAndSortBestiary,
+  normalizeBestiaryCreatureType,
+  normalizeBestiarySize,
+  parseChallengeRating,
+} = loadLocalRules(resolve('src/features/catalog/utils/bestiaryCatalog.ts'));
 const bestiaryManifest = JSON.parse(readFileSync(resolve('docs/bestiary-manifest.json'), 'utf8'));
 const spellSlugs = new Set(spells.map(entry => entry.slug));
 const conditionSlugs = new Set(conditions.map(entry => entry.slug));
@@ -46,6 +57,80 @@ const bySlug = Object.fromEntries(entries.map(entry => [entry.slug, entry]));
 const sampleDescriptionSlugs = [
   'wolf', 'bandit', 'ghost', 'imp', 'aboleth', 'fire-elemental', 'animated-armor', 'owlbear', 'adult-red-dragon', 'treant',
 ];
+
+test('Bestiary catalog normalizes creature types and size aliases without mutating source records', () => {
+  assert.equal(normalizeBestiaryCreatureType('Аберрація'), 'Аберація');
+  assert.equal(normalizeBestiarySize('Велетенський'), 'Величезний');
+  assert.equal(normalizeBestiarySize('Середній або Малий'), 'Малий або Середній');
+  assert.deepEqual(bestiarySizeFilterValues('Середній або Малий'), ['Малий', 'Середній']);
+  assert.equal(bySlug.aboleth.creatureType, 'Аберрація');
+
+  const typeOptions = bestiaryCreatureTypeOptions(entries);
+  assert.equal(typeOptions.length, 14);
+  assert.ok(typeOptions.includes('Аберація'));
+  assert.ok(!typeOptions.includes('Аберрація'));
+  assert.deepEqual(bestiarySizeOptions(entries), ['Крихітний', 'Малий', 'Середній', 'Великий', 'Величезний', 'Колосальний']);
+});
+
+test('Bestiary catalog parses fractional challenge ratings and exposes numeric CR order', () => {
+  assert.equal(parseChallengeRating('0'), 0);
+  assert.equal(parseChallengeRating('1/8'), 0.125);
+  assert.equal(parseChallengeRating('1/4'), 0.25);
+  assert.equal(parseChallengeRating('1/2'), 0.5);
+  assert.equal(parseChallengeRating('30'), 30);
+  const options = bestiaryChallengeRatingOptions(entries);
+  assert.deepEqual(options.slice(0, 5), ['0', '1/8', '1/4', '1/2', '1']);
+  assert.equal(options.at(-1), '30');
+});
+
+test('Bestiary catalog filters type, composite size, Huge aliases, search, and CR range', () => {
+  const base = { search: '', creatureType: '', size: '', crMin: '', crMax: '', sort: 'name-asc' };
+  const aberrations = filterAndSortBestiary(entries, { ...base, creatureType: 'Аберація' });
+  assert.equal(aberrations.length, 9);
+  assert.ok(aberrations.some(entry => entry.slug === 'aboleth'));
+  assert.ok(aberrations.every(entry => normalizeBestiaryCreatureType(entry.creatureType) === 'Аберація'));
+
+  const small = filterAndSortBestiary(entries, { ...base, size: 'Малий' });
+  assert.equal(small.length, 59);
+  assert.ok(small.some(entry => entry.size === 'Середній або Малий'));
+  const medium = filterAndSortBestiary(entries, { ...base, size: 'Середній' });
+  assert.equal(medium.length, 126);
+  const huge = filterAndSortBestiary(entries, { ...base, size: 'Величезний' });
+  assert.equal(huge.length, 34);
+  assert.ok(huge.some(entry => entry.size === 'Велетенський'));
+
+  const fractional = filterAndSortBestiary(entries, { ...base, crMin: '1/8', crMax: '1/2' });
+  assert.ok(fractional.length > 0);
+  assert.ok(fractional.every(entry => parseChallengeRating(entry.challengeRating) >= 0.125 && parseChallengeRating(entry.challengeRating) <= 0.5));
+  assert.ok(filterAndSortBestiary(entries, { ...base, search: 'Aboleth' }).some(entry => entry.slug === 'aboleth'));
+});
+
+test('Bestiary catalog sorting is stable for Ukrainian names and numeric CR values', () => {
+  const base = { search: '', creatureType: '', size: '', crMin: '', crMax: '' };
+  const namesAscending = filterAndSortBestiary(entries, { ...base, sort: 'name-asc' });
+  const namesDescending = filterAndSortBestiary(entries, { ...base, sort: 'name-desc' });
+  assert.equal(namesAscending[0].slug, namesDescending.at(-1).slug);
+  assert.equal(namesAscending.at(-1).slug, namesDescending[0].slug);
+
+  const challengeAscending = filterAndSortBestiary(entries, { ...base, sort: 'cr-asc' });
+  const challengeDescending = filterAndSortBestiary(entries, { ...base, sort: 'cr-desc' });
+  assert.equal(challengeAscending[0].challengeRating, '0');
+  assert.equal(challengeDescending[0].challengeRating, '30');
+  assert.ok(parseChallengeRating(challengeAscending[0].challengeRating) <= parseChallengeRating(challengeAscending[1].challengeRating));
+});
+
+test('Bestiary catalog exposes an accessible collapsible filter panel and no Bestiary atmosphere', () => {
+  const catalogSource = readFileSync(resolve('src/pages/BestiaryPage.tsx'), 'utf8');
+  const detailSource = readFileSync(resolve('src/pages/BestiaryDetailPage.tsx'), 'utf8');
+  assert.match(catalogSource, /aria-expanded=\{state\.filtersOpen\}/);
+  assert.match(catalogSource, /aria-controls="bestiary-filter-panel"/);
+  assert.match(catalogSource, /hidden=\{!state\.filtersOpen\}/);
+  assert.match(catalogSource, /useRouteSessionState<BestiaryCatalogState>/);
+  assert.match(catalogSource, /activeFilterCount/);
+  assert.doesNotMatch(catalogSource, /ArchiveAtmosphere/);
+  assert.doesNotMatch(detailSource, /ArchiveAtmosphere/);
+  assert.doesNotMatch(catalogSource, /CODEX_ICONS\.creatureType/);
+});
 
 test('SRD 5.2.1 manifest contains all 330 canonical stat blocks', () => {
   assert.equal(bestiaryManifest.source.id, 'srd-5-2-1');

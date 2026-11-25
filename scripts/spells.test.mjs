@@ -55,10 +55,11 @@ test('all spells have unique slugs, complete text and licensed provenance', () =
     assert.doesNotMatch(spell.sourceText, /\[object Object\]|undefined|null/);
   }
 });
-test('search matches Ukrainian, English, slug and tags', () => {
-  for (const search of ['куля вогню', ' FIREBALL ', 'fireball', 'сфера']) {
+test('search ranks canonical and verified alternative names', () => {
+  for (const search of ['куля вогню', ' FIREBALL ', 'fireball', 'вогняна куля']) {
     assert.equal(filter({ search })[0].slug, 'fireball');
   }
+  assert.equal(filter({ search: 'евокація' }).length, 0);
   assert.equal(filter({ search: 'немає такого закляття' }).length, 0);
 });
 test('filters combine and preserve the zero-level cantrip', () => {

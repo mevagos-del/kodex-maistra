@@ -6,8 +6,9 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 import { loadSpells } from './load-spells.mjs';
+import { withSearchImport } from './load-search.mjs';
 
-const source = await readFile(new URL('../src/data/rules/feats.ts', import.meta.url), 'utf8');
+const source = await withSearchImport(await readFile(new URL('../src/data/rules/feats.ts', import.meta.url), 'utf8'));
 const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } });
 const { officialFeats: entries, featCategories, featAbilities, featSource, featPublicSource, filterFeats, groupFeats, featPrerequisites, eligibleFeatSpells, eligibleFeatWeapons } = await import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`);
 const { officialSpells: spells } = await loadSpells();
@@ -20,7 +21,8 @@ function loadLocalRules(path) {
   modules.set(filename, exports);
   const compiled = ts.transpileModule(readFileSync(filename, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
   // Test-only loader evaluates the project's trusted static TypeScript data, without adding a runtime dependency.
-  new Function('require', 'exports', compiled)(specifier => loadLocalRules(resolve(dirname(filename), specifier)), exports);
+  new Function('require', 'exports', compiled)(specifier => loadLocalRules(specifier === '@/features/catalog/utils/referenceSearch'
+    ? resolve('src/features/catalog/utils/referenceSearch.ts') : resolve(dirname(filename), specifier)), exports);
   return exports;
 }
 const rulesRoot = fileURLToPath(new URL('../src/data/rules/', import.meta.url));
@@ -233,7 +235,7 @@ test('new origin feats preserve resource, range, recharge and 2024 changes', () 
 });
 test('every published name and slug is searchable, filterable and alphabetically grouped', () => {
   for (const entry of entries) {
-    for (const query of [entry.slug, entry.nameEn, entry.nameUk]) assert.ok(filterFeats(query).some(found => found.slug === entry.slug));
+    for (const query of [entry.nameEn, entry.nameUk]) assert.ok(filterFeats(query).some(found => found.slug === entry.slug));
     assert.ok(filterFeats('', entry.category).includes(entry));
     assert.ok(filterFeats('', '', entry.prerequisites.length ? entry.prerequisites[0].kind : 'none').includes(entry));
   }

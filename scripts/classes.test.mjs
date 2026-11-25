@@ -20,7 +20,8 @@ function loadLocalRules(path) {
   }).outputText;
   // Test-only loader evaluates the project's trusted static TypeScript data.
   new Function('require', 'exports', compiled)(
-    (specifier) => loadLocalRules(resolve(dirname(filename), specifier)),
+    (specifier) => loadLocalRules(specifier === '@/features/catalog/utils/referenceSearch'
+      ? resolve('src/features/catalog/utils/referenceSearch.ts') : resolve(dirname(filename), specifier)),
     exports,
   );
   return exports;

@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import ts from 'typescript';
+import { searchModuleUrl } from './load-search.mjs';
 
 // Keep Node's validation on exactly the static data Vite consumes, without a TS runtime dependency.
 export async function loadSpells() {
@@ -10,6 +11,10 @@ export async function loadSpells() {
   for (const node of parsed.statements) {
     if (!ts.isImportDeclaration(node) || !ts.isStringLiteral(node.moduleSpecifier)) continue;
     const specifier = node.moduleSpecifier.text;
+    if (specifier === '@/features/catalog/utils/referenceSearch') {
+      imports.set(specifier, await searchModuleUrl());
+      continue;
+    }
     if (!specifier.startsWith('./spells-level-') || !specifier.endsWith('.json')) {
       throw new Error(`Unexpected runtime dependency in spell dataset: ${specifier}`);
     }

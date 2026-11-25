@@ -4,6 +4,7 @@ import level3Spells from './spells-level-3.json';
 import level4To5Spells from './spells-level-4-5.json';
 import level6Spells from './spells-level-6.json';
 import level7To9Spells from './spells-level-7-9.json';
+import { searchReferences } from '@/features/catalog/utils/referenceSearch';
 
 export const spellClasses = {
   bard: 'Бард', cleric: 'Жрець', druid: 'Друїд', paladin: 'Паладин', ranger: 'Слідопит',
@@ -417,9 +418,7 @@ export function spellFiltersToSearchParams(filters: SpellFilters) {
   return params;
 }
 export function filterSpells(entries: SpellEntry[], filters: SpellFilters) {
-  const query = filters.search.trim().toLocaleLowerCase('uk');
-  return entries.filter((spell) =>
-    (!query || [spell.nameUk, spell.nameEn, spell.slug, ...spell.tags].join(' ').toLocaleLowerCase('uk').includes(query)) &&
+  return searchReferences(entries, filters.search, (spell) => ({ nameUk: spell.nameUk, nameOriginal: spell.nameEn, slug: spell.slug })).filter((spell) =>
     (!filters.level || spell.level === Number(filters.level)) && (!filters.school || spell.school === filters.school) &&
     (!filters.class || spell.classes.includes(filters.class as SpellClass)) &&
     (!filters.concentration || spell.concentration === (filters.concentration === 'yes')) &&

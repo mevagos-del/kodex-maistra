@@ -3,11 +3,12 @@ import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 import ts from 'typescript';
 import { loadSpells } from './load-spells.mjs';
+import { withSearchImport } from './load-search.mjs';
 
 const root = new URL('../', import.meta.url);
 const read = path => readFile(new URL(path, root), 'utf8');
 async function loadData(path) {
-  const source = await read(path);
+  const source = await withSearchImport(await read(path));
   const { outputText } = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } });
   return import(`data:text/javascript;base64,${Buffer.from(outputText).toString('base64')}`);
 }
@@ -65,13 +66,12 @@ test('all rule and entity relationships resolve to real runtime identities', () 
   }
 });
 
-test('search supports Ukrainian, English, slug, category and keywords; category filter remains exact', () => {
+test('search uses names only; category filter remains exact', () => {
   for (const entry of rules) {
-    for (const query of [entry.nameUk, entry.nameOriginal, entry.slug]) assert.ok(rulesModule.filterRules(query).includes(entry));
+    for (const query of [entry.nameUk, entry.nameOriginal]) assert.ok(rulesModule.filterRules(query).includes(entry));
   }
   assert.ok(rulesModule.filterRules('захист').length > 0);
-  assert.ok(rulesModule.filterRules('Кидки').length > 0);
-  assert.ok(rulesModule.filterRules('два к20').length > 0);
+  assert.equal(rulesModule.filterRules('два к20').length, 0);
   assert.ok(rulesModule.filterRules('', 'combat').every(entry => entry.category === 'combat'));
   assert.equal(rulesModule.filterRules('немає такого правила').length, 0);
 });

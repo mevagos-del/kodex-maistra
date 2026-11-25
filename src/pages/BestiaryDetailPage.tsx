@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { SectionScrollNav } from '@/features/navigation/SectionScrollNav';
 import { bestiaryBySlug } from '@/data/rules/bestiary';
 import { officialConditions } from '@/data/rules/conditions';
 import { officialItems } from '@/data/rules/items';
 import { officialRules } from '@/data/rules/rules';
 import type { OfficialMonsterAction, OfficialMonsterRuleBlock } from '@/data/rules/types';
-import { ArchiveAtmosphere } from '@/features/catalog/components/ArchiveAtmosphere';
 import { BESTIARY_ICONS } from '@/features/catalog/utils/codexIcons';
 import { DetailBackButton } from '@/features/navigation/DetailBackButton';
 import { formatAttackMetadata, formatDamageText, formatMonsterActionScanFacts, formatMonsterDamageInstance, formatMonsterGear, formatMonsterLimitedUse, formatMonsterRecharge, formatMonsterSavingThrow, formatMonsterSavingThrowOutcomes, formatMonsterSpellcastingGroupLabel, formatMonsterSpellReference, normalizeMonsterDamageInstances, normalizeMonsterMechanicSteps, parseDiceFormula, rollDiceFormula, splitBestiaryDescription, splitBestiarySpeed } from '@/features/catalog/utils/bestiaryMechanics';
@@ -152,14 +152,13 @@ export function BestiaryDetailPage() {
   const speed = splitBestiarySpeed(entry.speed);
 
   return <main className="bestiary-detail">
-    <ArchiveAtmosphere />
     <header className="bestiary-detail__header">
       <div className="bestiary-detail__heading"><DetailBackButton fallback="/bestiary" /><h1>{entry.nameUk}</h1><small>{entry.nameOriginal}</small>
         <p>{entry.size} {entry.creatureType}{entry.subtype ? ` (${entry.subtype})` : ''}{entry.alignment ? `, ${entry.alignment}` : ''}</p>
         <div className="bestiary-detail__header-meta"><strong>ПО {entry.challengeRating}</strong><span>{entry.experiencePoints.toLocaleString('uk-UA')} досвіду</span></div>
       </div>
     </header>
-    <nav className="bestiary-local-nav" aria-label="Розділи істоти">{sections.map(([id, label]) => <a href={`#${id}`} key={id}>{label}</a>)}</nav>
+    <SectionScrollNav className="bestiary-local-nav" label="Розділи істоти" items={sections.map(([id, label]) => ({ href: `#${id}`, label }))} />
 
     <div className="bestiary-detail__layout">
       <div className="bestiary-detail__main">
